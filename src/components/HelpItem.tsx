@@ -20,6 +20,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-export { default as useDynamicHelpTarget } from "./hooks/useDynamicHelp";
-export * as DynamicHelp from "./DynamicHelp";
-export * from "./components";
+import * as React from "react";
+
+import * as DynamicHelp from "../DynamicHelp";
+
+type HelpItemProps = {
+    id: DynamicHelp.ItemId;
+    children: React.ReactNode;
+}
+
+/**
+ * A display element in a Dynamic Help Flow - one "step" of the flow.
+ *
+ */
+
+export const HelpItem = (props: HelpItemProps): JSX.Element => {
+    return (<>{props.children}</> );
+}

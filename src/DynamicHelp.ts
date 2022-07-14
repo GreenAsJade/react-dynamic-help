@@ -20,6 +20,5 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-export { default as useDynamicHelpTarget } from "./hooks/useDynamicHelp";
-export * as DynamicHelp from "./DynamicHelp";
-export * from "./components";
+export type FlowId = string;
+export type ItemId = string;

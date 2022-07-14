@@ -20,8 +20,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE. 
 */
 
-const useDynamicHelp = (names: string[]) => {
-    console.log("using Dynamic Help:", names);
-}
+import * as React from "react";
 
-export default useDynamicHelp;
+const useDynamicHelpTarget = (target: React.RefObject<any>, targetId: string) => {
+    React.useEffect(() => {
+        console.log("using dynamic target", target, targetId);
+    });
+};
+
+export default useDynamicHelpTarget;
