@@ -24,14 +24,11 @@ import * as React from "react";
 
 import * as HelpTypes from "DynamicHelpTypes";
 
-type StateSetter = React.Dispatch<React.SetStateAction<HelpTypes.State>>;
+import { DynamicHelpContext } from "../DynamicHelp";
 
-function addFlow(
-    helpState: HelpTypes.State,
-    setHelpState: StateSetter,
-    id: HelpTypes.FlowId,
-    showInitially: boolean,
-) {
+function useHelpFlow(id: HelpTypes.FlowId, showInitially: boolean) {
+    const { helpState, setState } = React.useContext(DynamicHelpContext);
+
     console.log("addflow", helpState, id, showInitially);
 
     if (!(id in helpState.flows)) {
@@ -40,19 +37,20 @@ function addFlow(
             showInitially: showInitially,
             items: {},
         };
-        setHelpState({ ...helpState });
+        setState({ ...helpState });
     } else {
         console.log("(already added)");
     }
 }
 
-function addItem(
-    helpState: HelpTypes.State,
-    setHelpState: StateSetter,
+function useHelpItem(
     flow: HelpTypes.FlowId,
     item: HelpTypes.ItemId,
     target: HelpTypes.TargetId,
+    seq: number,
 ) {
+    const { helpState, setState } = React.useContext(DynamicHelpContext);
+
     console.log("additem", helpState, flow, item, target);
 
     if (!(flow in helpState.flows)) {
@@ -69,8 +67,9 @@ function addItem(
     if (!(item in helpState.flows[flow].items)) {
         helpState.flows[flow].items[item] = {
             visible: false,
+            seq: seq,
         };
-        setHelpState({ ...helpState });
+        setState({ ...helpState });
     } else {
         console.log("(already added)");
     }
@@ -80,19 +79,13 @@ function addItem(
  * Sets up, and provides functions to maintain, Dynamic Help state.
  * @returns {DynamicHelpType.State} The composite state of the Dynamic Help system, intended for distrubution by DynamicHelpProvider.
  */
-export const useDynamicHelpState = () => {
+
+export const useDynamicHelpState = (): HelpTypes.HelpContext => {
     const [helpState, setHelpState] = React.useState<HelpTypes.State>({
         flows: {},
-
-        addFlow: (id: HelpTypes.FlowId, showInitially: boolean) =>
-            addFlow(helpState, setHelpState, id, showInitially),
-
-        addItem: (
-            flow: HelpTypes.FlowId,
-            item: HelpTypes.ItemId,
-            target: HelpTypes.TargetId,
-        ) => addItem(helpState, setHelpState, flow, item, target),
+        useHelpFlow: useHelpFlow,
+        useHelpItem: useHelpItem,
     });
 
-    return helpState;
+    return { helpState: helpState, setState: setHelpState };
 };

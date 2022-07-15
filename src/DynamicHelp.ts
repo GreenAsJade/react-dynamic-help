@@ -27,6 +27,6 @@ import * as HelpTypes from "DynamicHelpTypes";
 
 export const DynamicHelpContext = React.createContext({
     // unused default
-} as HelpTypes.State);
+} as HelpTypes.HelpContext);
 
 export const DynamicHelpProvider = DynamicHelpContext.Provider;

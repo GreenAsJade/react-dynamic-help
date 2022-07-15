@@ -27,6 +27,7 @@ export type StorageKey = string;
 
 type ItemState = {
     visible: boolean;
+    seq: number;
 };
 
 type ItemStates = {
@@ -42,8 +43,25 @@ type FlowState = {
 type FlowStates = {
     [id: FlowId]: FlowState;
 };
+
+type AddFlowFunction = (id: FlowId, showInitially: boolean) => void;
+
+type AddItemFunction = (
+    flow: FlowId,
+    item: ItemId,
+    target: TargetId,
+    seq: number,
+) => void;
+
 export type State = {
     flows: FlowStates;
-    addFlow: any;
-    addItem: any;
+    useHelpFlow: AddFlowFunction;
+    useHelpItem: AddItemFunction;
+};
+
+type StateSetter = React.Dispatch<React.SetStateAction<State>>;
+
+export type HelpContext = {
+    helpState: State;
+    setState: StateSetter;
 };
