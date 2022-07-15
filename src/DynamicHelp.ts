@@ -23,5 +23,10 @@ SOFTWARE.
 import * as React from "react";
 //import * as data from "data";
 
-export const DynamicHelpContext = React.createContext({});
+import * as HelpTypes from "DynamicHelpTypes";
+
+export const DynamicHelpContext = React.createContext({
+    // unused default
+} as HelpTypes.State);
+
 export const DynamicHelpProvider = DynamicHelpContext.Provider;

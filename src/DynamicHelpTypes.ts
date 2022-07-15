@@ -24,3 +24,26 @@ export type FlowId = string;
 export type ItemId = string;
 export type TargetId = string;
 export type StorageKey = string;
+
+type ItemState = {
+    visible: boolean;
+};
+
+type ItemStates = {
+    [id: ItemId]: ItemState;
+};
+
+type FlowState = {
+    visible: boolean;
+    showInitially: boolean;
+    items: ItemStates;
+};
+
+type FlowStates = {
+    [id: FlowId]: FlowState;
+};
+export type State = {
+    flows: FlowStates;
+    addFlow: any;
+    addItem: any;
+};

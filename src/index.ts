@@ -21,6 +21,7 @@ SOFTWARE.
 */
 
 export * from "./DynamicHelpTypes";
-export * from "./hooks/useDynamicHelp";
 export * from "./DynamicHelp";
+export * from "./hooks/useDynamicHelpTarget";
+export * from "./hooks/useDynamicHelpState";
 export * from "./components";

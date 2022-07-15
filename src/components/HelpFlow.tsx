@@ -23,11 +23,12 @@ SOFTWARE.
 import * as React from "react";
 
 import * as HelpTypes from "../DynamicHelpTypes";
+import { DynamicHelpContext } from "../DynamicHelp";
 
 type HelpFlowProps = {
     id: HelpTypes.FlowId;
     showInitially: boolean;
-    children: React.ReactNode;
+    children: JSX.Element | JSX.Element[];
 };
 
 /**
@@ -38,6 +39,27 @@ type HelpFlowProps = {
  */
 
 export const HelpFlow = (props: HelpFlowProps): JSX.Element => {
-    console.log("Help Flow children:", props.children);
+    const helpState = React.useContext(DynamicHelpContext);
+
+    console.log("Helpflow sees state", helpState);
+
+    // Initialize help flow state, checking local storage on the way
+    React.useEffect(() => {
+        // technically not-required check, since props definitions should enforce this!
+        if (!props.children || !React.Children.count(props.children)) {
+            console.error("Help flow has no children:", props.id);
+        }
+
+        console.log("Help Flow - adding self...");
+        helpState.addFlow(props.id, props.showInitially);
+
+        React.Children.forEach(props.children, (item) => {
+            const [id, target] = [item.props.id, item.props.target];
+            console.log("Flow children init", props.id, id, target);
+
+            helpState.addItem(props.id, id, target);
+        });
+    }, []);
+
     return <>{props.children}</>;
 };
