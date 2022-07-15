@@ -22,12 +22,13 @@ SOFTWARE.
 
 import * as React from "react";
 
-import * as DynamicHelp from "../DynamicHelp";
+import * as HelpTypes from "../DynamicHelpTypes";
 
 type HelpFlowProps = {
-    id: DynamicHelp.FlowId;
+    id: HelpTypes.FlowId;
+    showInitially: boolean;
     children: React.ReactNode;
-}
+};
 
 /**
  * A container component for Dynamic Help Flows.
@@ -37,5 +38,6 @@ type HelpFlowProps = {
  */
 
 export const HelpFlow = (props: HelpFlowProps): JSX.Element => {
-    return (<>{props.children}</> );
-}
+    console.log("Help Flow children:", props.children);
+    return <>{props.children}</>;
+};

@@ -20,5 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-export type FlowId = string;
-export type ItemId = string;
+import * as React from "react";
+//import * as data from "data";
+
+export const DynamicHelpContext = React.createContext({});
+export const DynamicHelpProvider = DynamicHelpContext.Provider;

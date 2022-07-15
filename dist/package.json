@@ -1,7 +1,7 @@
 {
   "name": "react-dynamic-help",
   "description": "React Dynamic Help - Create flows of helpful popups in your React App",
-  "version": "0.0.8",
+  "version": "0.0.10",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/greenasjade/react-dynamic-help.git"
@@ -13,5 +13,9 @@
   "main": "lib/es5/index.js",
   "module": "lib/es6/index.js",
   "author": "GreenAsJade",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@types/react": "^18.0.15",
+    "react": "^18.2.0"
+  }
 }

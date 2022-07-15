@@ -22,18 +22,20 @@ SOFTWARE.
 
 import * as React from "react";
 
-import * as DynamicHelp from "../DynamicHelp";
+import * as HelpTypes from "../DynamicHelpTypes";
 
 type HelpItemProps = {
-    id: DynamicHelp.ItemId;
+    id: HelpTypes.ItemId;
+    target: HelpTypes.TargetId;
     children: React.ReactNode;
-}
+};
 
 /**
  * A display element in a Dynamic Help Flow - one "step" of the flow.
  *
+ * (currently just renders its children: functionality TBD!)
  */
 
 export const HelpItem = (props: HelpItemProps): JSX.Element => {
-    return (<>{props.children}</> );
-}
+    return <>{props.children}</>;
+};

@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-export * from "./DynamicHelpTypes";
-export * from "./hooks/useDynamicHelp";
-export * from "./DynamicHelp";
-export * from "./components";
+export type FlowId = string;
+export type ItemId = string;
+export type TargetId = string;
+export type StorageKey = string;
