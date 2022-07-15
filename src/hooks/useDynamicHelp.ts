@@ -26,7 +26,8 @@ export const useDynamicHelpTarget = (
     target: React.RefObject<any>,
     targetId: string,
 ) => {
-    React.useEffect(() => {
-        console.log("using dynamic target", target, targetId);
-    });
+    console.log("UDHT", target, targetId);
+    // React.useEffect(() => {
+    //   console.log("using dynamic target", target, targetId);
+    //   });
 };
