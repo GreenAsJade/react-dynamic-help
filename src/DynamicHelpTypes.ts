@@ -52,8 +52,9 @@ type FlowMap = {
     [item: ItemId]: FlowId;
 };
 
+// Many Help Items may target a particular UI element
 type ItemMap = {
-    [target: TargetId]: ItemId;
+    [target: TargetId]: Set<ItemId>;
 };
 
 type StateSetter = React.Dispatch<React.SetStateAction<State>>;

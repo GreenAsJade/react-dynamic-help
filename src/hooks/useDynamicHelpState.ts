@@ -77,7 +77,12 @@ function addHelpItem(
             targetRef: null,
         };
         helpState.flowMap[item] = flow;
-        helpState.itemMap[target] = item;
+
+        if (!helpState.itemMap[target]) {
+            helpState.itemMap[target] = new Set<HelpTypes.ItemId>();
+        }
+        helpState.itemMap[target].add(item);
+
         setState({ ...helpState });
     } else {
         console.log("(already added)");

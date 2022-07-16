@@ -44,39 +44,41 @@ export const useDynamicHelpTarget = (
         const { helpState, setState } = helpContext;
 
         console.log(
-            "Help going to use Item target..",
+            "Help going to use Item target...",
             element,
             targetId,
             helpState,
         );
 
-        const targetItem = helpState.itemMap[targetId];
+        const targetItems = helpState.itemMap[targetId];
 
-        if (!targetItem) {
+        if (!targetItems) {
             console.warn(
                 "useDynamicHelpTarget called with target %s but no HelpItem has that target",
-                targetItem,
+                targetId,
                 element,
             );
             return;
         }
 
-        const flow = helpState.flowMap[targetItem];
+        targetItems.forEach((targetItem) => {
+            const flow = helpState.flowMap[targetItem];
 
-        if (!flow) {
-            console.warn(
-                "useDynamicHelp called for HelpItem that doesn't have a flow!",
-                targetItem,
-            );
-            return;
-        }
+            if (!flow) {
+                console.warn(
+                    "useDynamicHelp called for HelpItem %s that doesn't have a flow!",
+                    targetItem,
+                );
+                return;
+            }
 
-        const itemState = getItemState(targetItem, helpState);
+            const itemState = getItemState(targetItem, helpState);
 
-        itemState.targetRef = element.current;
+            itemState.targetRef = element.current;
 
-        helpState.flows[flow].items[targetItem] = itemState;
-
+            helpState.flows[flow].items[targetItem] = itemState;
+        });
+        console.log("setting help state:", helpState);
         setState({ ...helpState });
     }, []);
 };
