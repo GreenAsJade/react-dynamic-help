@@ -39,7 +39,8 @@ type HelpFlowProps = {
  */
 
 export const HelpFlow = (props: HelpFlowProps): JSX.Element => {
-    const helpState = React.useContext(DynamicHelpContext).helpState;
+    const helpContext = React.useContext(DynamicHelpContext);
+    const helpState = helpContext.helpState;
 
     console.log("Helpflow sees state", helpState);
 
@@ -51,14 +52,15 @@ export const HelpFlow = (props: HelpFlowProps): JSX.Element => {
         }
 
         console.log("Help Flow - adding self...");
-        helpState.useHelpFlow(props.id, props.showInitially);
+        helpState.addHelpFlow(helpContext, props.id, props.showInitially);
 
+        console.log("Help Flow - adding children...");
         (React.Children.toArray(props.children) as JSX.Element[]).forEach(
             (item, index) => {
                 const [id, target] = [item.props.id, item.props.target];
-                console.log("Flow children init", props.id, id, target);
+                console.log("Flow item init", props.id, id, target);
 
-                helpState.useHelpItem(props.id, id, target, index);
+                helpState.addHelpItem(helpContext, props.id, id, target, index);
             },
         );
     }, []);

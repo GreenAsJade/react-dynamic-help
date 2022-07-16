@@ -1,7 +1,7 @@
 # react-dynamic-help
 Create flows of helpful prompts in your react application.
 
-V 0.0.12 - skeleton only, concept & packaging tests
+V 0.0.14 - skeleton only, concept & packaging tests
 
 This library was packaged following https://www.youtube.com/watch?v=vRmLTZyq57U
 

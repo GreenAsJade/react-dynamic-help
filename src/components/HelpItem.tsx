@@ -23,6 +23,7 @@ SOFTWARE.
 import * as React from "react";
 
 import * as HelpTypes from "../DynamicHelpTypes";
+import { DynamicHelpContext } from "../DynamicHelp";
 
 type HelpItemProps = {
     id: HelpTypes.ItemId;
@@ -30,12 +31,25 @@ type HelpItemProps = {
     children: React.ReactNode;
 };
 
+const getItemState = (
+    item: HelpTypes.ItemId,
+    helpState: HelpTypes.State,
+): HelpTypes.ItemState => {
+    const flow = helpState.itemMap[item];
+
+    return helpState.flows[flow]?.items[item];
+};
+
 /**
  * A display element in a Dynamic Help Flow - one "step" of the flow.
  *
- * (currently just renders its children: functionality TBD!)
+ * (currently just renders its children, if `visible`: other functionality TBD!)
  */
 
 export const HelpItem = (props: HelpItemProps): JSX.Element => {
-    return <>{props.children}</>;
+    const { helpState } = React.useContext(DynamicHelpContext);
+
+    const state: HelpTypes.ItemState = getItemState(props.id, helpState);
+
+    return <>{state?.visible ? props.children : ""}</>;
 };

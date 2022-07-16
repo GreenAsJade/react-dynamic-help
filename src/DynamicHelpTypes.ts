@@ -25,16 +25,17 @@ export type ItemId = string;
 export type TargetId = string;
 export type StorageKey = string;
 
-type ItemState = {
+export type ItemState = {
     visible: boolean;
     seq: number;
+    flow: FlowId;
 };
 
 type ItemStates = {
     [id: ItemId]: ItemState;
 };
 
-type FlowState = {
+export type FlowState = {
     visible: boolean;
     showInitially: boolean;
     items: ItemStates;
@@ -44,9 +45,25 @@ type FlowStates = {
     [id: FlowId]: FlowState;
 };
 
-type AddFlowFunction = (id: FlowId, showInitially: boolean) => void;
+type ItemMap = {
+    [item: ItemId]: FlowId;
+};
+
+type StateSetter = React.Dispatch<React.SetStateAction<State>>;
+
+export type HelpContext = {
+    helpState: State;
+    setState: StateSetter;
+};
+
+type AddFlowFunction = (
+    helpContext: HelpContext,
+    id: FlowId,
+    showInitially: boolean,
+) => void;
 
 type AddItemFunction = (
+    helpContext: HelpContext,
     flow: FlowId,
     item: ItemId,
     target: TargetId,
@@ -55,13 +72,7 @@ type AddItemFunction = (
 
 export type State = {
     flows: FlowStates;
-    useHelpFlow: AddFlowFunction;
-    useHelpItem: AddItemFunction;
-};
-
-type StateSetter = React.Dispatch<React.SetStateAction<State>>;
-
-export type HelpContext = {
-    helpState: State;
-    setState: StateSetter;
+    itemMap: ItemMap;
+    addHelpFlow: AddFlowFunction;
+    addHelpItem: AddItemFunction;
 };

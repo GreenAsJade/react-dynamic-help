@@ -24,10 +24,14 @@ import * as React from "react";
 
 import * as HelpTypes from "DynamicHelpTypes";
 
-import { DynamicHelpContext } from "../DynamicHelp";
+function addHelpFlow(
+    helpContext: HelpTypes.HelpContext,
+    id: HelpTypes.FlowId,
+    showInitially: boolean,
+) {
+    console.log("Use Help Flow");
 
-function useHelpFlow(id: HelpTypes.FlowId, showInitially: boolean) {
-    const { helpState, setState } = React.useContext(DynamicHelpContext);
+    const { helpState, setState } = helpContext;
 
     console.log("addflow", helpState, id, showInitially);
 
@@ -43,13 +47,14 @@ function useHelpFlow(id: HelpTypes.FlowId, showInitially: boolean) {
     }
 }
 
-function useHelpItem(
+function addHelpItem(
+    helpContext: HelpTypes.HelpContext,
     flow: HelpTypes.FlowId,
     item: HelpTypes.ItemId,
     target: HelpTypes.TargetId,
     seq: number,
 ) {
-    const { helpState, setState } = React.useContext(DynamicHelpContext);
+    const { helpState, setState } = helpContext;
 
     console.log("additem", helpState, flow, item, target);
 
@@ -68,7 +73,9 @@ function useHelpItem(
         helpState.flows[flow].items[item] = {
             visible: false,
             seq: seq,
+            flow: flow,
         };
+        helpState.itemMap[item] = flow;
         setState({ ...helpState });
     } else {
         console.log("(already added)");
@@ -83,9 +90,11 @@ function useHelpItem(
 export const useDynamicHelpState = (): HelpTypes.HelpContext => {
     const [helpState, setHelpState] = React.useState<HelpTypes.State>({
         flows: {},
-        useHelpFlow: useHelpFlow,
-        useHelpItem: useHelpItem,
+        itemMap: {},
+        addHelpFlow: addHelpFlow,
+        addHelpItem: addHelpItem,
     });
 
+    console.log("Context initializer returning", helpState);
     return { helpState: helpState, setState: setHelpState };
 };
