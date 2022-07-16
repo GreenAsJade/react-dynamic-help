@@ -22,11 +22,61 @@ SOFTWARE.
 
 import * as React from "react";
 
+import * as HelpTypes from "../DynamicHelpTypes";
+
+import { DynamicHelpContext } from "../DynamicHelp";
+
+import { getItemState } from "../components/HelpItem";
+
+/**
+ * A hook to notify Dynamic Help that a element that is to be the target of a Help Item has become rendered.
+ *
+ * @param element : The ref to the element that will get the help
+ * @param targetItem : The ItemId of the HelpItem that applies.
+ */
 export const useDynamicHelpTarget = (
-    target: React.RefObject<any>,
-    targetId: string,
+    element: React.RefObject<any>,
+    targetId: HelpTypes.TargetId,
 ) => {
+    const helpContext = React.useContext(DynamicHelpContext);
+
     React.useEffect(() => {
-        console.log("RDH - Using dynamic target..", target, targetId);
-    });
+        const { helpState, setState } = helpContext;
+
+        console.log(
+            "Help going to use Item target..",
+            element,
+            targetId,
+            helpState,
+        );
+
+        const targetItem = helpState.itemMap[targetId];
+
+        if (!targetItem) {
+            console.warn(
+                "useDynamicHelpTarget called with target %s but no HelpItem has that target",
+                targetItem,
+                element,
+            );
+            return;
+        }
+
+        const flow = helpState.flowMap[targetItem];
+
+        if (!flow) {
+            console.warn(
+                "useDynamicHelp called for HelpItem that doesn't have a flow!",
+                targetItem,
+            );
+            return;
+        }
+
+        const itemState = getItemState(targetItem, helpState);
+
+        itemState.targetRef = element.current;
+
+        helpState.flows[flow].items[targetItem] = itemState;
+
+        setState({ ...helpState });
+    }, []);
 };

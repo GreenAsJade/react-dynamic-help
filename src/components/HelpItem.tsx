@@ -31,11 +31,11 @@ type HelpItemProps = {
     children: React.ReactNode;
 };
 
-const getItemState = (
+export const getItemState = (
     item: HelpTypes.ItemId,
     helpState: HelpTypes.State,
 ): HelpTypes.ItemState => {
-    const flow = helpState.itemMap[item];
+    const flow = helpState.flowMap[item];
 
     return helpState.flows[flow]?.items[item];
 };
@@ -51,5 +51,9 @@ export const HelpItem = (props: HelpItemProps): JSX.Element => {
 
     const state: HelpTypes.ItemState = getItemState(props.id, helpState);
 
-    return <>{state?.visible ? props.children : ""}</>;
+    const showSelf = state?.visible && !!state?.targetRef;
+
+    console.log("Help Item render:", props.id, showSelf, state, helpState);
+
+    return <>{showSelf ? props.children : ""}</>;
 };

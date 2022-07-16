@@ -71,11 +71,13 @@ function addHelpItem(
 
     if (!(item in helpState.flows[flow].items)) {
         helpState.flows[flow].items[item] = {
-            visible: false,
+            visible: true,
             seq: seq,
             flow: flow,
+            targetRef: null,
         };
-        helpState.itemMap[item] = flow;
+        helpState.flowMap[item] = flow;
+        helpState.itemMap[target] = item;
         setState({ ...helpState });
     } else {
         console.log("(already added)");
@@ -90,6 +92,7 @@ function addHelpItem(
 export const useDynamicHelpState = (): HelpTypes.HelpContext => {
     const [helpState, setHelpState] = React.useState<HelpTypes.State>({
         flows: {},
+        flowMap: {},
         itemMap: {},
         addHelpFlow: addHelpFlow,
         addHelpItem: addHelpItem,

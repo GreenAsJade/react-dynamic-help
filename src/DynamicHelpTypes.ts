@@ -20,6 +20,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+import React from "react";
+
 export type FlowId = string;
 export type ItemId = string;
 export type TargetId = string;
@@ -29,6 +31,7 @@ export type ItemState = {
     visible: boolean;
     seq: number;
     flow: FlowId;
+    targetRef: JSX.Element | null;
 };
 
 type ItemStates = {
@@ -45,8 +48,12 @@ type FlowStates = {
     [id: FlowId]: FlowState;
 };
 
-type ItemMap = {
+type FlowMap = {
     [item: ItemId]: FlowId;
+};
+
+type ItemMap = {
+    [target: TargetId]: ItemId;
 };
 
 type StateSetter = React.Dispatch<React.SetStateAction<State>>;
@@ -72,6 +79,7 @@ type AddItemFunction = (
 
 export type State = {
     flows: FlowStates;
+    flowMap: FlowMap;
     itemMap: ItemMap;
     addHelpFlow: AddFlowFunction;
     addHelpItem: AddItemFunction;
