@@ -50,7 +50,8 @@ function addHelpFlow(
 function addHelpItem(
     helpContext: HelpTypes.HelpContext,
     flow: HelpTypes.FlowId,
-    item: HelpTypes.ItemId,
+    itemId: HelpTypes.ItemId,
+    item: Element,
     target: HelpTypes.TargetId,
     seq: number,
 ) {
@@ -69,17 +70,17 @@ function addHelpItem(
 
     console.log("the flow state:", helpState.flows[flow]);
 
-    if (!(item in helpState.flows[flow].items)) {
-        helpState.flows[flow].items[item] = {
+    if (!(itemId in helpState.flows[flow].items)) {
+        helpState.flows[flow].items[itemId] = {
             visible: true,
             seq: seq,
             flow: flow,
             targetRef: null,
         };
-        helpState.flowMap[item] = flow;
+        helpState.flowMap[itemId] = flow;
 
         if (!helpState.itemMap[target]) {
-            helpState.itemMap[target] = new Set<HelpTypes.ItemId>();
+            helpState.itemMap[target] = new Set<Element>();
         }
         helpState.itemMap[target].add(item);
 
@@ -103,6 +104,6 @@ export const useDynamicHelpState = (): HelpTypes.HelpContext => {
         addHelpItem: addHelpItem,
     });
 
-    console.log("Context initializer returning", helpState);
+    console.log("Context provider returning", helpState);
     return { helpState: helpState, setState: setHelpState };
 };

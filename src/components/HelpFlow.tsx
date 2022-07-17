@@ -60,7 +60,14 @@ export const HelpFlow = (props: HelpFlowProps): JSX.Element => {
                 const [id, target] = [item.props.id, item.props.target];
                 console.log("Flow item init", props.id, id, target);
 
-                helpState.addHelpItem(helpContext, props.id, id, target, index);
+                helpState.addHelpItem(
+                    helpContext,
+                    props.id,
+                    id,
+                    item,
+                    target,
+                    index,
+                );
             },
         );
     }, []);

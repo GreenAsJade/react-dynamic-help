@@ -21,6 +21,7 @@ SOFTWARE.
 */
 
 import * as React from "react";
+import * as ReactDOM from "react-dom";
 
 import * as HelpTypes from "../DynamicHelpTypes";
 import { DynamicHelpContext } from "../DynamicHelp";
@@ -51,9 +52,22 @@ export const HelpItem = (props: HelpItemProps): JSX.Element => {
 
     const state: HelpTypes.ItemState = getItemState(props.id, helpState);
 
-    const showSelf = state?.visible && !!state?.targetRef;
+    if (state?.visible && !!state?.targetRef) {
+        const { bottom, right } = state.targetRef.getBoundingClientRect();
 
-    console.log("Help Item render:", props.id, showSelf, state, helpState);
+        const itemTop = bottom;
+        const itemLeft = right;
 
-    return <>{showSelf ? props.children : ""}</>;
+        return ReactDOM.createPortal(
+            <div
+                className="rdh-help-item"
+                style={{ position: "absolute", top: itemTop, left: itemLeft }}
+            >
+                {props.children}
+            </div>,
+            state.targetRef,
+        );
+    } else {
+        return <></>;
+    }
 };

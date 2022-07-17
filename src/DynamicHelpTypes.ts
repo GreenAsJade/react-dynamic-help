@@ -31,7 +31,7 @@ export type ItemState = {
     visible: boolean;
     seq: number;
     flow: FlowId;
-    targetRef: JSX.Element | null;
+    targetRef: Element | null;
 };
 
 type ItemStates = {
@@ -54,7 +54,7 @@ type FlowMap = {
 
 // Many Help Items may target a particular UI element
 type ItemMap = {
-    [target: TargetId]: Set<ItemId>;
+    [target: TargetId]: Set<Element>;
 };
 
 type StateSetter = React.Dispatch<React.SetStateAction<State>>;
@@ -73,7 +73,8 @@ type AddFlowFunction = (
 type AddItemFunction = (
     helpContext: HelpContext,
     flow: FlowId,
-    item: ItemId,
+    itemId: ItemId,
+    item: Element,
     target: TargetId,
     seq: number,
 ) => void;

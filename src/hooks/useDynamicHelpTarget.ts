@@ -26,27 +26,21 @@ import * as HelpTypes from "../DynamicHelpTypes";
 
 import { DynamicHelpContext } from "../DynamicHelp";
 
-import { getItemState } from "../components/HelpItem";
-
 /**
- * A hook to notify Dynamic Help that a element that is to be the target of a Help Item has become rendered.
+ * A hook to notify Dynamic Help that an element that is to be the target of a Help Item has become rendered.
  *
- * @param element : The ref to the element that will get the help
- * @param targetItem : The ItemId of the HelpItem that applies.
+ * @param targetId : The Help TargedId of the item to bne set up
  */
-export const useDynamicHelpTarget = (
-    element: React.RefObject<any>,
-    targetId: HelpTypes.TargetId,
-) => {
-    const helpContext = React.useContext(DynamicHelpContext);
+export const useDynamicHelpTarget = (targetId: HelpTypes.TargetId) => {
+    console.log("setting up help targetting ", targetId);
 
-    React.useEffect(() => {
-        const { helpState, setState } = helpContext;
+    const helpState = React.useContext(DynamicHelpContext).helpState;
 
+    const setRefCallback = (targetRef: any) => {
         console.log(
-            "Help going to use Item target...",
-            element,
+            "Help Target node update...",
             targetId,
+            targetRef,
             helpState,
         );
 
@@ -54,31 +48,18 @@ export const useDynamicHelpTarget = (
 
         if (!targetItems) {
             console.warn(
-                "useDynamicHelpTarget called with target %s but no HelpItem has that target",
+                "Help Target node update called with target %s but no HelpItem has that target",
                 targetId,
-                element,
             );
             return;
         }
 
         targetItems.forEach((targetItem) => {
-            const flow = helpState.flowMap[targetItem];
+            console.log("At change check:", targetItem);
 
-            if (!flow) {
-                console.warn(
-                    "useDynamicHelp called for HelpItem %s that doesn't have a flow!",
-                    targetItem,
-                );
-                return;
-            }
-
-            const itemState = getItemState(targetItem, helpState);
-
-            itemState.targetRef = element.current;
-
-            helpState.flows[flow].items[targetItem] = itemState;
+            targetItem?.setTargetPresent(!!targetRef);
         });
-        console.log("setting help state:", helpState);
-        setState({ ...helpState });
-    }, []);
+    };
+
+    return setRefCallback;
 };

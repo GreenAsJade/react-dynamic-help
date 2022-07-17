@@ -33,7 +33,8 @@ module.exports = {
         "no-self-assign": "off", // 2 errors
         "no-useless-escape": "off", // 24 errors
         "prefer-spread": "off", // 7 errors
-        "react-hooks/exhaustive-deps": "off", // 41 errors
+
+        "react-hooks/exhaustive-deps": "warn", 
 
         //==============================================================
 
