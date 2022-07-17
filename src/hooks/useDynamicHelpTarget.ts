@@ -57,7 +57,7 @@ export const useDynamicHelpTarget = (targetId: HelpTypes.TargetId) => {
         targetItems.forEach((targetItem) => {
             console.log("At change check:", targetItem);
 
-            targetItem?.setTargetPresent(!!targetRef);
+            targetItem?.setTarget(targetRef);
         });
     };
 

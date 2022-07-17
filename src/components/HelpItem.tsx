@@ -26,48 +26,91 @@ import * as ReactDOM from "react-dom";
 import * as HelpTypes from "../DynamicHelpTypes";
 import { DynamicHelpContext } from "../DynamicHelp";
 
-type HelpItemProps = {
+type ItemStateInfo = [
+    flow: HelpTypes.FlowState,
+    itemState: HelpTypes.ItemState,
+];
+
+export const getItemState = (
+    item: HelpTypes.ItemId,
+    helpState: HelpTypes.State,
+): ItemStateInfo => {
+    const flowId = helpState.flowMap[item];
+    const flow = helpState.flows[flowId];
+    return [flow, flow?.items[item]];
+};
+
+type HelpItemProperties = {
     id: HelpTypes.ItemId;
     target: HelpTypes.TargetId;
     children: React.ReactNode;
 };
 
-export const getItemState = (
-    item: HelpTypes.ItemId,
-    helpState: HelpTypes.State,
-): HelpTypes.ItemState => {
-    const flow = helpState.flowMap[item];
-
-    return helpState.flows[flow]?.items[item];
+type HelpItemState = {
+    target: any;
 };
 
 /**
  * A display element in a Dynamic Help Flow - one "step" of the flow.
  *
- * (currently just renders its children, if `visible`: other functionality TBD!)
  */
 
-export const HelpItem = (props: HelpItemProps): JSX.Element => {
-    const { helpState } = React.useContext(DynamicHelpContext);
+export class HelpItem extends React.PureComponent<
+    HelpItemProperties,
+    HelpItemState
+> {
+    static contextType = DynamicHelpContext;
 
-    const state: HelpTypes.ItemState = getItemState(props.id, helpState);
-
-    if (state?.visible && !!state?.targetRef) {
-        const { bottom, right } = state.targetRef.getBoundingClientRect();
-
-        const itemTop = bottom;
-        const itemLeft = right;
-
-        return ReactDOM.createPortal(
-            <div
-                className="rdh-help-item"
-                style={{ position: "absolute", top: itemTop, left: itemLeft }}
-            >
-                {props.children}
-            </div>,
-            state.targetRef,
-        );
-    } else {
-        return <></>;
+    constructor(props: HelpItemProperties) {
+        super(props);
+        this.state = { target: null };
     }
-};
+
+    componentDidMount = () => {
+        const { helpState, setState } = this.context as HelpTypes.HelpContext;
+
+        if (!helpState.itemMap[this.props.target]) {
+            helpState.itemMap[this.props.target] =
+                new Set<HelpTypes.HelpItemElement>();
+        }
+        helpState.itemMap[this.props.target].add(this);
+
+        setState({ ...helpState });
+    };
+
+    setTarget = (value: Element): void => {
+        console.log("Setting Help Item target:", this.props.id, value);
+        this.setState({ target: value });
+    };
+
+    render() {
+        const { helpState } = this.context as HelpTypes.HelpContext;
+
+        const [flowState, itemState] = getItemState(this.props.id, helpState);
+
+        console.log("HelpItem render", this.props.id, flowState, itemState);
+
+        if (flowState?.visible && itemState?.visible && !!this.state?.target) {
+            const { bottom, right } = this.state.target.getBoundingClientRect();
+
+            const itemTop = bottom;
+            const itemLeft = right;
+
+            return ReactDOM.createPortal(
+                <div
+                    className="rdh-help-item"
+                    style={{
+                        position: "absolute",
+                        top: itemTop,
+                        left: itemLeft,
+                    }}
+                >
+                    {this.props.children}
+                </div>,
+                document.body,
+            );
+        } else {
+            return <></>;
+        }
+    }
+}

@@ -20,7 +20,5 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-export * from "./DynamicHelpTypes";
-export * from "./DynamicHelp";
-export * from "./hooks";
-export * from "./components";
+export * from "./useDynamicHelpTarget";
+export * from "./useDynamicHelpState";

@@ -46,31 +46,25 @@ export const HelpFlow = (props: HelpFlowProps): JSX.Element => {
 
     // Initialize help flow state, checking local storage on the way
     React.useEffect(() => {
-        // technically not-required check, since props definitions should enforce this!
-        if (!props.children || !React.Children.count(props.children)) {
-            console.error("Help flow has no children:", props.id);
-        }
-
         console.log("Help Flow - adding self...");
         helpState.addHelpFlow(helpContext, props.id, props.showInitially);
 
         console.log("Help Flow - adding children...");
-        (React.Children.toArray(props.children) as JSX.Element[]).forEach(
-            (item, index) => {
-                const [id, target] = [item.props.id, item.props.target];
-                console.log("Flow item init", props.id, id, target);
 
-                helpState.addHelpItem(
-                    helpContext,
-                    props.id,
-                    id,
-                    item,
-                    target,
-                    index,
-                );
-            },
-        );
-    }, []);
+        React.Children.toArray(props.children).forEach((item: any, index) => {
+            const [id, target] = [item.props.id, item.props.target];
+            //console.log("Flow item init", props.id, id, target);
+
+            helpState.addHelpItem(
+                helpContext,
+                props.id,
+                id,
+                target,
+                props.showInitially,
+                index,
+            );
+        });
+    });
 
     return <>{props.children}</>;
 };

@@ -30,3 +30,20 @@ export const DynamicHelpContext = React.createContext({
 } as HelpTypes.HelpContext);
 
 export const DynamicHelpProvider = DynamicHelpContext.Provider;
+
+export const useFlowToggle = (flow: HelpTypes.FlowId): boolean => {
+    const { helpState, setState } = React.useContext(DynamicHelpContext);
+
+    const currentState = helpState.flows[flow];
+
+    if (!currentState) {
+        console.warn("Attempt to toggle non-existent flow:", flow);
+        return false;
+    }
+
+    helpState.flows[flow].visible = !helpState.flows[flow].visible;
+
+    setState({ ...helpState });
+
+    return helpState.flows[flow].visible;
+};

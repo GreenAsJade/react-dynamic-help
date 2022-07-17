@@ -52,9 +52,14 @@ type FlowMap = {
     [item: ItemId]: FlowId;
 };
 
+// forward definition for <HelpItem> objects
+export interface HelpItemElement {
+    setTarget(target: Element): void;
+}
+
 // Many Help Items may target a particular UI element
 type ItemMap = {
-    [target: TargetId]: Set<Element>;
+    [target: TargetId]: Set<HelpItemElement>;
 };
 
 type StateSetter = React.Dispatch<React.SetStateAction<State>>;
@@ -74,10 +79,12 @@ type AddItemFunction = (
     helpContext: HelpContext,
     flow: FlowId,
     itemId: ItemId,
-    item: Element,
     target: TargetId,
+    showInitially: boolean,
     seq: number,
 ) => void;
+
+export type ToggleFlowFuction = (flow: FlowId, context: HelpContext) => boolean;
 
 export type State = {
     flows: FlowStates;
@@ -85,4 +92,5 @@ export type State = {
     itemMap: ItemMap;
     addHelpFlow: AddFlowFunction;
     addHelpItem: AddItemFunction;
+    flowToggle: ToggleFlowFuction;
 };

@@ -33,7 +33,7 @@ function addHelpFlow(
 
     const { helpState, setState } = helpContext;
 
-    console.log("addflow", helpState, id, showInitially);
+    console.log("addflow", id, showInitially);
 
     if (!(id in helpState.flows)) {
         helpState.flows[id] = {
@@ -51,24 +51,20 @@ function addHelpItem(
     helpContext: HelpTypes.HelpContext,
     flow: HelpTypes.FlowId,
     itemId: HelpTypes.ItemId,
-    item: Element,
     target: HelpTypes.TargetId,
+    visible: boolean,
     seq: number,
 ) {
     const { helpState, setState } = helpContext;
 
-    console.log("additem", helpState, flow, item, target);
+    console.log("addHelpitem", helpState, flow, target);
 
     if (!(flow in helpState.flows)) {
-        console.warn(
-            "Can't add help item %s to non-existent flow %s",
-            flow,
-            item,
-        );
+        console.warn("Can't add help item %s to non-existent flow %s", flow);
         return;
     }
 
-    console.log("the flow state:", helpState.flows[flow]);
+    // console.log("the flow state:", helpState.flows[flow]);
 
     if (!(itemId in helpState.flows[flow].items)) {
         helpState.flows[flow].items[itemId] = {
@@ -80,9 +76,8 @@ function addHelpItem(
         helpState.flowMap[itemId] = flow;
 
         if (!helpState.itemMap[target]) {
-            helpState.itemMap[target] = new Set<Element>();
+            helpState.itemMap[target] = new Set<HelpTypes.HelpItemElement>();
         }
-        helpState.itemMap[target].add(item);
 
         setState({ ...helpState });
     } else {
@@ -90,8 +85,27 @@ function addHelpItem(
     }
 }
 
+function flowToggle(
+    flow: HelpTypes.FlowId,
+    helpContext: HelpTypes.HelpContext,
+): boolean {
+    const { helpState, setState } = helpContext;
+    const currentState = helpState.flows[flow];
+
+    if (!currentState) {
+        console.warn("Attempt to toggle non-existent flow:", flow);
+        return false;
+    }
+
+    helpState.flows[flow].visible = !helpState.flows[flow].visible;
+
+    setState({ ...helpState });
+
+    return helpState.flows[flow].visible;
+}
+
 /**
- * Sets up, and provides functions to maintain, Dynamic Help state.
+ * Sets up, supplies, and provides functions to maintain, Dynamic Help state.
  * @returns {DynamicHelpType.State} The composite state of the Dynamic Help system, intended for distrubution by DynamicHelpProvider.
  */
 
@@ -102,6 +116,7 @@ export const useDynamicHelpState = (): HelpTypes.HelpContext => {
         itemMap: {},
         addHelpFlow: addHelpFlow,
         addHelpItem: addHelpItem,
+        flowToggle: flowToggle,
     });
 
     console.log("Context provider returning", helpState);
