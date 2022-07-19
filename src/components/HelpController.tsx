@@ -23,21 +23,21 @@ SOFTWARE.
 import * as React from "react";
 
 import {
-    AppHelpState,
+    AppTargetsState,
     SystemState,
     SystemContextProvider,
     TargetId,
-    TargetItemSetterSetter,
+    AppApiContextSetter,
 } from "..";
 
 type HelpControllerProps = {
-    provideTargetMapper: TargetItemSetterSetter;
+    provideControllerApi: AppApiContextSetter;
 
     children: JSX.Element | JSX.Element[];
 };
 
 type HelpControllerState = {
-    appState: AppHelpState;
+    appTargetsState: AppTargetsState;
     systemState: SystemState;
 };
 
@@ -55,12 +55,12 @@ export class HelpController extends React.Component<
     HelpControllerState
 > {
     // we accumulate multiple updates per render cycle here ... the ultimate value ends up in this.state
-    appStateScratchPad: AppHelpState = { targetItems: {} };
+    appTargetsAccumulator: AppTargetsState = { targetItems: {} };
 
     constructor(props: HelpControllerProps) {
         super(props);
         this.state = {
-            appState: {
+            appTargetsState: {
                 targetItems: {},
             },
             systemState: { flows: {}, flowMap: {} },
@@ -68,8 +68,10 @@ export class HelpController extends React.Component<
     }
 
     componentDidMount = () => {
-        console.log("Mounting controller", this.props.provideTargetMapper);
-        this.props.provideTargetMapper(this.mapTargetCallback);
+        console.log("Mounting controller", this.props.provideControllerApi);
+        this.props.provideControllerApi({
+            registerTargetItem: this.mapTargetCallback,
+        });
     };
 
     /**
@@ -85,15 +87,20 @@ export class HelpController extends React.Component<
         return (targetRef: any) => {
             // Note that this callback can be called multiple times per render of the App,
             // one for each help item target it is rendering.
-            console.log("mapping", target, targetRef, this.appStateScratchPad);
-            this.appStateScratchPad = {
+            console.log(
+                "mapping",
+                target,
+                targetRef,
+                this.appTargetsAccumulator,
+            );
+            this.appTargetsAccumulator = {
                 targetItems: {
-                    ...this.appStateScratchPad.targetItems,
+                    ...this.appTargetsAccumulator.targetItems,
                     [target]: targetRef,
                 },
             };
 
-            this.setState({ appState: this.appStateScratchPad });
+            this.setState({ appTargetsState: this.appTargetsAccumulator });
         };
     };
 
@@ -109,7 +116,7 @@ export class HelpController extends React.Component<
                 <SystemContextProvider
                     value={{
                         systemState: this.state.systemState,
-                        appState: this.state.appState,
+                        appTargetsState: this.state.appTargetsState,
                         setSystemState: this.updateStuff,
                     }}
                 >

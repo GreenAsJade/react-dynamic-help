@@ -52,13 +52,13 @@ type HelpItemProperties = {
  */
 
 export function HelpItem(props: HelpItemProperties): JSX.Element {
-    const { appState } = React.useContext(SystemContext);
+    const { appTargetsState } = React.useContext(SystemContext);
 
-    console.log("HelpItem render", props.id, appState);
+    console.log("HelpItem render", props.id, appTargetsState);
 
     //const [flowState, itemState] = getItemState(this.props.id, systemState);
 
-    const target = appState.targetItems[props.target];
+    const target = appTargetsState.targetItems[props.target];
 
     if (target) {
         const { bottom, right } = target.getBoundingClientRect();

@@ -27,7 +27,7 @@ import * as HelpTypes from "DynamicHelpTypes";
 
 export const Api = React.createContext({
     // unused default
-} as HelpTypes.AppHelpContext);
+} as HelpTypes.AppApi);
 
 export const ApiProvider = Api.Provider;
 

@@ -22,5 +22,4 @@ SOFTWARE.
 
 export * from "./DynamicHelpTypes";
 export * from "./DynamicHelp";
-export * from "./hooks";
 export * from "./components";

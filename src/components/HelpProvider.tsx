@@ -22,7 +22,7 @@ SOFTWARE.
 
 import * as React from "react";
 
-import { ApiProvider, TargetItemSetter, HelpController } from "..";
+import { ApiProvider, HelpController, AppApi } from "..";
 
 type HelpProviderProps = {
     children: JSX.Element | JSX.Element[];
@@ -46,17 +46,19 @@ export const HelpProvider = (props: HelpProviderProps): JSX.Element => {
         props.children,
     ) as React.ReactElement[];
 
-    // here we store the target mapper function when it is provided to us by the HelpController...
+    // here we store the Contoller API functions when  provided to us by the HelpController...
     // ... for passing on to the Application via context.
-    const [targetMapper, setTargetMapper] = React.useState<TargetItemSetter>(
-        () => (ir: any, r: any) => {
-            // this is a non-null initialiser for the callback, it doesn't matter if it is called,
-            // the callback will be re-called after it's initialised
-            console.log(
-                "Info: target mapper called before initialised:",
-                ir,
-                r,
-            );
+    const [controllerApi, setControllerAPI] = React.useState<AppApi>(
+        // this is a non-null initialiser for the API, it doesn't matter if it is called,
+        // all APIs will be re-called after the API initialised, due to the resulting App re-render
+        {
+            registerTargetItem: () => (ir: any, r: any) => {
+                console.log(
+                    "Info: registerTargtItrm called before initialised:",
+                    ir,
+                    r,
+                );
+            },
         },
     );
 
@@ -64,18 +66,16 @@ export const HelpProvider = (props: HelpProviderProps): JSX.Element => {
      * The prop passed to the HelpController, which it uses to give us the mapper function,.
      * @param mapperFunction A ref-callback that the App can call to tell us when targets are mounted
      */
-    const provideTargetMapper = (mapperFunction: TargetItemSetter) => {
-        console.log("provide target mapper called:", mapperFunction);
-        setTargetMapper(() => mapperFunction);
+    const provideControllerApi = (apiObject: AppApi) => {
+        console.log("provide controller API called:", apiObject);
+        setControllerAPI(apiObject);
     };
 
-    console.log("Help provider render:", targetMapper);
+    console.log("Help provider render:", controllerApi);
     return (
         <>
-            <ApiProvider value={{ registerTargetItem: targetMapper }}>
-                {app}
-            </ApiProvider>
-            <HelpController provideTargetMapper={provideTargetMapper}>
+            <ApiProvider value={controllerApi}>{app}</ApiProvider>
+            <HelpController provideControllerApi={provideControllerApi}>
                 {helpFlows}
             </HelpController>
         </>

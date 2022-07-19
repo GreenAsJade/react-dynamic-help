@@ -54,25 +54,26 @@ export type ItemTable = {
     [target: TargetId]: any; // a ref, tbd type
 };
 
-export type AppHelpState = {
+export type AppTargetsState = {
     targetItems: ItemTable;
 };
 
 export type TargetItemSetter = (id: TargetId, targetRef: any) => void; // any: a ref, tbd
-export type AppHelpContext = {
-    registerTargetItem: TargetItemSetter | null;
+
+export type AppApi = {
+    registerTargetItem: TargetItemSetter;
 };
 
 /**
- * A function passed in on Controller props and used to pass back a TargetItemSetter function to the Connector
+ * A function passed in on Controller props and use to give the Provider the API from the controller.
  */
-export type TargetItemSetterSetter = (setterFunction: TargetItemSetter) => void;
+export type AppApiContextSetter = (apiSetterFunction: AppApi) => void;
 
 type StateSetter = () => void;
 
 export type HelpSystemContext = {
     systemState: SystemState;
-    appState: AppHelpState;
+    appTargetsState: AppTargetsState;
     setSystemState: StateSetter;
 };
 
