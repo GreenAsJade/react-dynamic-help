@@ -50,11 +50,6 @@ type FlowMap = {
     [item: ItemId]: FlowId;
 };
 
-// Many Help Items may target a particular UI element
-type ItemMap = {
-    [target: TargetId]: Set<ItemId>;
-};
-
 export type ItemTable = {
     [target: TargetId]: any; // a ref, tbd type
 };
@@ -84,5 +79,4 @@ export type HelpSystemContext = {
 export type SystemState = {
     flows: FlowStates;
     flowMap: FlowMap;
-    itemMap: ItemMap;
 };

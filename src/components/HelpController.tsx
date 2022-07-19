@@ -63,7 +63,7 @@ export class HelpController extends React.Component<
             appState: {
                 targetItems: {},
             },
-            systemState: { flows: {}, flowMap: {}, itemMap: {} },
+            systemState: { flows: {}, flowMap: {} },
         };
     }
 

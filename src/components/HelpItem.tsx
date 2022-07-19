@@ -46,57 +46,40 @@ type HelpItemProperties = {
     children: React.ReactNode;
 };
 
-type HelpItemState = {
-    target: any;
-};
-
 /**
  * A display element in a Dynamic Help Flow - one "step" of the flow.
  *
  */
 
-export class HelpItem extends React.PureComponent<
-    HelpItemProperties,
-    HelpItemState
-> {
-    static contextType = SystemContext;
+export function HelpItem(props: HelpItemProperties): JSX.Element {
+    const { appState } = React.useContext(SystemContext);
 
-    constructor(props: HelpItemProperties) {
-        super(props);
-        this.state = { target: null };
-    }
+    console.log("HelpItem render", props.id, appState);
 
-    render() {
-        const { systemState } = this.context as HelpTypes.HelpSystemContext;
+    //const [flowState, itemState] = getItemState(this.props.id, systemState);
 
-        //console.log("HelpItem render", this.props.id, systemState);
+    const target = appState.targetItems[props.target];
+
+    if (target) {
+        const { bottom, right } = target.getBoundingClientRect();
+
+        const itemTop = bottom;
+        const itemLeft = right;
+
+        return ReactDOM.createPortal(
+            <div
+                className="rdh-help-item"
+                style={{
+                    position: "absolute",
+                    top: itemTop,
+                    left: itemLeft,
+                }}
+            >
+                {props.children}
+            </div>,
+            document.body,
+        );
+    } else {
         return <></>;
-
-        const [flowState, itemState] = getItemState(this.props.id, systemState);
-
-        console.log("HelpItem render", this.props.id, flowState, itemState);
-
-        if (flowState?.visible && itemState?.visible && !!this.state?.target) {
-            const { bottom, right } = this.state.target.getBoundingClientRect();
-
-            const itemTop = bottom;
-            const itemLeft = right;
-
-            return ReactDOM.createPortal(
-                <div
-                    className="rdh-help-item"
-                    style={{
-                        position: "absolute",
-                        top: itemTop,
-                        left: itemLeft,
-                    }}
-                >
-                    {this.props.children}
-                </div>,
-                document.body,
-            );
-        } else {
-            return <></>;
-        }
     }
 }
