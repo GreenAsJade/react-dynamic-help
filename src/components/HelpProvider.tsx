@@ -22,7 +22,7 @@ SOFTWARE.
 
 import * as React from "react";
 
-import { AppApiProvider, TargetItemSetter, HelpController } from "..";
+import { ApiProvider, TargetItemSetter, HelpController } from "..";
 
 type HelpProviderProps = {
     children: JSX.Element | JSX.Element[];
@@ -35,26 +35,23 @@ type HelpProviderProps = {
  *
  * The registered target items are provided by SystemContext to the Help System.
  *
+ * This component is needed to decouple renders of the help system from renders of the App,
+ * which in turn is needed because the help system is updated when refs callbacks are called in the App
+ *  => Help system updates must not cause an app re-render.
+ *
  */
 
 export const HelpProvider = (props: HelpProviderProps): JSX.Element => {
-    const [helpFlows, app] = React.Children.toArray(
+    const [app, ...helpFlows] = React.Children.toArray(
         props.children,
     ) as React.ReactElement[];
-
-    console.log(
-        "HelpProvider children",
-        props.children,
-        React.Children.count(props.children),
-    );
-    if (React.Children.count(props.children) !== 2) {
-        throw "Help Provider must have exactly two children";
-    }
 
     // here we store the target mapper function when it is provided to us by the HelpController...
     // ... for passing on to the Application via context.
     const [targetMapper, setTargetMapper] = React.useState<TargetItemSetter>(
         () => (ir: any, r: any) => {
+            // this is a non-null initialiser for the callback, it doesn't matter if it is called,
+            // the callback will be re-called after it's initialised
             console.log(
                 "Info: target mapper called before initialised:",
                 ir,
@@ -75,12 +72,12 @@ export const HelpProvider = (props: HelpProviderProps): JSX.Element => {
     console.log("Help provider render:", targetMapper);
     return (
         <>
+            <ApiProvider value={{ registerTargetItem: targetMapper }}>
+                {app}
+            </ApiProvider>
             <HelpController provideTargetMapper={provideTargetMapper}>
                 {helpFlows}
             </HelpController>
-            <AppApiProvider value={{ registerTargetItem: targetMapper }}>
-                {app}
-            </AppApiProvider>
         </>
     );
 };
