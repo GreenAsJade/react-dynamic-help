@@ -22,7 +22,7 @@ SOFTWARE.
 
 import * as React from "react";
 
-import { ApiProvider, HelpController, AppApi } from "..";
+import { ApiProvider, HelpController, AppApi, TargetId } from "..";
 
 type HelpProviderProps = {
     children: JSX.Element | JSX.Element[];
@@ -49,22 +49,21 @@ export const HelpProvider = (props: HelpProviderProps): JSX.Element => {
     // here we store the Contoller API functions when  provided to us by the HelpController...
     // ... for passing on to the Application via context.
     const [controllerApi, setControllerAPI] = React.useState<AppApi>(
-        // this is a non-null initialiser for the API, it doesn't matter if it is called,
+        // this is a non-null initialiser for the API, it doesn't matter if it is called:
         // all APIs will be re-called after the API initialised, due to the resulting App re-render
         {
-            registerTargetItem: () => (ir: any, r: any) => {
+            registerTargetItem: (id: TargetId) => (target: HTMLElement) => {
                 console.log(
-                    "Info: registerTargtItrm called before initialised:",
-                    ir,
-                    r,
+                    "Info: registration of target before controller initialisation:",
+                    id,
+                    target,
                 );
             },
         },
     );
 
     /**
-     * The prop passed to the HelpController, which it uses to give us the mapper function,.
-     * @param mapperFunction A ref-callback that the App can call to tell us when targets are mounted
+     * The callback prop passed to the HelpController, which it uses to give us the API object.
      */
     const provideControllerApi = (apiObject: AppApi) => {
         console.log("provide controller API called:", apiObject);

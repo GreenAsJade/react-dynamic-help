@@ -28,6 +28,7 @@ import {
     SystemContextProvider,
     TargetId,
     AppApiContextSetter,
+    TargetItemSetter,
 } from "..";
 
 type HelpControllerProps = {
@@ -70,7 +71,7 @@ export class HelpController extends React.Component<
     componentDidMount = () => {
         console.log("Mounting controller", this.props.provideControllerApi);
         this.props.provideControllerApi({
-            registerTargetItem: this.mapTargetCallback,
+            registerTargetItem: this.registerTargetCallback,
         });
     };
 
@@ -81,8 +82,8 @@ export class HelpController extends React.Component<
      *
      * That table is passed as context to the Help System in appHelpState.
      */
-    mapTargetCallback = (target: TargetId) => {
-        console.log("Request to set up ref mapper for", target);
+    registerTargetCallback: TargetItemSetter = (target: TargetId) => {
+        console.log("Request to register", target);
 
         return (targetRef: any) => {
             // Note that this callback can be called multiple times per render of the App,
@@ -102,6 +103,10 @@ export class HelpController extends React.Component<
 
             this.setState({ appTargetsState: this.appTargetsAccumulator });
         };
+    };
+
+    signalTargetIsUsed = (target: TargetId) => {
+        console.log("seeing target used:", target);
     };
 
     updateStuff = (): void => {

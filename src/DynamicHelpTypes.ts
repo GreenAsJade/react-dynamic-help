@@ -51,23 +51,25 @@ type FlowMap = {
 };
 
 export type ItemTable = {
-    [target: TargetId]: any; // a ref, tbd type
+    [target: TargetId]: HTMLElement; // ref to target
 };
 
 export type AppTargetsState = {
     targetItems: ItemTable;
 };
 
-export type TargetItemSetter = (id: TargetId, targetRef: any) => void; // any: a ref, tbd
+export type TargetItemSetter = (
+    id: TargetId,
+) => (targetRef: HTMLElement) => void;
 
 export type AppApi = {
     registerTargetItem: TargetItemSetter;
 };
 
 /**
- * A function passed in on Controller props and use to give the Provider the API from the controller.
+ * A function passed in on Controller props, used to give the Provider the API from the controller.
  */
-export type AppApiContextSetter = (apiSetterFunction: AppApi) => void;
+export type AppApiContextSetter = (apiObject: AppApi) => void;
 
 type StateSetter = () => void;
 
