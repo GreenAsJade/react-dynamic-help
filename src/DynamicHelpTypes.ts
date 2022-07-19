@@ -20,8 +20,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import React from "react";
-
 export type FlowId = string;
 export type ItemId = string;
 export type TargetId = string;
@@ -52,45 +50,39 @@ type FlowMap = {
     [item: ItemId]: FlowId;
 };
 
-// forward definition for <HelpItem> objects
-export interface HelpItemElement {
-    setTarget(target: Element): void;
-}
-
 // Many Help Items may target a particular UI element
 type ItemMap = {
-    [target: TargetId]: Set<HelpItemElement>;
+    [target: TargetId]: Set<ItemId>;
 };
 
-type StateSetter = React.Dispatch<React.SetStateAction<State>>;
-
-export type HelpContext = {
-    helpState: State;
-    setState: StateSetter;
+export type ItemTable = {
+    [target: TargetId]: any; // a ref, tbd type
 };
 
-type AddFlowFunction = (
-    helpContext: HelpContext,
-    id: FlowId,
-    showInitially: boolean,
-) => void;
+export type AppHelpState = {
+    targetItems: ItemTable;
+};
 
-type AddItemFunction = (
-    helpContext: HelpContext,
-    flow: FlowId,
-    itemId: ItemId,
-    target: TargetId,
-    showInitially: boolean,
-    seq: number,
-) => void;
+export type TargetItemSetter = (id: TargetId, targetRef: any) => void; // any: a ref, tbd
+export type AppHelpContext = {
+    registerTargetItem: TargetItemSetter | null;
+};
 
-export type ToggleFlowFuction = (flow: FlowId, context: HelpContext) => boolean;
+/**
+ * A function passed in on Controller props and used to pass back a TargetItemSetter function to the Connector
+ */
+export type TargetItemSetterSetter = (setterFunction: TargetItemSetter) => void;
 
-export type State = {
+type StateSetter = () => void;
+
+export type HelpSystemContext = {
+    systemState: SystemState;
+    appState: AppHelpState;
+    setSystemState: StateSetter;
+};
+
+export type SystemState = {
     flows: FlowStates;
     flowMap: FlowMap;
     itemMap: ItemMap;
-    addHelpFlow: AddFlowFunction;
-    addHelpItem: AddItemFunction;
-    flowToggle: ToggleFlowFuction;
 };

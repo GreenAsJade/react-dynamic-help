@@ -25,25 +25,14 @@ import * as React from "react";
 
 import * as HelpTypes from "DynamicHelpTypes";
 
-export const DynamicHelpContext = React.createContext({
+export const AppApi = React.createContext({
     // unused default
-} as HelpTypes.HelpContext);
+} as HelpTypes.AppHelpContext);
 
-export const DynamicHelpProvider = DynamicHelpContext.Provider;
+export const AppApiProvider = AppApi.Provider;
 
-export const useFlowToggle = (flow: HelpTypes.FlowId): boolean => {
-    const { helpState, setState } = React.useContext(DynamicHelpContext);
+export const SystemContext = React.createContext({
+    // unused default
+} as HelpTypes.HelpSystemContext);
 
-    const currentState = helpState.flows[flow];
-
-    if (!currentState) {
-        console.warn("Attempt to toggle non-existent flow:", flow);
-        return false;
-    }
-
-    helpState.flows[flow].visible = !helpState.flows[flow].visible;
-
-    setState({ ...helpState });
-
-    return helpState.flows[flow].visible;
-};
+export const SystemContextProvider = SystemContext.Provider;

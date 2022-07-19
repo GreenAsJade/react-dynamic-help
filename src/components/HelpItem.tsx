@@ -24,7 +24,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 
 import * as HelpTypes from "../DynamicHelpTypes";
-import { DynamicHelpContext } from "../DynamicHelp";
+import { SystemContext } from "../DynamicHelp";
 
 type ItemStateInfo = [
     flow: HelpTypes.FlowState,
@@ -33,7 +33,7 @@ type ItemStateInfo = [
 
 export const getItemState = (
     item: HelpTypes.ItemId,
-    helpState: HelpTypes.State,
+    helpState: HelpTypes.SystemState,
 ): ItemStateInfo => {
     const flowId = helpState.flowMap[item];
     const flow = helpState.flows[flowId];
@@ -59,34 +59,20 @@ export class HelpItem extends React.PureComponent<
     HelpItemProperties,
     HelpItemState
 > {
-    static contextType = DynamicHelpContext;
+    static contextType = SystemContext;
 
     constructor(props: HelpItemProperties) {
         super(props);
         this.state = { target: null };
     }
 
-    componentDidMount = () => {
-        const { helpState, setState } = this.context as HelpTypes.HelpContext;
-
-        if (!helpState.itemMap[this.props.target]) {
-            helpState.itemMap[this.props.target] =
-                new Set<HelpTypes.HelpItemElement>();
-        }
-        helpState.itemMap[this.props.target].add(this);
-
-        setState({ ...helpState });
-    };
-
-    setTarget = (value: Element): void => {
-        console.log("Setting Help Item target:", this.props.id, value);
-        this.setState({ target: value });
-    };
-
     render() {
-        const { helpState } = this.context as HelpTypes.HelpContext;
+        const { systemState } = this.context as HelpTypes.HelpSystemContext;
 
-        const [flowState, itemState] = getItemState(this.props.id, helpState);
+        //console.log("HelpItem render", this.props.id, systemState);
+        return <></>;
+
+        const [flowState, itemState] = getItemState(this.props.id, systemState);
 
         console.log("HelpItem render", this.props.id, flowState, itemState);
 

@@ -20,4 +20,38 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-export * from "./useDynamicHelp";
+import * as React from "react";
+
+import { AppHelpContext, TargetId, ItemTable } from "DynamicHelpTypes";
+
+const mapTargetItem = (
+    id: TargetId,
+    targetRef: any,
+    helpAppState: ItemTable,
+    setHelpAppState: any,
+): void => {
+    console.log("set target item ref", id, targetRef, helpAppState);
+    if (helpAppState.targetItems[id] !== targetRef) {
+        setHelpAppState({
+            targetItems: { ...helpAppState.targetItems, id: targetRef },
+        });
+    }
+};
+
+/**
+ * Sets up, supplies, and provides functions to maintain, Dynamic Help APP state tracking.
+ * @returns {HelpTypes.HelpAppContext}
+ */
+
+export const useDynamicHelp = (): AppHelpContext => {
+    const [helpAppState, setHelpAppState] = React.useState<ItemTable>({
+        targetItems: {},
+    });
+
+    console.log("Help App Context provider...", helpAppState);
+
+    return {
+        registerTargetItem: (id: TargetId, targetRef: any) =>
+            mapTargetItem(id, targetRef, helpAppState, setHelpAppState),
+    };
+};

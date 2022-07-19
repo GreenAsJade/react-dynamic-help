@@ -23,7 +23,7 @@ SOFTWARE.
 import * as React from "react";
 
 import * as HelpTypes from "../DynamicHelpTypes";
-import { DynamicHelpContext } from "../DynamicHelp";
+import { SystemContext } from "../DynamicHelp";
 
 type HelpFlowProps = {
     id: HelpTypes.FlowId;
@@ -39,31 +39,14 @@ type HelpFlowProps = {
  */
 
 export const HelpFlow = (props: HelpFlowProps): JSX.Element => {
-    const helpContext = React.useContext(DynamicHelpContext);
-    const helpState = helpContext.helpState;
+    const helpContext = React.useContext(SystemContext);
+    const helpState = helpContext.systemState;
 
     console.log("Helpflow sees state", helpState);
 
     // Initialize help flow state, checking local storage on the way
     React.useEffect(() => {
-        console.log("Help Flow - adding self...");
-        helpState.addHelpFlow(helpContext, props.id, props.showInitially);
-
-        console.log("Help Flow - adding children...");
-
-        React.Children.toArray(props.children).forEach((item: any, index) => {
-            const [id, target] = [item.props.id, item.props.target];
-            //console.log("Flow item init", props.id, id, target);
-
-            helpState.addHelpItem(
-                helpContext,
-                props.id,
-                id,
-                target,
-                props.showInitially,
-                index,
-            );
-        });
+        //console.log("Help Flow - adding self... (tbd)", props.id);
     });
 
     return <>{props.children}</>;

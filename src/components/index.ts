@@ -20,5 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+export * from "./HelpProvider";
+export * from "./HelpController";
 export * from "./HelpFlow";
 export * from "./HelpItem";
