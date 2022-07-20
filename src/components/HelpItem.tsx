@@ -58,9 +58,14 @@ export function HelpItem(props: HelpItemProperties): JSX.Element {
 
     const target = appTargetsState.targetItems[props.target];
 
-    console.log("HelpItem render", props.id, appTargetsState, systemState);
+    console.log("HelpItem render", props.id); // , appTargetsState, systemState);
 
-    if (target && flowState?.visible && itemState?.visible) {
+    if (
+        target &&
+        flowState?.visible &&
+        itemState?.visible &&
+        systemState.systemEnabled
+    ) {
         const { bottom, right } = target.getBoundingClientRect();
 
         const itemTop = bottom;

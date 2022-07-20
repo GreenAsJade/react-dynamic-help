@@ -32,6 +32,7 @@ export type StorageKey = string;
 export type AppApi = {
     registerTargetItem: TargetItemSetter;
     enableFlow: FlowSwitch;
+    enableHelp: (enable: boolean) => void;
 };
 
 export type TargetItemSetter = (id: TargetId) => {
@@ -78,6 +79,7 @@ export type AppTargetsState = {
 };
 
 export type SystemState = {
+    systemEnabled: boolean;
     flows: FlowStates;
     flowMap: FlowMap;
     items: ItemStates;

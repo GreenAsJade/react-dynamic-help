@@ -52,34 +52,41 @@ export const HelpProvider = (props: HelpProviderProps): JSX.Element => {
         props.children,
     ) as React.ReactElement[];
 
-    // here we store the Contoller API functions when  provided to us by the HelpController...
+    // Here we store the Contoller API functions on our state, when they provided to us by the HelpController...
     // ... for passing on to the Application via context.
+    // In this way, the App is decoupled from the Help System renders, which is important to avoid App ref regeneration loops.
+
     const [controllerApi, setControllerAPI] = React.useState<AppApi>(
         // This is a non-null initialiser for the API so the client doesn't have to worry if the API is initialised yet.
-        // It doesn't matter if these are called:
-        // all APIs will be re-called after the API initialised, due to the resulting App re-render.
+        // It doesn't matter if these are called: all APIs will be re-called after the API initialised, due to the resulting App re-render.
         // Some will certainly be called before intialisation, due to render sequence.
         // Others... it would be suprising.  They are the "console.warn" ones.
         {
             registerTargetItem: (id: TargetId) => ({
                 ref: (target: HTMLElement) => {
                     console.log(
-                        "Info: registration of target before controller initialisation:",
+                        "Info: registration of target before controller initialied:",
                         id,
                         target,
                     );
                 },
                 used: () => {
                     console.warn(
-                        "Warning: a target signalled used before controller initialisation",
+                        "Warning: a target signalled used before controller initialized",
                         id,
                     );
                 },
             }),
             enableFlow: (flow, enabled) => {
                 console.log(
-                    "Info: enableFlow called before controller initialization",
+                    "Info: enableFlow called before controller initialized",
                     flow,
+                    enabled,
+                );
+            },
+            enableHelp: (enabled) => {
+                console.log(
+                    "Info: enableHelp called before controller initialised",
                     enabled,
                 );
             },
@@ -90,11 +97,10 @@ export const HelpProvider = (props: HelpProviderProps): JSX.Element => {
      * The callback prop passed to the HelpController, which it uses to give us the API object.
      */
     const provideControllerApi: AppApiSetter = (apiObject) => {
-        console.log("provide controller API called:", apiObject);
+        console.log("HelpProvider provideController API called:", apiObject);
         setControllerAPI(apiObject);
     };
 
-    console.log("Help provider render:", controllerApi);
     return (
         <>
             <ApiProvider value={controllerApi}>{app}</ApiProvider>

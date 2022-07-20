@@ -59,6 +59,7 @@ export class HelpController extends React.Component<
     // we accumulate multiple updates per render cycle here ... the ultimate value ends up in this.state
     appTargets: AppTargetsState = { targetItems: {} };
     systemState: SystemState = {
+        systemEnabled: true,
         flows: {},
         flowMap: {},
         items: {},
@@ -75,12 +76,12 @@ export class HelpController extends React.Component<
 
     componentDidMount = () => {
         console.log(
-            "**** Mounting controller",
-            this.props.provideControllerApi,
+            "**** Mounting HelpController: Help System initialization underway...",
         );
         this.props.provideControllerApi({
             registerTargetItem: this.registerTargetCallback,
             enableFlow: this.enableFlow,
+            enableHelp: this.enableHelp,
         });
     };
 
@@ -107,7 +108,7 @@ export class HelpController extends React.Component<
     mapTarget = (target: TargetId, targetRef: HTMLElement) => {
         // Note that this callback can be called multiple times per render of the App,
         // one for each help item target it is rendering.
-        // console.log("mapping", target, targetRef, this.appTargets);
+        console.log("target registration", target, targetRef, this.appTargets);
 
         this.appTargets = {
             targetItems: {
@@ -145,6 +146,11 @@ export class HelpController extends React.Component<
     enableFlow = (flow: FlowId, enabled = true) => {
         console.log("Turning on flow", flow);
         this.systemState.flows[flow].visible = enabled;
+        this.setState({ systemState: this.systemState });
+    };
+
+    enableHelp = (enabled: boolean = true) => {
+        this.systemState.systemEnabled = enabled;
         this.setState({ systemState: this.systemState });
     };
 
@@ -189,6 +195,7 @@ export class HelpController extends React.Component<
     };
 
     render() {
+        console.log("Help Controller has state", this.state.systemState);
         return (
             <>
                 <SystemContextProvider

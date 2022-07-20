@@ -42,8 +42,6 @@ export const HelpFlow = (props: HelpFlowProps): JSX.Element => {
     const helpContext = React.useContext(SystemContext);
     const { api, systemState } = helpContext;
 
-    console.log("Helpflow sees state", helpContext);
-
     React.useEffect(() => {
         if (!systemState.flows[props.id]) {
             console.log("Help Flow registration:", props.id);
