@@ -28,10 +28,8 @@ import {
     SystemContextProvider,
     TargetId,
     ItemId,
-    TargetItemSetter,
     AppApiSetter,
-    RegisterFlow,
-    RegisterItem,
+    FlowId,
 } from "..";
 
 type HelpControllerProps = {
@@ -59,8 +57,8 @@ export class HelpController extends React.Component<
     HelpControllerState
 > {
     // we accumulate multiple updates per render cycle here ... the ultimate value ends up in this.state
-    appTargetsAccumulator: AppTargetsState = { targetItems: {} };
-    systemStateAccumulator: SystemState = {
+    appTargets: AppTargetsState = { targetItems: {} };
+    systemState: SystemState = {
         flows: {},
         flowMap: {},
         items: {},
@@ -70,8 +68,8 @@ export class HelpController extends React.Component<
     constructor(props: HelpControllerProps) {
         super(props);
         this.state = {
-            appTargetsState: this.appTargetsAccumulator,
-            systemState: this.systemStateAccumulator,
+            appTargetsState: this.appTargets,
+            systemState: this.systemState,
         };
     }
 
@@ -82,18 +80,23 @@ export class HelpController extends React.Component<
         );
         this.props.provideControllerApi({
             registerTargetItem: this.registerTargetCallback,
+            enableFlow: this.enableFlow,
         });
     };
+
+    //
+    // API for the App to use.
+    //
 
     /**
      * This callback is provided to the client app as a ref callback generator to register "target items".
      *
      * It provides back a ref call back stores the target item's ref in the ItemTable by it's TargetId,
-     * and a "signal used" callback to signal when the target has been used.
+     * and a "signal used" function to signal when the target has been used.
      */
 
-    registerTargetCallback: TargetItemSetter = (target: TargetId) => {
-        console.log("Request to register", target);
+    registerTargetCallback = (target: TargetId) => {
+        //console.log("Request to register", target);
 
         return {
             ref: (targetRef: HTMLElement) => this.mapTarget(target, targetRef),
@@ -104,21 +107,21 @@ export class HelpController extends React.Component<
     mapTarget = (target: TargetId, targetRef: HTMLElement) => {
         // Note that this callback can be called multiple times per render of the App,
         // one for each help item target it is rendering.
-        console.log("mapping", target, targetRef, this.appTargetsAccumulator);
+        // console.log("mapping", target, targetRef, this.appTargets);
 
-        this.appTargetsAccumulator = {
+        this.appTargets = {
             targetItems: {
-                ...this.appTargetsAccumulator.targetItems,
+                ...this.appTargets.targetItems,
                 [target]: targetRef,
             },
         };
-        this.setState({ appTargetsState: this.appTargetsAccumulator });
+        this.setState({ appTargetsState: this.appTargets });
     };
 
     signalTargetIsUsed = (target: TargetId) => {
         console.log("seeing target used:", target);
 
-        const state = this.systemStateAccumulator; // just alias for ease of reading
+        const state = this.systemState; // just alias for ease of reading
 
         state.itemMap[target].forEach((itemId) => {
             state.items[itemId].visible = false;
@@ -132,57 +135,60 @@ export class HelpController extends React.Component<
             } else {
                 const nextItem = flow.items[flow.activeItem];
                 state.items[nextItem].visible = true;
+                console.log("stepped flow", flowId, nextItem);
             }
             state.flows[flowId] = flow;
             this.setState({ systemState: state });
         });
     };
 
+    enableFlow = (flow: FlowId, enabled = true) => {
+        console.log("Turning on flow", flow);
+        this.systemState.flows[flow].visible = enabled;
+        this.setState({ systemState: this.systemState });
+    };
+
     //
-    // API for Help Flows and Help Items to interact with systenState.
+    // API for Help Flows and Help Items to interact with systemState.
     //
 
     // Registration.  These should check local storage for state: TBD
 
-    addHelpFlow: RegisterFlow = (id, showInitially) => {
+    addHelpFlow = (id: FlowId, showInitially: boolean) => {
         console.log("Flow registration:", id, showInitially);
-        if (!(id in this.systemStateAccumulator.flows)) {
-            this.systemStateAccumulator.flows[id] = {
+        if (!(id in this.systemState.flows)) {
+            this.systemState.flows[id] = {
                 visible: showInitially,
                 showInitially,
                 items: [],
                 activeItem: 0,
             };
-            this.setState({ systemState: this.systemStateAccumulator });
+            this.setState({ systemState: this.systemState });
         }
     };
 
-    addHelpItem: RegisterItem = (flowId, itemId, target) => {
+    addHelpItem = (flowId: FlowId, itemId: ItemId, target: TargetId) => {
         console.log("Item registration:", flowId, itemId, target);
-        if (!(itemId in this.systemStateAccumulator.items)) {
-            this.systemStateAccumulator.items[itemId] = {
-                visible:
-                    this.systemStateAccumulator.flows[flowId].items.length ===
-                    0,
+        if (!(itemId in this.systemState.items)) {
+            this.systemState.items[itemId] = {
+                visible: this.systemState.flows[flowId].items.length === 0,
                 flow: flowId,
                 target: target,
             };
 
-            this.systemStateAccumulator.flows[flowId].items.push(itemId);
-            this.systemStateAccumulator.flowMap[itemId] = flowId;
+            this.systemState.flows[flowId].items.push(itemId);
+            this.systemState.flowMap[itemId] = flowId;
 
-            if (!this.systemStateAccumulator.itemMap[target]) {
-                this.systemStateAccumulator.itemMap[target] = new Set<ItemId>();
+            if (!this.systemState.itemMap[target]) {
+                this.systemState.itemMap[target] = new Set<ItemId>();
             }
-            this.systemStateAccumulator.itemMap[target].add(itemId);
+            this.systemState.itemMap[target].add(itemId);
 
-            this.setState({ systemState: this.systemStateAccumulator });
+            this.setState({ systemState: this.systemState });
         }
     };
 
     render() {
-        console.log("Help controller sees App state", this.state);
-
         return (
             <>
                 <SystemContextProvider

@@ -55,9 +55,11 @@ export const HelpProvider = (props: HelpProviderProps): JSX.Element => {
     // here we store the Contoller API functions when  provided to us by the HelpController...
     // ... for passing on to the Application via context.
     const [controllerApi, setControllerAPI] = React.useState<AppApi>(
-        // this is a non-null initialiser for the API so the client doesn't have to worry if the API is initialised yet.
-        // It doesn't matter these are called:
-        // all APIs will be re-called after the API initialised, due to the resulting App re-render
+        // This is a non-null initialiser for the API so the client doesn't have to worry if the API is initialised yet.
+        // It doesn't matter if these are called:
+        // all APIs will be re-called after the API initialised, due to the resulting App re-render.
+        // Some will certainly be called before intialisation, due to render sequence.
+        // Others... it would be suprising.  They are the "console.warn" ones.
         {
             registerTargetItem: (id: TargetId) => ({
                 ref: (target: HTMLElement) => {
@@ -68,12 +70,19 @@ export const HelpProvider = (props: HelpProviderProps): JSX.Element => {
                     );
                 },
                 used: () => {
-                    console.log(
-                        "Info: a target signalled used before controller initialisation",
+                    console.warn(
+                        "Warning: a target signalled used before controller initialisation",
                         id,
                     );
                 },
             }),
+            enableFlow: (flow, enabled) => {
+                console.log(
+                    "Info: enableFlow called before controller initialization",
+                    flow,
+                    enabled,
+                );
+            },
         },
     );
 

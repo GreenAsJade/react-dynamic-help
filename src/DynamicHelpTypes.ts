@@ -31,12 +31,15 @@ export type StorageKey = string;
  */
 export type AppApi = {
     registerTargetItem: TargetItemSetter;
+    enableFlow: FlowSwitch;
 };
 
 export type TargetItemSetter = (id: TargetId) => {
     ref: (targetRef: HTMLElement) => void;
     used: () => void;
 };
+
+export type FlowSwitch = (flow: FlowId, enabled: boolean) => void;
 
 /**
  * A function passed in on the Controller props,
