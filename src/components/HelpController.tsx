@@ -78,31 +78,31 @@ export class HelpController extends React.Component<
     /**
      * This callback is provided to the client app as a ref callback generator to register "target items".
      *
-     * The resultant ref call back stores the target item's ref in the ItemTable by it's TargetId.
-     *
-     * That table is passed as context to the Help System in appHelpState.
+     * It provides back a ref call back stores the target item's ref in the ItemTable by it's TargetId,
+     * and a "signal used" callback to signal when the target has been used.
      */
+
     registerTargetCallback: TargetItemSetter = (target: TargetId) => {
         console.log("Request to register", target);
 
-        return (targetRef: any) => {
-            // Note that this callback can be called multiple times per render of the App,
-            // one for each help item target it is rendering.
-            console.log(
-                "mapping",
-                target,
-                targetRef,
-                this.appTargetsAccumulator,
-            );
-            this.appTargetsAccumulator = {
-                targetItems: {
-                    ...this.appTargetsAccumulator.targetItems,
-                    [target]: targetRef,
-                },
-            };
-
-            this.setState({ appTargetsState: this.appTargetsAccumulator });
+        return {
+            ref: (targetRef: HTMLElement) => this.mapTarget(target, targetRef),
+            used: () => this.signalTargetIsUsed(target),
         };
+    };
+
+    mapTarget = (target: TargetId, targetRef: HTMLElement) => {
+        // Note that this callback can be called multiple times per render of the App,
+        // one for each help item target it is rendering.
+        console.log("mapping", target, targetRef, this.appTargetsAccumulator);
+
+        this.appTargetsAccumulator = {
+            targetItems: {
+                ...this.appTargetsAccumulator.targetItems,
+                [target]: targetRef,
+            },
+        };
+        this.setState({ appTargetsState: this.appTargetsAccumulator });
     };
 
     signalTargetIsUsed = (target: TargetId) => {

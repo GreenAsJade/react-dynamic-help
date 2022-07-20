@@ -49,16 +49,25 @@ export const HelpProvider = (props: HelpProviderProps): JSX.Element => {
     // here we store the Contoller API functions when  provided to us by the HelpController...
     // ... for passing on to the Application via context.
     const [controllerApi, setControllerAPI] = React.useState<AppApi>(
-        // this is a non-null initialiser for the API, it doesn't matter if it is called:
+        // this is a non-null initialiser for the API so the client doesn't have to worry if the API is initialised yet.
+        // It doesn't matter these are called:
         // all APIs will be re-called after the API initialised, due to the resulting App re-render
         {
-            registerTargetItem: (id: TargetId) => (target: HTMLElement) => {
-                console.log(
-                    "Info: registration of target before controller initialisation:",
-                    id,
-                    target,
-                );
-            },
+            registerTargetItem: (id: TargetId) => ({
+                ref: (target: HTMLElement) => {
+                    console.log(
+                        "Info: registration of target before controller initialisation:",
+                        id,
+                        target,
+                    );
+                },
+                used: () => {
+                    console.log(
+                        "Info: a target signalled used before controller initialisation",
+                        id,
+                    );
+                },
+            }),
         },
     );
 

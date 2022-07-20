@@ -58,9 +58,10 @@ export type AppTargetsState = {
     targetItems: ItemTable;
 };
 
-export type TargetItemSetter = (
-    id: TargetId,
-) => (targetRef: HTMLElement) => void;
+export type TargetItemSetter = (id: TargetId) => {
+    ref: (targetRef: HTMLElement) => void;
+    used: () => void;
+};
 
 export type AppApi = {
     registerTargetItem: TargetItemSetter;
