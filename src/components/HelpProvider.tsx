@@ -22,7 +22,13 @@ SOFTWARE.
 
 import * as React from "react";
 
-import { ApiProvider, HelpController, AppApi, TargetId } from "..";
+import {
+    ApiProvider,
+    HelpController,
+    AppApi,
+    TargetId,
+    AppApiSetter,
+} from "..";
 
 type HelpProviderProps = {
     children: JSX.Element | JSX.Element[];
@@ -74,7 +80,7 @@ export const HelpProvider = (props: HelpProviderProps): JSX.Element => {
     /**
      * The callback prop passed to the HelpController, which it uses to give us the API object.
      */
-    const provideControllerApi = (apiObject: AppApi) => {
+    const provideControllerApi: AppApiSetter = (apiObject) => {
         console.log("provide controller API called:", apiObject);
         setControllerAPI(apiObject);
     };

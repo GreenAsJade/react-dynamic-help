@@ -20,10 +20,65 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+// Basic types for identifiers
 export type FlowId = string;
 export type ItemId = string;
 export type TargetId = string;
 export type StorageKey = string;
+
+/**
+ * The API for the App on the Help Controller
+ */
+export type AppApi = {
+    registerTargetItem: TargetItemSetter;
+};
+
+export type TargetItemSetter = (id: TargetId) => {
+    ref: (targetRef: HTMLElement) => void;
+    used: () => void;
+};
+
+/**
+ * A function passed in on the Controller props,
+ * used by the Controller to give the Provider the Controller API,
+ * so that the Provider can pass the Controller API on to the App.
+ */
+export type AppApiSetter = (apiObject: AppApi) => void;
+
+/**
+ * Information passed from Controller to Help Flows and Items:
+ * includes internal help system state and the API that the Flows and Items can use to update it,
+ * plus the information tracked about the state of the app,
+ * plus an API for them to talk back to the Controller
+ */
+export type HelpSystemContext = {
+    systemState: SystemState;
+    appTargetsState: AppTargetsState;
+    api: ControllerApi;
+};
+
+export type RegisterFlow = (id: FlowId, showInitially: boolean) => void;
+export type RegisterItem = (
+    flowId: FlowId,
+    itemId: ItemId,
+    target: TargetId,
+    index: number,
+) => void;
+
+export type ControllerApi = {
+    addHelpFlow: RegisterFlow;
+    addHelpItem: RegisterItem;
+};
+
+export type AppTargetsState = {
+    targetItems: ItemTable;
+};
+
+export type SystemState = {
+    flows: FlowStates;
+    flowMap: FlowMap;
+    items: ItemStates;
+};
 
 export type ItemState = {
     visible: boolean;
@@ -39,7 +94,6 @@ type ItemStates = {
 export type FlowState = {
     visible: boolean;
     showInitially: boolean;
-    items: ItemStates;
 };
 
 type FlowStates = {
@@ -50,37 +104,9 @@ type FlowMap = {
     [item: ItemId]: FlowId;
 };
 
+/**
+ * Used by Help Items to find their target based on its id.
+ */
 export type ItemTable = {
     [target: TargetId]: HTMLElement; // ref to target
-};
-
-export type AppTargetsState = {
-    targetItems: ItemTable;
-};
-
-export type TargetItemSetter = (id: TargetId) => {
-    ref: (targetRef: HTMLElement) => void;
-    used: () => void;
-};
-
-export type AppApi = {
-    registerTargetItem: TargetItemSetter;
-};
-
-/**
- * A function passed in on Controller props, used to give the Provider the API from the controller.
- */
-export type AppApiContextSetter = (apiObject: AppApi) => void;
-
-type StateSetter = () => void;
-
-export type HelpSystemContext = {
-    systemState: SystemState;
-    appTargetsState: AppTargetsState;
-    setSystemState: StateSetter;
-};
-
-export type SystemState = {
-    flows: FlowStates;
-    flowMap: FlowMap;
 };

@@ -27,12 +27,14 @@ import {
     SystemState,
     SystemContextProvider,
     TargetId,
-    AppApiContextSetter,
     TargetItemSetter,
+    AppApiSetter,
+    RegisterFlow,
+    RegisterItem,
 } from "..";
 
 type HelpControllerProps = {
-    provideControllerApi: AppApiContextSetter;
+    provideControllerApi: AppApiSetter;
 
     children: JSX.Element | JSX.Element[];
 };
@@ -57,14 +59,17 @@ export class HelpController extends React.Component<
 > {
     // we accumulate multiple updates per render cycle here ... the ultimate value ends up in this.state
     appTargetsAccumulator: AppTargetsState = { targetItems: {} };
+    systemStateAccumulator: SystemState = {
+        flows: {},
+        flowMap: {},
+        items: {},
+    };
 
     constructor(props: HelpControllerProps) {
         super(props);
         this.state = {
-            appTargetsState: {
-                targetItems: {},
-            },
-            systemState: { flows: {}, flowMap: {} },
+            appTargetsState: this.appTargetsAccumulator,
+            systemState: this.systemStateAccumulator,
         };
     }
 
@@ -109,8 +114,21 @@ export class HelpController extends React.Component<
         console.log("seeing target used:", target);
     };
 
-    updateStuff = (): void => {
-        console.log("updateStuff tbd");
+    // API for Help Flows and Help Items to interact with systenState.
+
+    addHelpFlow: RegisterFlow = (id, showInitially) => {
+        console.log("Flow registration:", id, showInitially);
+        if (!(id in this.state.systemState.flows)) {
+            this.systemStateAccumulator.flows[id] = {
+                visible: showInitially,
+                showInitially,
+            };
+            this.setState({ systemState: this.systemStateAccumulator });
+        }
+    };
+
+    addHelpItem: RegisterItem = (flowId, itemId, target, index) => {
+        console.log("Item registration:", flowId, itemId, target, index);
     };
 
     render() {
@@ -122,7 +140,10 @@ export class HelpController extends React.Component<
                     value={{
                         systemState: this.state.systemState,
                         appTargetsState: this.state.appTargetsState,
-                        setSystemState: this.updateStuff,
+                        api: {
+                            addHelpFlow: this.addHelpFlow,
+                            addHelpItem: this.addHelpItem,
+                        },
                     }}
                 >
                     {this.props.children}
