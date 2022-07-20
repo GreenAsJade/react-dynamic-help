@@ -117,6 +117,25 @@ export class HelpController extends React.Component<
 
     signalTargetIsUsed = (target: TargetId) => {
         console.log("seeing target used:", target);
+
+        const state = this.systemStateAccumulator; // just alias for ease of reading
+
+        state.itemMap[target].forEach((itemId) => {
+            state.items[itemId].visible = false;
+            const flowId = state.flowMap[itemId];
+            const flow = state.flows[flowId];
+            if (++flow.activeItem === flow.items.length) {
+                // turn off the flow and reset it
+                flow.activeItem = 0;
+                flow.visible = false;
+                console.log("Finished flow", flowId);
+            } else {
+                const nextItem = flow.items[flow.activeItem];
+                state.items[nextItem].visible = true;
+            }
+            state.flows[flowId] = flow;
+            this.setState({ systemState: state });
+        });
     };
 
     //
@@ -132,6 +151,7 @@ export class HelpController extends React.Component<
                 visible: showInitially,
                 showInitially,
                 items: [],
+                activeItem: 0,
             };
             this.setState({ systemState: this.systemStateAccumulator });
         }

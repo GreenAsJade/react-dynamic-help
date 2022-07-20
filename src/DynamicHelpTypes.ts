@@ -91,6 +91,7 @@ export type FlowState = {
     visible: boolean;
     showInitially: boolean;
     items: ItemId[];
+    activeItem: number; // index into items
 };
 
 type FlowStates = {
