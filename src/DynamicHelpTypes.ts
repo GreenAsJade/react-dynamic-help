@@ -84,7 +84,7 @@ export type ItemState = {
     visible: boolean;
     seq: number;
     flow: FlowId;
-    targetRef: Element | null;
+    target: TargetId;
 };
 
 type ItemStates = {

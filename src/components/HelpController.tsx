@@ -118,7 +118,7 @@ export class HelpController extends React.Component<
 
     addHelpFlow: RegisterFlow = (id, showInitially) => {
         console.log("Flow registration:", id, showInitially);
-        if (!(id in this.state.systemState.flows)) {
+        if (!(id in this.systemStateAccumulator.flows)) {
             this.systemStateAccumulator.flows[id] = {
                 visible: showInitially,
                 showInitially,
@@ -129,6 +129,15 @@ export class HelpController extends React.Component<
 
     addHelpItem: RegisterItem = (flowId, itemId, target, index) => {
         console.log("Item registration:", flowId, itemId, target, index);
+        if (!(itemId in this.systemStateAccumulator.items)) {
+            this.systemStateAccumulator.items[itemId] = {
+                visible: index === 0,
+                seq: index,
+                flow: flowId,
+                target: target,
+            };
+            this.setState({ systemState: this.systemStateAccumulator });
+        }
     };
 
     render() {
