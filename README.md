@@ -1,7 +1,7 @@
 # react-dynamic-help
 Create flows of helpful prompts in your react application.
 
-V 0.1.0 - Basic concept only.
+V 0.1.1 - Basic concept only.
 
 Demo at https://github.com/GreenAsJade/react-dynamic-help-demo
 

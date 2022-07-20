@@ -19,6 +19,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+import "./HelpItem.css";
 
 import * as React from "react";
 import * as ReactDOM from "react-dom";
@@ -73,7 +74,7 @@ export function HelpItem(props: HelpItemProperties): JSX.Element {
 
         return ReactDOM.createPortal(
             <div
-                className="rdh-help-item"
+                className="rdh-help-item rdh-help-item-custom"
                 style={{
                     position: "absolute",
                     top: itemTop,

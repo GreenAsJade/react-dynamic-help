@@ -1,0 +1,7 @@
+.rdh-help-item {
+    z-index: 1000;
+    background-color: blueviolet;
+    border-style: solid;
+    border-color: blueviolet;
+    border-radius: 0.3rem;
+}
