@@ -132,6 +132,8 @@ export class HelpController extends React.Component<
                 // turn off the flow and reset it
                 flow.activeItem = 0;
                 flow.visible = false;
+                const initialItemId = flow.items[0];
+                state.items[initialItemId].visible = true;
                 console.log("Finished flow", flowId);
             } else {
                 const nextItem = flow.items[flow.activeItem];
