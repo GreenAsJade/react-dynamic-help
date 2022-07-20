@@ -40,23 +40,26 @@ type HelpFlowProps = {
 
 export const HelpFlow = (props: HelpFlowProps): JSX.Element => {
     const helpContext = React.useContext(SystemContext);
-    const { api } = helpContext;
+    const { api, systemState } = helpContext;
 
     console.log("Helpflow sees state", helpContext);
 
-    // Initialize help flow state, checking local storage on the way (tbd)
     React.useEffect(() => {
-        console.log("Help Flow registration:", props.id);
+        if (!systemState.flows[props.id]) {
+            console.log("Help Flow registration:", props.id);
 
-        api.addHelpFlow(props.id, props.showInitially);
+            api.addHelpFlow(props.id, props.showInitially);
 
-        console.log("Help Flow - adding children...");
+            console.log("Help Flow - adding children...");
 
-        React.Children.toArray(props.children).forEach((item: any, index) => {
-            const [id, target] = [item.props.id, item.props.target];
+            React.Children.toArray(props.children).forEach(
+                (item: any, index) => {
+                    const [id, target] = [item.props.id, item.props.target];
 
-            api.addHelpItem(props.id, id, target, index);
-        });
+                    api.addHelpItem(props.id, id, target, index);
+                },
+            );
+        }
     });
 
     return <>{props.children}</>;

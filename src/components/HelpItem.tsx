@@ -26,12 +26,10 @@ import * as ReactDOM from "react-dom";
 import * as HelpTypes from "../DynamicHelpTypes";
 import { SystemContext } from "../DynamicHelp";
 
-/*
 type ItemStateInfo = [
     flow: HelpTypes.FlowState,
     itemState: HelpTypes.ItemState,
 ];
-
 
 export const getItemState = (
     item: HelpTypes.ItemId,
@@ -39,9 +37,8 @@ export const getItemState = (
 ): ItemStateInfo => {
     const flowId = helpState.flowMap[item];
     const flow = helpState.flows[flowId];
-    return [flow, flow?.items[item]];
+    return [flow, helpState.items[item]];
 };
-*/
 
 type HelpItemProperties = {
     id: HelpTypes.ItemId;
@@ -55,15 +52,15 @@ type HelpItemProperties = {
  */
 
 export function HelpItem(props: HelpItemProperties): JSX.Element {
-    const { appTargetsState } = React.useContext(SystemContext);
+    const { appTargetsState, systemState } = React.useContext(SystemContext);
 
-    //const [flowState, itemState] = getItemState(this.props.id, systemState);
+    const [flowState, itemState] = getItemState(props.id, systemState);
 
     const target = appTargetsState.targetItems[props.target];
 
-    console.log("HelpItem render", props.id, appTargetsState);
+    console.log("HelpItem render", props.id, appTargetsState, systemState);
 
-    if (target) {
+    if (target && flowState?.visible && itemState?.visible) {
         const { bottom, right } = target.getBoundingClientRect();
 
         const itemTop = bottom;

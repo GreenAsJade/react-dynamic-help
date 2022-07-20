@@ -71,29 +71,26 @@ export type ControllerApi = {
 };
 
 export type AppTargetsState = {
-    targetItems: ItemTable;
+    targetItems: TargetTable;
 };
 
 export type SystemState = {
     flows: FlowStates;
     flowMap: FlowMap;
     items: ItemStates;
+    itemMap: ItemMap;
 };
 
 export type ItemState = {
     visible: boolean;
-    seq: number;
     flow: FlowId;
     target: TargetId;
-};
-
-type ItemStates = {
-    [id: ItemId]: ItemState;
 };
 
 export type FlowState = {
     visible: boolean;
     showInitially: boolean;
+    items: ItemId[];
 };
 
 type FlowStates = {
@@ -104,9 +101,17 @@ type FlowMap = {
     [item: ItemId]: FlowId;
 };
 
+type ItemStates = {
+    [item: ItemId]: ItemState;
+};
+
+type ItemMap = {
+    [target: TargetId]: Set<ItemId>;
+};
+
 /**
  * Used by Help Items to find their target based on its id.
  */
-export type ItemTable = {
+export type TargetTable = {
     [target: TargetId]: HTMLElement; // ref to target
 };

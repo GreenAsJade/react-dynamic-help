@@ -27,6 +27,7 @@ import {
     SystemState,
     SystemContextProvider,
     TargetId,
+    ItemId,
     TargetItemSetter,
     AppApiSetter,
     RegisterFlow,
@@ -63,6 +64,7 @@ export class HelpController extends React.Component<
         flows: {},
         flowMap: {},
         items: {},
+        itemMap: {},
     };
 
     constructor(props: HelpControllerProps) {
@@ -74,7 +76,10 @@ export class HelpController extends React.Component<
     }
 
     componentDidMount = () => {
-        console.log("Mounting controller", this.props.provideControllerApi);
+        console.log(
+            "**** Mounting controller",
+            this.props.provideControllerApi,
+        );
         this.props.provideControllerApi({
             registerTargetItem: this.registerTargetCallback,
         });
@@ -114,7 +119,11 @@ export class HelpController extends React.Component<
         console.log("seeing target used:", target);
     };
 
+    //
     // API for Help Flows and Help Items to interact with systenState.
+    //
+
+    // Registration.  These should check local storage for state: TBD
 
     addHelpFlow: RegisterFlow = (id, showInitially) => {
         console.log("Flow registration:", id, showInitially);
@@ -122,20 +131,31 @@ export class HelpController extends React.Component<
             this.systemStateAccumulator.flows[id] = {
                 visible: showInitially,
                 showInitially,
+                items: [],
             };
             this.setState({ systemState: this.systemStateAccumulator });
         }
     };
 
-    addHelpItem: RegisterItem = (flowId, itemId, target, index) => {
-        console.log("Item registration:", flowId, itemId, target, index);
+    addHelpItem: RegisterItem = (flowId, itemId, target) => {
+        console.log("Item registration:", flowId, itemId, target);
         if (!(itemId in this.systemStateAccumulator.items)) {
             this.systemStateAccumulator.items[itemId] = {
-                visible: index === 0,
-                seq: index,
+                visible:
+                    this.systemStateAccumulator.flows[flowId].items.length ===
+                    0,
                 flow: flowId,
                 target: target,
             };
+
+            this.systemStateAccumulator.flows[flowId].items.push(itemId);
+            this.systemStateAccumulator.flowMap[itemId] = flowId;
+
+            if (!this.systemStateAccumulator.itemMap[target]) {
+                this.systemStateAccumulator.itemMap[target] = new Set<ItemId>();
+            }
+            this.systemStateAccumulator.itemMap[target].add(itemId);
+
             this.setState({ systemState: this.systemStateAccumulator });
         }
     };
