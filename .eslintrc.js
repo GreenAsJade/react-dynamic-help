@@ -17,22 +17,19 @@ module.exports = {
     ],
     extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended", "prettier"],
     rules: {
-        // Recommended rules with errors
-        // TODO: Fix these and re-enable them
+        "@typescript-eslint/ban-types": "error",
+        "@typescript-eslint/explicit-module-boundary-types": "error", 
+        "@typescript-eslint/no-empty-interface": "error", 
+        "@typescript-eslint/no-explicit-any": "error", 
+        "@typescript-eslint/no-namespace": "error", 
+        "@typescript-eslint/no-this-alias": "error", 
+        "@typescript-eslint/triple-slash-reference": "warn", 
 
-        "@typescript-eslint/ban-types": "off", // 35 errors
-        "@typescript-eslint/explicit-module-boundary-types": "off", // 1242 warnings
-        "@typescript-eslint/no-empty-interface": "off", // 45 errors
-        "@typescript-eslint/no-explicit-any": "off", // 535 warnings
-        "@typescript-eslint/no-namespace": "off", // 1 error
-        "@typescript-eslint/no-this-alias": "off", // 4 errors
-        "@typescript-eslint/triple-slash-reference": "off", // 1 error
-
-        "no-misleading-character-class": "off", // 2 errors
-        "no-prototype-builtins": "off", // 8 errors
-        "no-self-assign": "off", // 2 errors
-        "no-useless-escape": "off", // 24 errors
-        "prefer-spread": "off", // 7 errors
+        "no-misleading-character-class": "error", 
+        "no-prototype-builtins": "error", 
+        "no-self-assign": "error", 
+        "no-useless-escape": "error", 
+        "prefer-spread": "warn", 
 
         "react-hooks/exhaustive-deps": "warn", 
 
