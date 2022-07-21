@@ -21,6 +21,12 @@ Demo at https://github.com/GreenAsJade/react-dynamic-help-demo
 
 Things to do:
 
+ - Make HelpItem id's optional props ... not really clear why we need those exposed, until we get a feature that would use id.
+ 
+ - Support a no-op pseudo Item somehow, so you can have a break in a flow, with a resume.
+    - Wouldn't this just amount to "start another flow?"
+    - Maybe, logically, but for ease of understanding - not clear!
+
  - Support showing multiple Help Items at a single step in the flow.
 
  - Have the standard Help Item layout be more "callout like", so it indicates clearly what the target is.
