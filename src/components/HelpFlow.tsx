@@ -51,6 +51,8 @@ export const HelpFlow = (props: HelpFlowProps): JSX.Element => {
             console.log("Help Flow - adding children...");
 
             React.Children.toArray(props.children).forEach(
+                // item is a HelpItem, with known props, but it's hard to tell Typescript this!
+                // eslint-disable-next-line
                 (item: any, index) => {
                     const [id, target] = [item.props.id, item.props.target];
 

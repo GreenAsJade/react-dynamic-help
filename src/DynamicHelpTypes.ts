@@ -30,15 +30,16 @@ export type StorageKey = string;
  * The API for the App on the Help Controller
  */
 export type AppApi = {
-    registerTargetItem: TargetItemSetter;
+    registerTargetItem: TargetItemRegisterer;
     enableFlow: FlowSwitch;
     enableHelp: (enable: boolean) => void;
 };
 
-export type TargetItemSetter = (id: TargetId) => {
+export type TargetItemHelpers = {
     ref: (targetRef: HTMLElement) => void;
     used: () => void;
 };
+export type TargetItemRegisterer = (id: TargetId) => TargetItemHelpers;
 
 export type FlowSwitch = (flow: FlowId, enabled: boolean) => void;
 

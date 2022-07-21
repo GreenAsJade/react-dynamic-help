@@ -30,6 +30,7 @@ import {
     ItemId,
     AppApiSetter,
     FlowId,
+    TargetItemHelpers,
 } from "..";
 
 type HelpControllerProps = {
@@ -74,7 +75,7 @@ export class HelpController extends React.Component<
         };
     }
 
-    componentDidMount = () => {
+    componentDidMount = (): void => {
         console.log(
             "**** Mounting HelpController: Help System initialization underway...",
         );
@@ -96,7 +97,7 @@ export class HelpController extends React.Component<
      * and a "signal used" function to signal when the target has been used.
      */
 
-    registerTargetCallback = (target: TargetId) => {
+    registerTargetCallback = (target: TargetId): TargetItemHelpers => {
         //console.log("Request to register", target);
 
         return {
@@ -105,7 +106,7 @@ export class HelpController extends React.Component<
         };
     };
 
-    mapTarget = (target: TargetId, targetRef: HTMLElement) => {
+    mapTarget = (target: TargetId, targetRef: HTMLElement): void => {
         // Note that this callback can be called multiple times per render of the App,
         // one for each help item target it is rendering.
         console.log("target registration", target, targetRef, this.appTargets);
@@ -119,7 +120,7 @@ export class HelpController extends React.Component<
         this.setState({ appTargetsState: this.appTargets });
     };
 
-    signalTargetIsUsed = (target: TargetId) => {
+    signalTargetIsUsed = (target: TargetId): void => {
         console.log("seeing target used:", target);
 
         const state = this.systemState; // just alias for ease of reading
@@ -145,13 +146,13 @@ export class HelpController extends React.Component<
         });
     };
 
-    enableFlow = (flow: FlowId, enabled = true) => {
+    enableFlow = (flow: FlowId, enabled = true): void => {
         console.log("Turning on flow", flow);
         this.systemState.flows[flow].visible = enabled;
         this.setState({ systemState: this.systemState });
     };
 
-    enableHelp = (enabled: boolean = true) => {
+    enableHelp = (enabled: boolean = true): void => {
         this.systemState.systemEnabled = enabled;
         this.setState({ systemState: this.systemState });
     };
@@ -162,7 +163,7 @@ export class HelpController extends React.Component<
 
     // Registration.  These should check local storage for state: TBD
 
-    addHelpFlow = (id: FlowId, showInitially: boolean) => {
+    addHelpFlow = (id: FlowId, showInitially: boolean): void => {
         console.log("Flow registration:", id, showInitially);
         if (!(id in this.systemState.flows)) {
             this.systemState.flows[id] = {
@@ -175,7 +176,7 @@ export class HelpController extends React.Component<
         }
     };
 
-    addHelpItem = (flowId: FlowId, itemId: ItemId, target: TargetId) => {
+    addHelpItem = (flowId: FlowId, itemId: ItemId, target: TargetId): void => {
         console.log("Item registration:", flowId, itemId, target);
         if (!(itemId in this.systemState.items)) {
             this.systemState.items[itemId] = {
@@ -196,7 +197,7 @@ export class HelpController extends React.Component<
         }
     };
 
-    render() {
+    render(): JSX.Element {
         console.log("Help Controller has state", this.state.systemState);
         return (
             <>

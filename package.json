@@ -1,7 +1,7 @@
 {
   "name": "react-dynamic-help",
   "description": "React Dynamic Help - Create flows of helpful popups in your React App",
-  "version": "0.1.1",
+  "version": "0.2.1",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/greenasjade/react-dynamic-help.git"
@@ -12,8 +12,8 @@
   "homepage": "https://github.com/greenasjade/react-dynamic-help#readme",
   "main": "dist/lib/es5/index.js",
   "scripts": {
-    "copy-files": "echo 'learn how to use a packager!' && cp README.md dist/ && cp src/components/HelpItem.css dist/lib/es5/components && cp src/components/HelpItem.css dist/lib/es6/components",
-    "compile-all-fix-me": "rm -rf dist/lib; tsc && tsc --build tsconfig.es5.json && npm run copy-files",
+    "copy-files": "echo 'Note to self: learn how to use a packager!' && cp README.md dist/ && cp src/components/HelpItem.css dist/lib/es5/components && cp src/components/HelpItem.css dist/lib/es6/components",
+    "compile-all": "rm -rf dist/lib; tsc && tsc --build tsconfig.es5.json && npm run copy-files",
     "compile": "tsc --build tsconfig.es5.json && npm run copy-files",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
