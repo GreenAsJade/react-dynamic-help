@@ -13,7 +13,7 @@ Help Items and their Flows are specified in a separate JSX tree.
 
 ---
 
-V 0.2.1 - Very basic implementation of the concept.
+V 0.2.2 - Very basic implementation of the concept.
 
 Demo at https://github.com/GreenAsJade/react-dynamic-help-demo
 
@@ -22,6 +22,8 @@ Demo at https://github.com/GreenAsJade/react-dynamic-help-demo
 Things to do:
 
  - Set props on Items to select the placement relative to the target
+
+ - Support showing multiple Help Items at a single step in the flow.
 
  - Have the standard Help Item layout be more "callout like", so it indicates clearly what the target is.
 
