@@ -109,7 +109,7 @@ export class HelpController extends React.Component<
     mapTarget = (target: TargetId, targetRef: HTMLElement): void => {
         // Note that this callback can be called multiple times per render of the App,
         // one for each help item target it is rendering.
-        console.log("target registration", target, targetRef, this.appTargets);
+        // console.log("target registration", target, targetRef, this.appTargets);
 
         this.appTargets = {
             targetItems: {

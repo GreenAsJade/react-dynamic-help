@@ -44,6 +44,7 @@ export const getItemState = (
 type HelpItemProperties = {
     id: HelpTypes.ItemId;
     target: HelpTypes.TargetId;
+    position?: HelpTypes.ItemPosition;
     children: React.ReactNode;
 };
 
@@ -52,7 +53,10 @@ type HelpItemProperties = {
  *
  */
 
-export function HelpItem(props: HelpItemProperties): JSX.Element {
+export function HelpItem({
+    position = "bottom-right",
+    ...props
+}: HelpItemProperties): JSX.Element {
     const { appTargetsState, systemState } = React.useContext(SystemContext);
 
     const [flowState, itemState] = getItemState(props.id, systemState);
@@ -67,18 +71,68 @@ export function HelpItem(props: HelpItemProperties): JSX.Element {
         itemState?.visible &&
         systemState.systemEnabled
     ) {
-        const { bottom, right } = target.getBoundingClientRect();
+        const {
+            top: targetTop,
+            bottom: targetBottom,
+            left: targetLeft,
+            right: targetRight,
+        } = target.getBoundingClientRect();
 
-        const itemTop = bottom;
-        const itemLeft = right;
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+
+        let itemPosition = {};
+
+        if (position === "bottom-right") {
+            itemPosition = {
+                top: targetBottom,
+                left: targetRight,
+            };
+        } else if (position === "top-left") {
+            itemPosition = {
+                bottom: vh - targetTop,
+                right: vw - targetLeft,
+            };
+        } else if (position === "bottom-left") {
+            itemPosition = {
+                top: targetBottom,
+                right: vw - targetLeft,
+            };
+        } else if (position === "top-right") {
+            itemPosition = {
+                bottom: vh - targetTop,
+                left: targetRight,
+            };
+        } else if (["bottom-centre", "bottom-center"].includes(position)) {
+            itemPosition = {
+                top: targetBottom,
+                left: (targetRight + targetLeft) / 2,
+            };
+        } else if (["top-centre", "top-center"].includes(position)) {
+            itemPosition = {
+                bottom: vh - targetTop,
+                left: (targetRight + targetLeft) / 2,
+            };
+        } else if (["centre-left", "center-left"].includes(position)) {
+            itemPosition = {
+                right: vw - targetLeft + 3,
+                bottom: vh - (targetTop + targetBottom) / 2,
+            };
+        } else if (["centre-right", "center-right"].includes(position)) {
+            itemPosition = {
+                left: targetRight + 3,
+                bottom: vh - (targetTop + targetBottom) / 2,
+            };
+        }
+
+        // console.log(props.id, itemPosition, position, props);
 
         return ReactDOM.createPortal(
             <div
                 className="rdh-help-item rdh-help-item-custom"
                 style={{
                     position: "absolute",
-                    top: itemTop,
-                    left: itemLeft,
+                    ...itemPosition,
                 }}
             >
                 {props.children}

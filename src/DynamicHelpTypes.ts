@@ -26,6 +26,21 @@ export type ItemId = string;
 export type TargetId = string;
 export type StorageKey = string;
 
+// Help Item props
+export type ItemPosition =
+    | "top-left"
+    | "top-right"
+    | "bottom-left"
+    | "bottom-right"
+    | "top-centre"
+    | "top-center"
+    | "bottom-centre"
+    | "bottom-center"
+    | "center-left"
+    | "centre-left"
+    | "center-right"
+    | "centre-right";
+
 /**
  * The API for the App on the Help Controller
  */
