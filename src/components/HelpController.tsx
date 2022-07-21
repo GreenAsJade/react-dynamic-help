@@ -126,23 +126,25 @@ export class HelpController extends React.Component<
         const state = this.systemState; // just alias for ease of reading
 
         state.itemMap[target].forEach((itemId) => {
-            state.items[itemId].visible = false;
             const flowId = state.flowMap[itemId];
             const flow = state.flows[flowId];
-            if (++flow.activeItem === flow.items.length) {
-                // turn off the flow and reset it
-                flow.activeItem = 0;
-                flow.visible = false;
-                const initialItemId = flow.items[0];
-                state.items[initialItemId].visible = true;
-                console.log("Finished flow", flowId);
-            } else {
-                const nextItem = flow.items[flow.activeItem];
-                state.items[nextItem].visible = true;
-                console.log("stepped flow", flowId, nextItem);
+            if (flow.items[flow.activeItem] === itemId) {
+                state.items[itemId].visible = false;
+                if (++flow.activeItem === flow.items.length) {
+                    // turn off the flow and reset it
+                    flow.activeItem = 0;
+                    flow.visible = false;
+                    const initialItemId = flow.items[0];
+                    state.items[initialItemId].visible = true;
+                    console.log("Finished flow", flowId);
+                } else {
+                    const nextItem = flow.items[flow.activeItem];
+                    state.items[nextItem].visible = true;
+                    console.log("stepped flow", flowId, nextItem);
+                }
+                state.flows[flowId] = flow;
+                this.setState({ systemState: state });
             }
-            state.flows[flowId] = flow;
-            this.setState({ systemState: state });
         });
     };
 
