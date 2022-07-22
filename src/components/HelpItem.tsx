@@ -27,24 +27,16 @@ import * as ReactDOM from "react-dom";
 import * as HelpTypes from "../DynamicHelpTypes";
 import { SystemContext } from "../DynamicHelp";
 
-type ItemStateInfo = [
-    flow: HelpTypes.FlowState,
-    itemState: HelpTypes.ItemState,
-];
-
-export const getItemState = (
-    item: HelpTypes.ItemId,
-    helpState: HelpTypes.SystemState,
-): ItemStateInfo => {
-    const flowId = helpState.flowMap[item];
-    const flow = helpState.flows[flowId];
-    return [flow, helpState.items[item]];
-};
-
 type HelpItemProperties = {
-    id: HelpTypes.ItemId;
+    id?: HelpTypes.ItemId; // user can provide this for css targetting, otherwise default is generated.
     target: HelpTypes.TargetId;
     position?: HelpTypes.ItemPosition;
+
+    // provided by the containing HelpFlow:
+    state?: HelpTypes.ItemState;
+    flowState?: HelpTypes.FlowState;
+    systemEnabled?: boolean;
+
     children: React.ReactNode;
 };
 
@@ -57,19 +49,15 @@ export function HelpItem({
     position = "bottom-right",
     ...props
 }: HelpItemProperties): JSX.Element {
-    const { appTargetsState, systemState } = React.useContext(SystemContext);
-
-    const [flowState, itemState] = getItemState(props.id, systemState);
+    const { appTargetsState } = React.useContext(SystemContext);
 
     const target = appTargetsState.targetItems[props.target];
 
-    // console.log("HelpItem render", props.id); // , appTargetsState, systemState);
-
     if (
         target &&
-        flowState?.visible &&
-        itemState?.visible &&
-        systemState.systemEnabled
+        props.flowState?.visible &&
+        props.state?.visible &&
+        props.systemEnabled
     ) {
         const {
             top: targetTop,
@@ -125,11 +113,10 @@ export function HelpItem({
             };
         }
 
-        // console.log(props.id, itemPosition, position, props);
-
         return ReactDOM.createPortal(
             <div
                 className="rdh-help-item rdh-help-item-custom"
+                id={props.id}
                 style={{
                     position: "absolute",
                     ...itemPosition,
@@ -143,3 +130,19 @@ export function HelpItem({
         return <></>;
     }
 }
+
+type ItemStateInfo = [
+    flow: HelpTypes.FlowState,
+    itemState: HelpTypes.ItemState,
+];
+
+// Currently not used because we receive this info on props.
+
+export const getItemState = (
+    item: HelpTypes.ItemId,
+    helpState: HelpTypes.SystemState,
+): ItemStateInfo => {
+    const flowId = helpState.flowMap[item];
+    const flow = helpState.flows[flowId];
+    return [flow, helpState.items[item]];
+};

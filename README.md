@@ -13,7 +13,7 @@ Help Items and their Flows are specified in a separate JSX tree.
 
 ---
 
-V 0.3.2 - Basic implementation of the concept.
+V 0.4.3 - Basic implementation of the concept.
 
 Demo at https://github.com/GreenAsJade/react-dynamic-help-demo
 
@@ -21,19 +21,17 @@ Demo at https://github.com/GreenAsJade/react-dynamic-help-demo
 
 Things to do:
 
- - Make HelpItem id's optional props ... not really clear why we need those exposed, until we get a feature that would use id.
- 
+ - Save the help system state.  That's important for a real app :)
+
  - Support a no-op pseudo Item somehow, so you can have a break in a flow, with a resume.
     - Wouldn't this just amount to "start another flow?"
-    - Maybe, logically, but for ease of understanding - not clear!
+       - It's not the same, because "start another flow" calls for app interaction, this should be doable in the HelpFlow/Item definition.
 
  - Support showing multiple Help Items at a single step in the flow.
 
  - Have the standard Help Item layout be more "callout like", so it indicates clearly what the target is.
 
  - Be able to style the target to show that it is the target (drop-shadow or similar)
-
- But: https://stackoverflow.com/questions/73059467/how-do-you-set-the-style-of-an-element-obtained-from-a-callback-ref-in-typescrip
 
  - Fix up the packaging
 

@@ -31,6 +31,13 @@ type HelpFlowProps = {
     children: JSX.Element | JSX.Element[];
 };
 
+function defaultId(
+    flow: HelpTypes.FlowId,
+    target: HelpTypes.TargetId,
+    index: number,
+) {
+    return `help-for-${target}-in-${flow}-${index}`;
+}
 /**
  * A container component for Dynamic Help Flows.
  *
@@ -42,11 +49,13 @@ export const HelpFlow = (props: HelpFlowProps): JSX.Element => {
     const helpContext = React.useContext(SystemContext);
     const { api, systemState } = helpContext;
 
+    const flowId = props.id; // alias for clearer code
+
     React.useEffect(() => {
         if (!systemState.flows[props.id]) {
             console.log("Help Flow registration:", props.id);
 
-            api.addHelpFlow(props.id, props.showInitially);
+            api.addHelpFlow(flowId, props.showInitially);
 
             console.log("Help Flow - adding children...");
 
@@ -54,13 +63,42 @@ export const HelpFlow = (props: HelpFlowProps): JSX.Element => {
                 // item is a HelpItem, with known props, but it's hard to tell Typescript this!
                 // eslint-disable-next-line
                 (item: any, index) => {
-                    const [id, target] = [item.props.id, item.props.target];
+                    let [id, target] = [item.props.id, item.props.target];
 
-                    api.addHelpItem(props.id, id, target, index);
+                    if (!id) {
+                        id = defaultId(flowId, target, index);
+                    }
+                    api.addHelpItem(flowId, id, target, index);
                 },
             );
         }
     });
 
-    return <>{props.children}</>;
+    // The primary reason for this chicanery is to allow the user to not have to provide an id for the HelpItems,
+    // while also providing for the future when they will want to (to address it in an api).
+
+    // A side effect is that we have to provide the Item's state to it via its props, because it doesn't necessarily
+    // know it's own id, and hence it can't look up its own state in the context via that id.
+
+    // It doesn't work to try naievly to provide the id to the child by inserting it on props, because we are using the
+    // absence of it on props to recognise we need to default it!  (I guess we could add a separate prop for
+    // 'actualId' that info, if that sort of refactor becomes necessary)
+
+    const children = React.useMemo(
+        () => React.Children.toArray(props.children) as JSX.Element[],
+        [props.children],
+    );
+
+    const childrenWithState = children.map((child, index) => {
+        const id =
+            child.props.id || defaultId(flowId, child.props.target, index);
+        return React.cloneElement(child, {
+            ...child.props,
+            state: systemState?.items[id],
+            flowState: systemState?.flows[flowId],
+            systemEnabled: systemState?.systemEnabled,
+        });
+    });
+
+    return <>{childrenWithState}</>;
 };
