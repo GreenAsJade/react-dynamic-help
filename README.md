@@ -30,6 +30,7 @@ export const Config = (props: ConfigProps): JSX.Element => {
        signalAddStatUsed();
    };
  
+   return ( // ...
                    <FA
                        ref={addStatButton}
                        icon={faCirclePlus}
