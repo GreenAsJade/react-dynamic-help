@@ -8,8 +8,63 @@ This library is intended to pop up help for the user _while they use the app_.
 The app interaction is intended to be minimally intrusive in the app codebase.
 
 The app interacts primarily by registering elements as "help targets", and calling a callback to indicate that the target has been used.
+```
+function AppWithHelp(): JSX.Element {
+   return (
+       <DynamicHelp.HelpProvider>
+           <App />
+           <HelpFlows />
+       </DynamicHelp.HelpProvider>
+   );
+}
+
+export const Config = (props: ConfigProps): JSX.Element => {
+ 
+   const { registerTargetItem } = React.useContext(DynamicHelp.Api);
+ 
+   const { ref: addStatButton, used: signalAddStatUsed } =
+       registerTargetItem("add-stat-button");
+ 
+   const addStat = () => {
+       setNewStatEntryOpen(true);
+       signalAddStatUsed();
+   };
+ 
+                   <FA
+                       ref={addStatButton}
+                       icon={faCirclePlus}
+                       onClick={addStat}
+                   />
+                   
+```
 
 Help Items and their Flows are specified in a separate JSX tree.
+
+```
+export function HelpFlows(): JSX.Element {
+   return (
+       <div className="help-flow-container">
+           <HelpFlow id="new-user" showInitially={true}>
+               <HelpItem target="help-toggle">
+                   <div>Click here to see more Dynamic Help</div>
+               </HelpItem>
+           </HelpFlow>
+ 
+           <HelpFlow id="basic" showInitially={false}>
+               <HelpItem target="add-stat-button">
+                   <div>Click to add a stat</div>
+               </HelpItem>
+               <HelpItem target="stat-name-input" position="bottom-centre">
+                   <div>Enter the name for a stat</div>
+               </HelpItem>
+               <HelpItem target="dice-chooser" position="bottom-center">
+                   <div>Choose a dice type</div>
+               </HelpItem>
+               <HelpItem id="help-for-stat-ok" target="stat-ok">
+                   <div>OK?</div>
+ 
+// …
+```
 
 ---
 
