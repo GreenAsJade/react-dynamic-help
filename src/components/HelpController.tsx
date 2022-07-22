@@ -45,11 +45,13 @@ type HelpControllerState = {
 };
 
 /**
- * The component that connects the help flows to the app.
+ * The component that
+ * - connects the help flows to the app,
+ * - implements the API that the app uses, which updates Help System state
  *
- * A callback is provided via AppContext to the App to register 'target items'
+ * The HelpItems respond to the changes in state in a fairly dumb way to either display themselves or not.
  *
- * The registered target items are provided by HelpSystemContext to the Help System.
+ * The API is provided to the controller by calling `props.provideControllerApi(ourApiObject)`
  *
  */
 
@@ -57,7 +59,8 @@ export class HelpController extends React.Component<
     HelpControllerProps,
     HelpControllerState
 > {
-    // we accumulate multiple updates per render cycle here ... the ultimate value ends up in this.state
+    // we accumulate multiple updates per render cycle (due to refs changing on render) here .
+    // .. the ultimate value of these ends up in this.state when that finally updates, to be passed out on the Context.
     appTargets: AppTargetsState = { targetItems: {} };
     systemState: SystemState = {
         systemEnabled: true,

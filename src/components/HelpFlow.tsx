@@ -41,8 +41,11 @@ function defaultId(
 /**
  * A container component for Dynamic Help Flows.
  *
- * It defines the `id` of the Help Flow, and sequences the display of the `HelpItems`
+ * It defines the `id` of the Help Flow, and provides the JSX structure for the App writer
+ * to tell us which Help Items are in that flow.
  *
+ * It reads Help System State from the context, and passes the appropriate item state to each
+ * HelpItem child.
  */
 
 export const HelpFlow = (props: HelpFlowProps): JSX.Element => {
