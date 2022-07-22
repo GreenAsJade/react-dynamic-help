@@ -5,6 +5,14 @@ This library is intended to pop up help for the user _while they use the app_.
 
 (In contrast to the common "tour based" help libraries, which "show your user the app in action" while they click "Next".)
 
+---
+
+V 0.4.4 - Basic implementation of the concept.
+
+Demo at https://github.com/GreenAsJade/react-dynamic-help-demo
+
+---
+
 The app interaction is intended to be minimally intrusive in the app codebase.
 
 The app interacts primarily by registering elements as "help targets", and calling a callback to indicate that the target has been used.
@@ -19,24 +27,24 @@ function AppWithHelp(): JSX.Element {
 }
 
 export const Config = (props: ConfigProps): JSX.Element => {
- 
+
    const { registerTargetItem } = React.useContext(DynamicHelp.Api);
- 
+
    const { ref: addStatButton, used: signalAddStatUsed } =
        registerTargetItem("add-stat-button");
- 
+
    const addStat = () => {
        setNewStatEntryOpen(true);
        signalAddStatUsed();
    };
- 
+
    return ( // ...
                    <FA
                        ref={addStatButton}
                        icon={faCirclePlus}
                        onClick={addStat}
                    />
-                   
+
 ```
 
 Help Items and their Flows are specified in a separate JSX tree.
@@ -66,12 +74,6 @@ export function HelpFlows(): JSX.Element {
  
 // …
 ```
-
----
-
-V 0.4.3 - Basic implementation of the concept.
-
-Demo at https://github.com/GreenAsJade/react-dynamic-help-demo
 
 ---
 
