@@ -26,7 +26,7 @@ function AppWithHelp(): JSX.Element {
    );
 }
 
-export const Config = (props: ConfigProps): JSX.Element => {
+export const AComponent = (props: ConfigProps): JSX.Element => {
 
    const { registerTargetItem } = React.useContext(DynamicHelp.Api);
 
