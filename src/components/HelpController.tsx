@@ -85,6 +85,7 @@ export class HelpController extends React.Component<
         this.props.provideControllerApi({
             registerTargetItem: this.registerTargetCallback,
             enableFlow: this.enableFlow,
+            signalUsed: this.signalTargetIsUsed,
             enableHelp: this.enableHelp,
         });
     };
@@ -131,6 +132,7 @@ export class HelpController extends React.Component<
         state.itemMap[target].forEach((itemId) => {
             const flowId = state.flowMap[itemId];
             const flow = state.flows[flowId];
+            //console.log("checking", itemId, flow);
             if (flow.items[flow.activeItem] === itemId) {
                 state.items[itemId].visible = false;
                 if (++flow.activeItem === flow.items.length) {

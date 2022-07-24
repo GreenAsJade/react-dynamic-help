@@ -84,6 +84,12 @@ export const HelpProvider = (props: HelpProviderProps): JSX.Element => {
                     enabled,
                 );
             },
+            signalUsed: (target) => {
+                console.warn(
+                    "Warning: signalUsed called before controller initialized",
+                    target,
+                );
+            },
             enableHelp: (enabled) => {
                 console.log(
                     "Info: enableHelp called before controller initialised",

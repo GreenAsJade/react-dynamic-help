@@ -130,7 +130,7 @@ export function HelpItem({
         } else if (position === "bottom-left") {
             itemPosition = {
                 [yAnchor]: yAnchorTargetBottom,
-                [xAnchor]: xAnchorTargetRight,
+                [xAnchor]: xAnchorTargetLeft,
             };
         } else if (position === "top-right") {
             itemPosition = {
@@ -159,7 +159,7 @@ export function HelpItem({
             };
         }
 
-        console.log("HelpItem", props.state.target, props.margin);
+        //console.log("HelpItem render", props.state.target);
 
         return ReactDOM.createPortal(
             <div

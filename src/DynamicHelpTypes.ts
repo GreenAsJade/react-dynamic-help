@@ -47,6 +47,7 @@ export type Position =
 export type AppApi = {
     registerTargetItem: TargetItemRegisterer;
     enableFlow: FlowSwitch;
+    signalUsed: (target: TargetId) => void;
     enableHelp: (enable: boolean) => void;
 };
 
