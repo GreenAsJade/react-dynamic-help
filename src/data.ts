@@ -28,10 +28,12 @@ A basic interface to local storage to hold HelpFlow state.
 
 import * as HelpTypes from "./DynamicHelpTypes";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type HelpDataStore = { [key: HelpTypes.StorageKey]: any }; // we really do offer to store `any`
 
 const store: HelpDataStore = {};
 
+// eslint-disable-next-line
 export function set(key: HelpTypes.StorageKey, value: any): any {
     store[key] = value;
     safeLocalStorageSet(`dynamic-help.${key}`, JSON.stringify(value));
@@ -43,6 +45,7 @@ export function remove(key: HelpTypes.StorageKey): void {
     safeLocalStorageRemove(`dynamic-help.${key}`);
 }
 
+// eslint-disable-next-line
 export function get(key: HelpTypes.StorageKey, default_value?: any): any {
     if (key in store) {
         return store[key];

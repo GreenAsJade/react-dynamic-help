@@ -79,6 +79,8 @@ export function HelpFlows(): JSX.Element {
 
 Things to do:
 
+ - Be able to dismiss help items without "doing the thing".
+ 
  - Save the help system state.  That's important for a real app :)
 
  - Support a no-op pseudo Item somehow, so you can have a break in a flow, with a resume.

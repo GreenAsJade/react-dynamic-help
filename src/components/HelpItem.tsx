@@ -27,10 +27,27 @@ import * as ReactDOM from "react-dom";
 import * as HelpTypes from "../DynamicHelpTypes";
 import { SystemContext } from "../DynamicHelp";
 
+const defaultAnchors: { [position: string]: HelpTypes.Position } = {
+    "top-left": "bottom-right",
+    "top-right": "bottom-left",
+    "bottom-left": "top-right",
+    "bottom-right": "top-left",
+    "top-centre": "bottom-left",
+    "top-center": "bottom-left",
+    "bottom-centre": "top-left",
+    "bottom-center": "top-left",
+    "center-left": "bottom-right",
+    "centre-left": "bottom-right",
+    "center-right": "bottom-left",
+    "centre-right": "bottom-left",
+};
+
 type HelpItemProperties = {
-    id?: HelpTypes.ItemId; // user can provide this for css targetting, otherwise default is generated.
-    target: HelpTypes.TargetId;
-    position?: HelpTypes.ItemPosition;
+    target: HelpTypes.TargetId; // App element the HelpItem relates to
+    position?: HelpTypes.Position; // where the HelpItem is placed on the target
+    anchor?: HelpTypes.Position; // which part of the HelpItem is placed at `position`
+    margin?: string;
+    id?: HelpTypes.ItemId; // user can provide this for css targetting
 
     // provided by the containing HelpFlow:
     state?: HelpTypes.ItemState;
@@ -59,6 +76,11 @@ export function HelpItem({
         props.state?.visible &&
         props.systemEnabled
     ) {
+        // what follows is maths to attach the `anchor` corner of this element (itemPosition) to
+        // the `position` corner of the target, taking into accound that bottom and right are measured
+        // from the bottom and right of the windown respectively for css absolute position, but they are measured
+        // from the top and left respectively for getBoundingClientRect (FFS).
+
         const {
             top: targetTop,
             bottom: targetBottom,
@@ -71,47 +93,73 @@ export function HelpItem({
 
         let itemPosition = {};
 
+        const anchor = props.anchor || defaultAnchors[position];
+
+        const yAnchor = anchor.includes("top") ? "top" : "bottom";
+        const xAnchor = anchor.includes("left") ? "left" : "right";
+
+        const yAnchorTargetBottom =
+            yAnchor === "top" ? targetBottom : vh - targetBottom;
+        const yAnchorTargetTop =
+            yAnchor === "bottom" ? vh - targetTop : targetTop;
+        const xAnchorTargetLeft =
+            xAnchor === "right" ? vw - targetLeft : targetLeft;
+        const xAnchorTargetRight =
+            xAnchor === "left" ? targetRight : vw - targetRight;
+
+        const yAnchorTargetCentre =
+            yAnchor === "top"
+                ? (targetTop + targetBottom) / 2
+                : vh - (targetTop + targetBottom) / 2;
+
+        const xAnchorTargetCentre =
+            xAnchor === "left"
+                ? (targetRight + targetLeft) / 2
+                : vw - (targetRight + targetLeft) / 2;
+
         if (position === "bottom-right") {
             itemPosition = {
-                top: targetBottom,
-                left: targetRight,
+                [yAnchor]: yAnchorTargetBottom,
+                [xAnchor]: xAnchorTargetRight,
             };
         } else if (position === "top-left") {
             itemPosition = {
-                bottom: vh - targetTop,
-                right: vw - targetLeft,
+                [yAnchor]: yAnchorTargetTop,
+                [xAnchor]: xAnchorTargetLeft,
             };
         } else if (position === "bottom-left") {
             itemPosition = {
-                top: targetBottom,
-                right: vw - targetLeft,
+                [yAnchor]: yAnchorTargetBottom,
+                [xAnchor]: xAnchorTargetRight,
             };
         } else if (position === "top-right") {
             itemPosition = {
-                bottom: vh - targetTop,
-                left: targetRight,
+                [yAnchor]: yAnchorTargetTop,
+                [xAnchor]: xAnchorTargetRight,
             };
         } else if (["bottom-centre", "bottom-center"].includes(position)) {
             itemPosition = {
-                top: targetBottom,
-                left: (targetRight + targetLeft) / 2,
+                [yAnchor]: yAnchorTargetBottom,
+                [xAnchor]: xAnchorTargetCentre,
             };
         } else if (["top-centre", "top-center"].includes(position)) {
             itemPosition = {
-                bottom: vh - targetTop,
-                left: (targetRight + targetLeft) / 2,
+                [yAnchor]: yAnchorTargetTop,
+                [xAnchor]: xAnchorTargetCentre,
             };
         } else if (["centre-left", "center-left"].includes(position)) {
             itemPosition = {
-                right: vw - targetLeft + 3,
-                bottom: vh - (targetTop + targetBottom) / 2,
+                [xAnchor]: xAnchorTargetLeft,
+                [yAnchor]: yAnchorTargetCentre,
             };
         } else if (["centre-right", "center-right"].includes(position)) {
             itemPosition = {
-                left: targetRight + 3,
-                bottom: vh - (targetTop + targetBottom) / 2,
+                [xAnchor]: xAnchorTargetRight,
+                [yAnchor]: yAnchorTargetCentre,
             };
         }
+
+        console.log("HelpItem", props.state.target, props.margin);
 
         return ReactDOM.createPortal(
             <div
@@ -119,6 +167,7 @@ export function HelpItem({
                 id={props.id}
                 style={{
                     position: "absolute",
+                    margin: props.margin,
                     ...itemPosition,
                 }}
             >
