@@ -155,7 +155,10 @@ export class HelpController extends React.Component<
 
     enableFlow = (flow: FlowId, enabled = true): void => {
         console.log("Turning on flow", flow);
+        const initialItem = this.systemState.flows[flow].items[0];
         this.systemState.flows[flow].visible = enabled;
+        this.systemState.items[initialItem].visible = enabled;
+        this.systemState.flows[flow].activeItem = 0;
         this.setState({ systemState: this.systemState });
     };
 
