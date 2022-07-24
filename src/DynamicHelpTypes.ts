@@ -89,6 +89,7 @@ export type RegisterItem = (
 export type ControllerApi = {
     addHelpFlow: RegisterFlow;
     addHelpItem: RegisterItem;
+    signalItemDismissed: (item: ItemId) => void;
 };
 
 export type AppTargetsState = {

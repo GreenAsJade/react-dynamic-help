@@ -207,6 +207,25 @@ export class HelpController extends React.Component<
         }
     };
 
+    signalItemDismissed = (itemId: ItemId): void => {
+        console.log("signal dismissed called for", itemId);
+        const state = this.systemState; // just alias for ease of reading
+
+        const flowId = state.flowMap[itemId];
+        const flow = state.flows[flowId];
+        state.items[itemId].visible = false;
+
+        // turn off the flow and reset it
+        flow.activeItem = 0;
+        flow.visible = false;
+        const initialItemId = flow.items[0];
+        state.items[initialItemId].visible = true;
+        console.log("Reset flow", flowId);
+
+        state.flows[flowId] = flow;
+        this.setState({ systemState: state });
+    };
+
     render(): JSX.Element {
         console.log("Help Controller has state", this.state.systemState);
         return (
@@ -218,6 +237,7 @@ export class HelpController extends React.Component<
                         api: {
                             addHelpFlow: this.addHelpFlow,
                             addHelpItem: this.addHelpItem,
+                            signalItemDismissed: this.signalItemDismissed,
                         },
                     }}
                 >

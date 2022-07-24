@@ -4,4 +4,21 @@
     border-style: solid;
     border-color: blueviolet;
     border-radius: 0.3rem;
+
+    display: flex;
+
+    max-width: 25rem;
+}
+
+span.rdh-help-item-dismiss {
+    font-size:smaller;
+    font-weight: bold;
+}
+
+span.rdh-help-item-dismiss.rdh-dismiss-margin-left {
+    margin: 0 0 0 0.5rem;
+}
+
+span.rdh-help-item-dismiss.rdh-dismiss-margin-right {
+    margin: 0 0.5rem 0 0;
 }

@@ -46,13 +46,15 @@ type HelpItemProperties = {
     target: HelpTypes.TargetId; // App element the HelpItem relates to
     position?: HelpTypes.Position; // where the HelpItem is placed on the target
     anchor?: HelpTypes.Position; // which part of the HelpItem is placed at `position`
-    margin?: string;
+    margin?: string; // can be used to offset the HelpItem from the default position
+    layout?: "left" | "right"; // which side is the dismiss button
     id?: HelpTypes.ItemId; // user can provide this for css targetting
 
     // provided by the containing HelpFlow:
     state?: HelpTypes.ItemState;
     flowState?: HelpTypes.FlowState;
     systemEnabled?: boolean;
+    signalDismissed?: () => void;
 
     children: React.ReactNode;
 };
@@ -159,19 +161,42 @@ export function HelpItem({
             };
         }
 
+        // Now we make sure that the dismiss button is in a sensible place, with a sensible margin,
+        // unless they specified it...
+
+        let layout = "right";
+
+        if (props.layout) {
+            layout = props.layout;
+        } else if (position.includes("left")) {
+            layout = "left";
+        }
+
+        const dismissStyle =
+            layout === "right"
+                ? "rdh-dismiss-margin-left"
+                : "rdh-dismiss-margin-right";
+
         //console.log("HelpItem render", props.state.target);
 
         return ReactDOM.createPortal(
             <div
-                className="rdh-help-item rdh-help-item-custom"
+                className="rdh-help-item"
                 id={props.id}
                 style={{
                     position: "absolute",
                     margin: props.margin,
+                    flexDirection: layout === "right" ? "row" : "row-reverse",
                     ...itemPosition,
                 }}
             >
-                {props.children}
+                <div className="rdh-help-item-custom">{props.children}</div>
+                <span
+                    className={`rdh-help-item-dismiss ${dismissStyle}`}
+                    onClick={props.signalDismissed}
+                >
+                    ⓧ
+                </span>
             </div>,
             document.body,
         );
