@@ -131,7 +131,7 @@ type ItemStates = {
 };
 
 type ItemMap = {
-    [target: TargetId]: Set<ItemId>;
+    [target: TargetId]: ItemId[]; // targets may have more than one item applicable
 };
 
 /**

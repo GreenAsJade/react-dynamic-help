@@ -222,9 +222,11 @@ export class HelpController extends React.Component<
             this.systemState.flowMap[itemId] = flowId;
 
             if (!this.systemState.itemMap[target]) {
-                this.systemState.itemMap[target] = new Set<ItemId>();
+                this.systemState.itemMap[target] = [];
             }
-            this.systemState.itemMap[target].add(itemId);
+            if (!this.systemState.itemMap[target].includes(itemId)) {
+                this.systemState.itemMap[target].push(itemId);
+            }
 
             this.propagateSystemState();
         }
