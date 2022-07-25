@@ -27,7 +27,9 @@ import * as ReactDOM from "react-dom";
 import * as HelpTypes from "../DynamicHelpTypes";
 import { SystemContext } from "../DynamicHelp";
 
-const defaultAnchors: { [position: string]: HelpTypes.Position } = {
+const defaultAnchors: {
+    [position in HelpTypes.Position as string]: HelpTypes.Position;
+} = {
     "top-left": "bottom-right",
     "top-right": "bottom-left",
     "bottom-left": "top-right",

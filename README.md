@@ -7,7 +7,7 @@ This library is intended to pop up help for the user _while they use the app_.
 
 ---
 
-V 0.6.0 - Basic implementation of the concept.
+V 0.7.0 - Basic implementation of the concept, enough features to actually use.
 
 Demo at https://github.com/GreenAsJade/react-dynamic-help-demo
 
@@ -78,13 +78,11 @@ export function HelpFlows(): JSX.Element {
 ---
 
 Things to do:
- 
- - Save the help system state.  That's important for a real app :)
 
  - Support a no-op pseudo Item somehow, so you can have a break in a flow, with a resume.
     - Wouldn't this just amount to "start another flow?"
        - It's not the same, because "start another flow" calls for app interaction, this should be doable in the HelpFlow/Item definition.
- 
+
  - Support showing multiple Help Items at a single step in the flow.
 
  - Have the standard Help Item layout be more "callout like", so it indicates clearly what the target is.
@@ -94,7 +92,6 @@ Things to do:
  - Be able to target items via css selector as an alternative to ref
     - Don't know if it is even possible.
     - Note that this would not support registration based features, but would be even less imact on the app.
-   
 
  - Fix up the packaging
 

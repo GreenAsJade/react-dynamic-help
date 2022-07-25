@@ -83,7 +83,7 @@ export const HelpFlow = (props: HelpFlowProps): JSX.Element => {
     // know it's own id, and hence it can't look up its own state in the context via that id.
 
     // It doesn't work to try naievly to provide the id to the child by inserting it on props, because we are using the
-    // absence of it on props to recognise we need to default it!  (I guess we could add a separate prop 'actualId' that info,
+    // absence of it on props to recognise we need to default it!  (I guess we could add a separate prop 'actualId',
     // if that sort of refactor becomes necessary)
 
     const children = React.useMemo(
