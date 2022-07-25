@@ -195,7 +195,7 @@ export function HelpItem({
                     className={`rdh-help-item-dismiss ${dismissStyle}`}
                     onClick={props.signalDismissed}
                 >
-                    ⓧ
+                    ☒
                 </span>
             </div>,
             document.body,

@@ -31,17 +31,26 @@ import {
     AppApiSetter,
     FlowId,
     TargetItemHelpers,
+    DynamicHelpStorageAPI,
 } from "..";
 
 type HelpControllerProps = {
     provideControllerApi: AppApiSetter;
-
+    storage: DynamicHelpStorageAPI;
     children: JSX.Element | JSX.Element[];
 };
 
 type HelpControllerState = {
     appTargetsState: AppTargetsState;
     systemState: SystemState;
+};
+
+const _resetState: SystemState = {
+    systemEnabled: true,
+    flows: {},
+    flowMap: {},
+    items: {},
+    itemMap: {},
 };
 
 /**
@@ -60,14 +69,14 @@ export class HelpController extends React.Component<
     HelpControllerState
 > {
     // we accumulate multiple updates per render cycle (due to refs changing on render) here .
-    // .. the ultimate value of these ends up in this.state when that finally updates, to be passed out on the Context.
+    // .. the ultimate value of these ends up in this.state (and storage) when react finally updates the state,
+    // to be passed out on the Context.
     appTargets: AppTargetsState = { targetItems: {} };
-    systemState: SystemState = {
-        systemEnabled: true,
-        flows: {},
-        flowMap: {},
-        items: {},
-        itemMap: {},
+    systemState: SystemState = _resetState;
+
+    propagateSystemState = (): void => {
+        this.props.storage.set("system-state", this.systemState);
+        this.setState({ systemState: this.systemState });
     };
 
     constructor(props: HelpControllerProps) {
@@ -87,7 +96,16 @@ export class HelpController extends React.Component<
             enableFlow: this.enableFlow,
             signalUsed: this.signalTargetIsUsed,
             enableHelp: this.enableHelp,
+            resetHelp: this.resetHelp,
         });
+
+        this.systemState = this.props.storage.get(
+            "system-state",
+            _resetState,
+        ) as SystemState;
+
+        console.log("Initial state loaded:", this.systemState);
+        this.setState({ systemState: this.systemState });
     };
 
     //
@@ -148,7 +166,7 @@ export class HelpController extends React.Component<
                     console.log("stepped flow", flowId, nextItem);
                 }
                 state.flows[flowId] = flow;
-                this.setState({ systemState: state });
+                this.propagateSystemState();
             }
         });
     };
@@ -159,12 +177,17 @@ export class HelpController extends React.Component<
         this.systemState.flows[flow].visible = enabled;
         this.systemState.items[initialItem].visible = enabled;
         this.systemState.flows[flow].activeItem = 0;
-        this.setState({ systemState: this.systemState });
+        this.propagateSystemState();
     };
 
     enableHelp = (enabled: boolean = true): void => {
         this.systemState.systemEnabled = enabled;
-        this.setState({ systemState: this.systemState });
+        this.propagateSystemState();
+    };
+
+    resetHelp = (): void => {
+        this.systemState = _resetState;
+        this.propagateSystemState();
     };
 
     //
@@ -182,7 +205,7 @@ export class HelpController extends React.Component<
                 items: [],
                 activeItem: 0,
             };
-            this.setState({ systemState: this.systemState });
+            this.propagateSystemState();
         }
     };
 
@@ -203,7 +226,7 @@ export class HelpController extends React.Component<
             }
             this.systemState.itemMap[target].add(itemId);
 
-            this.setState({ systemState: this.systemState });
+            this.propagateSystemState();
         }
     };
 
@@ -223,7 +246,7 @@ export class HelpController extends React.Component<
         console.log("Reset flow", flowId);
 
         state.flows[flowId] = flow;
-        this.setState({ systemState: state });
+        this.propagateSystemState();
     };
 
     render(): JSX.Element {

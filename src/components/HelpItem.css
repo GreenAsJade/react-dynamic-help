@@ -11,8 +11,8 @@
 }
 
 span.rdh-help-item-dismiss {
-    font-size:smaller;
     font-weight: bold;
+    cursor: pointer;
 }
 
 span.rdh-help-item-dismiss.rdh-dismiss-margin-left {

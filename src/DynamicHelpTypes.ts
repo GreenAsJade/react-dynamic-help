@@ -49,6 +49,7 @@ export type AppApi = {
     enableFlow: FlowSwitch;
     signalUsed: (target: TargetId) => void;
     enableHelp: (enable: boolean) => void;
+    resetHelp: () => void;
 };
 
 export type TargetItemHelpers = {

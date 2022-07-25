@@ -22,11 +22,25 @@ SOFTWARE.
 
 /*
 
-A basic interface to local storage to hold HelpFlow state.
+A basic interface to local storage to hold HelpController state.
 
 */
 
 import * as HelpTypes from "./DynamicHelpTypes";
+
+export type DynamicHelpStorageAPI = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    set: (key: HelpTypes.StorageKey, value: any) => any;
+    remove: (key: HelpTypes.StorageKey) => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    get: (key: HelpTypes.StorageKey, default_value?: any) => any;
+};
+
+export const StorageApi: DynamicHelpStorageAPI = {
+    set: set,
+    remove: remove,
+    get: get,
+};
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type HelpDataStore = { [key: HelpTypes.StorageKey]: any }; // we really do offer to store `any`
@@ -35,8 +49,16 @@ const store: HelpDataStore = {};
 
 // eslint-disable-next-line
 export function set(key: HelpTypes.StorageKey, value: any): any {
+    console.log("storing:", value);
     store[key] = value;
-    safeLocalStorageSet(`dynamic-help.${key}`, JSON.stringify(value));
+    const savedValue = JSON.stringify(value);
+    console.log("JSON:", savedValue);
+    safeLocalStorageSet(
+        `dynamic-help.${key}`,
+        JSON.stringify(value, (_key, value) =>
+            value instanceof Set ? [...value] : value,
+        ),
+    );
     return value;
 }
 
@@ -49,6 +71,10 @@ export function remove(key: HelpTypes.StorageKey): void {
 export function get(key: HelpTypes.StorageKey, default_value?: any): any {
     if (key in store) {
         return store[key];
+    }
+    const fromStorage = localStorage.getItem(`dynamic-help.${key}`);
+    if (fromStorage) {
+        return JSON.parse(fromStorage);
     }
     return default_value;
 }

@@ -28,9 +28,12 @@ import {
     AppApi,
     TargetId,
     AppApiSetter,
+    DynamicHelpStorageAPI,
+    StorageApi,
 } from "..";
 
 type HelpProviderProps = {
+    storageApi?: DynamicHelpStorageAPI;
     children: JSX.Element | JSX.Element[];
 };
 
@@ -47,7 +50,10 @@ type HelpProviderProps = {
  *
  */
 
-export const HelpProvider = (props: HelpProviderProps): JSX.Element => {
+export const HelpProvider = ({
+    storageApi = StorageApi,
+    ...props
+}: HelpProviderProps): JSX.Element => {
     const [app, ...helpFlows] = React.Children.toArray(
         props.children,
     ) as React.ReactElement[];
@@ -65,7 +71,7 @@ export const HelpProvider = (props: HelpProviderProps): JSX.Element => {
             registerTargetItem: (id: TargetId) => ({
                 ref: (target: HTMLElement) => {
                     console.log(
-                        "Info: registration of target before controller initialied:",
+                        "Info: registration of target before controller initialised:",
                         id,
                         target,
                     );
@@ -96,6 +102,11 @@ export const HelpProvider = (props: HelpProviderProps): JSX.Element => {
                     enabled,
                 );
             },
+            resetHelp: () => {
+                console.log(
+                    "Info: App signalled help-reset before controller initialized.",
+                );
+            },
         },
     );
 
@@ -110,7 +121,10 @@ export const HelpProvider = (props: HelpProviderProps): JSX.Element => {
     return (
         <>
             <ApiProvider value={controllerApi}>{app}</ApiProvider>
-            <HelpController provideControllerApi={provideControllerApi}>
+            <HelpController
+                provideControllerApi={provideControllerApi}
+                storage={storageApi}
+            >
                 {helpFlows}
             </HelpController>
         </>

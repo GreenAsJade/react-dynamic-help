@@ -23,3 +23,4 @@ SOFTWARE.
 export * from "./DynamicHelpTypes";
 export * from "./DynamicHelp";
 export * from "./components";
+export * from "./storage";
