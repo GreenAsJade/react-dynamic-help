@@ -27,10 +27,11 @@ import { SystemContext } from "../DynamicHelp";
 
 type HelpFlowProps = {
     id: HelpTypes.FlowId;
-    showInitially: boolean;
+    showInitially?: boolean;
     children: JSX.Element | JSX.Element[];
 };
 
+/
 function defaultId(
     flow: HelpTypes.FlowId,
     target: HelpTypes.TargetId,
@@ -48,7 +49,10 @@ function defaultId(
  * HelpItem child.
  */
 
-export const HelpFlow = (props: HelpFlowProps): JSX.Element => {
+export const HelpFlow = ({
+    showInitially = false,
+    ...props
+}: HelpFlowProps): JSX.Element => {
     const helpContext = React.useContext(SystemContext);
     const { api, systemState } = helpContext;
 
@@ -58,7 +62,7 @@ export const HelpFlow = (props: HelpFlowProps): JSX.Element => {
         if (!systemState.flows[props.id]) {
             console.log("Help Flow registration:", props.id);
 
-            api.addHelpFlow(flowId, props.showInitially);
+            api.addHelpFlow(flowId, showInitially);
 
             console.log("Help Flow - adding children...");
 

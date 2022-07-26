@@ -49,10 +49,10 @@ const store: HelpDataStore = {};
 
 // eslint-disable-next-line
 export function set(key: HelpTypes.StorageKey, value: any): any {
-    console.log("storing:", value);
+    //console.log("storing:", value);
     store[key] = value;
-    const savedValue = JSON.stringify(value);
-    console.log("JSON:", savedValue);
+    //const savedValue = JSON.stringify(value);
+    //console.log("JSON:", savedValue);
     safeLocalStorageSet(
         `dynamic-help.${key}`,
         JSON.stringify(value, (_key, value) =>

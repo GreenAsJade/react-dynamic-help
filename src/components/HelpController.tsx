@@ -75,6 +75,7 @@ export class HelpController extends React.Component<
     systemState: SystemState = _resetState;
 
     propagateSystemState = (): void => {
+        console.log("HelpController state update:", this.systemState);
         this.props.storage.set("system-state", this.systemState);
         this.setState({ systemState: this.systemState });
     };
@@ -131,7 +132,7 @@ export class HelpController extends React.Component<
     mapTarget = (target: TargetId, targetRef: HTMLElement): void => {
         // Note that this callback can be called multiple times per render of the App,
         // one for each help item target it is rendering.
-        // console.log("target registration", target, targetRef, this.appTargets);
+        console.log("target registration", target, targetRef, this.appTargets);
 
         this.appTargets = {
             targetItems: {
@@ -186,6 +187,7 @@ export class HelpController extends React.Component<
     };
 
     resetHelp = (): void => {
+        console.log("Info: resetting help system state");
         this.systemState = _resetState;
         this.propagateSystemState();
     };
@@ -252,7 +254,7 @@ export class HelpController extends React.Component<
     };
 
     render(): JSX.Element {
-        console.log("Help Controller has state", this.state.systemState);
+        //console.log("Help Controller has state", this.state.systemState);
         return (
             <>
                 <SystemContextProvider

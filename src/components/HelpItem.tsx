@@ -57,7 +57,7 @@ type HelpItemProperties = {
     systemEnabled?: boolean;
     signalDismissed?: () => void;
 
-    children: React.ReactNode;
+    children: React.ReactNode; // The help popup elements.
 };
 
 /**
