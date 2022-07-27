@@ -180,7 +180,7 @@ export function HelpItem({
                 ? "rdh-dismiss-margin-left"
                 : "rdh-dismiss-margin-right";
 
-        if (props.state.target && debug) {
+        if (debug) {
             target.style.borderStyle = "solid";
             target.style.borderColor = "#fb99aa";
         }
@@ -207,6 +207,11 @@ export function HelpItem({
             document.body,
         );
     } else {
+        // we're not visible
+        if (debug && target) {
+            target.style.borderStyle = "none"; // fix me, should be the old value
+            target.style.borderColor = "#fb99aa";
+        }
         return <></>;
     }
 }

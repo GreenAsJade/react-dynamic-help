@@ -62,7 +62,7 @@ function FloatingStateReset(): JSX.Element {
             }}
             onClick={resetHelp}
         >
-            ⟳
+            ⟳ rdh
         </div>,
         document.body,
     );
