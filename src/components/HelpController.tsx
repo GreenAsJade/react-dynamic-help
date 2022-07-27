@@ -34,25 +34,33 @@ import {
     DynamicHelpStorageAPI,
 } from "../DynamicHelpTypes";
 
-import { SystemContextProvider, Api } from "../DynamicHelp";
+import { SystemContextProvider, SystemContext } from "../DynamicHelp";
 
 /** A handy component when debugging
  * ... because the state gets saved, making it hard to repeat tests!
  */
 
 function FloatingStateReset(): JSX.Element {
-    const api = React.useContext(Api);
+    const api = React.useContext(SystemContext).api;
+
+    const resetHelp = () => {
+        console.log("Clicked debug reset");
+        api.resetHelp();
+    };
 
     return ReactDOM.createPortal(
         <div
             className="rdh-floating-state-reset"
             style={{
                 position: "absolute",
-                bottom: 0,
-                left: 0,
-                zIndex: 1000,
+                bottom: "5px",
+                left: "5px",
+                color: "red",
+                fontSize: "x-large",
+                zIndex: "1000",
+                cursor: "default",
             }}
-            onClick={api.resetHelp}
+            onClick={resetHelp}
         >
             ⟳
         </div>,
@@ -292,12 +300,13 @@ export class HelpController extends React.Component<
                             addHelpFlow: this.addHelpFlow,
                             addHelpItem: this.addHelpItem,
                             signalItemDismissed: this.signalItemDismissed,
+                            resetHelp: this.resetHelp,
                         },
                     }}
                 >
                     {this.props.children}
+                    {this.props.debug && <FloatingStateReset />}
                 </SystemContextProvider>
-                {this.props.debug && <FloatingStateReset />}
             </>
         );
     }
