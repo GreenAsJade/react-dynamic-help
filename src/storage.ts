@@ -28,15 +28,7 @@ A basic interface to local storage to hold HelpController state.
 
 import * as HelpTypes from "./DynamicHelpTypes";
 
-export type DynamicHelpStorageAPI = {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    set: (key: HelpTypes.StorageKey, value: any) => any;
-    remove: (key: HelpTypes.StorageKey) => void;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    get: (key: HelpTypes.StorageKey, default_value?: any) => any;
-};
-
-export const StorageApi: DynamicHelpStorageAPI = {
+export const StorageApi: HelpTypes.DynamicHelpStorageAPI = {
     set: set,
     remove: remove,
     get: get,

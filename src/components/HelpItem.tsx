@@ -50,6 +50,7 @@ type HelpItemProperties = {
     margin?: string; // can be used to offset the HelpItem from the default position
     layout?: "left" | "right"; // which side is the dismiss button
     id?: HelpTypes.ItemId; // user can provide this for css targetting
+    debug?: boolean; // note - this will be overriden by Flow debug, if that is set.
 
     // provided by the containing HelpFlow:
     state?: HelpTypes.ItemState;
@@ -67,6 +68,7 @@ type HelpItemProperties = {
 
 export function HelpItem({
     position = "bottom-right",
+    debug = false,
     ...props
 }: HelpItemProperties): JSX.Element {
     const { appTargetsState } = React.useContext(SystemContext);
@@ -178,7 +180,10 @@ export function HelpItem({
                 ? "rdh-dismiss-margin-left"
                 : "rdh-dismiss-margin-right";
 
-        //console.log("HelpItem render", props.state.target);
+        if (props.state.target && debug) {
+            target.style.borderStyle = "solid";
+            target.style.borderColor = "#fb99aa";
+        }
 
         return ReactDOM.createPortal(
             <div

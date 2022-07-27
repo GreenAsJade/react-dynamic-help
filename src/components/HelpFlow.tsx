@@ -28,17 +28,18 @@ import { SystemContext } from "../DynamicHelp";
 type HelpFlowProps = {
     id: HelpTypes.FlowId;
     showInitially?: boolean;
+    debug?: boolean; // if this is turned on it sets debug on the children as well, _overriding_ their debug prop.
     children: JSX.Element | JSX.Element[];
 };
 
-/
 function defaultId(
     flow: HelpTypes.FlowId,
     target: HelpTypes.TargetId,
     index: number,
-) {
+): HelpTypes.ItemId {
     return `help-for-${target}-in-${flow}-${index}`;
 }
+
 /**
  * A container component for Dynamic Help Flows.
  *
@@ -51,6 +52,7 @@ function defaultId(
 
 export const HelpFlow = ({
     showInitially = false,
+    debug = false,
     ...props
 }: HelpFlowProps): JSX.Element => {
     const helpContext = React.useContext(SystemContext);
@@ -60,7 +62,7 @@ export const HelpFlow = ({
 
     React.useEffect(() => {
         if (!systemState.flows[props.id]) {
-            console.log("Help Flow registration:", props.id);
+            debug ? console.log("Help Flow registration:", props.id) : null;
 
             api.addHelpFlow(flowId, showInitially);
 
@@ -104,6 +106,7 @@ export const HelpFlow = ({
             flowState: systemState?.flows[flowId],
             systemEnabled: systemState?.systemEnabled,
             signalDismissed: () => api.signalItemDismissed(id),
+            ...(debug ? { debug } : {}),
         });
     });
 

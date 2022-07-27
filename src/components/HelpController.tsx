@@ -21,22 +21,49 @@ SOFTWARE.
 */
 
 import * as React from "react";
+import * as ReactDOM from "react-dom";
 
 import {
     AppTargetsState,
     SystemState,
-    SystemContextProvider,
     TargetId,
     ItemId,
     AppApiSetter,
     FlowId,
     TargetItemHelpers,
     DynamicHelpStorageAPI,
-} from "..";
+} from "../DynamicHelpTypes";
+
+import { SystemContextProvider, Api } from "../DynamicHelp";
+
+/** A handy component when debugging
+ * ... because the state gets saved, making it hard to repeat tests!
+ */
+
+function FloatingStateReset(): JSX.Element {
+    const api = React.useContext(Api);
+
+    return ReactDOM.createPortal(
+        <div
+            className="rdh-floating-state-reset"
+            style={{
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+                zIndex: 1000,
+            }}
+            onClick={api.resetHelp}
+        >
+            ⟳
+        </div>,
+        document.body,
+    );
+}
 
 type HelpControllerProps = {
     provideControllerApi: AppApiSetter;
     storage: DynamicHelpStorageAPI;
+    debug: boolean;
     children: JSX.Element | JSX.Element[];
 };
 
@@ -270,6 +297,7 @@ export class HelpController extends React.Component<
                 >
                     {this.props.children}
                 </SystemContextProvider>
+                {this.props.debug && <FloatingStateReset />}
             </>
         );
     }

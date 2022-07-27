@@ -23,17 +23,20 @@ SOFTWARE.
 import * as React from "react";
 
 import {
-    ApiProvider,
-    HelpController,
     AppApi,
     TargetId,
     AppApiSetter,
     DynamicHelpStorageAPI,
-    StorageApi,
-} from "..";
+} from "../DynamicHelpTypes";
+
+import { StorageApi } from "../storage";
+
+import { ApiProvider } from "../DynamicHelp";
+import { HelpController } from "../components/HelpController";
 
 type HelpProviderProps = {
     storageApi?: DynamicHelpStorageAPI;
+    debug?: boolean;
     children: JSX.Element | JSX.Element[];
 };
 
@@ -52,6 +55,7 @@ type HelpProviderProps = {
 
 export const HelpProvider = ({
     storageApi = StorageApi,
+    debug = false,
     ...props
 }: HelpProviderProps): JSX.Element => {
     const [app, ...helpFlows] = React.Children.toArray(
@@ -124,6 +128,7 @@ export const HelpProvider = ({
             <HelpController
                 provideControllerApi={provideControllerApi}
                 storage={storageApi}
+                debug={debug}
             >
                 {helpFlows}
             </HelpController>

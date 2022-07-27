@@ -60,6 +60,14 @@ export type TargetItemRegisterer = (id: TargetId) => TargetItemHelpers;
 
 export type FlowSwitch = (flow: FlowId, enabled: boolean) => void;
 
+export type DynamicHelpStorageAPI = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    set: (key: StorageKey, value: any) => any;
+    remove: (key: StorageKey) => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    get: (key: StorageKey, default_value?: any) => any;
+};
+
 /**
  * A function passed in on the Controller props,
  * used by the Controller to give the Provider the Controller API,
