@@ -187,7 +187,7 @@ export function HelpItem({
 
         return ReactDOM.createPortal(
             <div
-                className="rdh-help-item"
+                className="rdh-help-item rdh-help-item-custom"
                 id={props.id}
                 style={{
                     position: "absolute",
@@ -196,7 +196,7 @@ export function HelpItem({
                     ...itemPosition,
                 }}
             >
-                <div className="rdh-help-item-custom">{props.children}</div>
+                <div className="rdh-help-item-content">{props.children}</div>
                 <span
                     className={`rdh-help-item-dismiss ${dismissStyle}`}
                     onClick={props.signalDismissed}

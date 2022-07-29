@@ -26,7 +26,7 @@ export type ItemId = string;
 export type TargetId = string;
 export type StorageKey = string;
 
-// Help Item props
+// Help Item prop types
 export type Position =
     | "top-left"
     | "top-right"
