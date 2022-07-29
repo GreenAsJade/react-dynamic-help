@@ -10,15 +10,16 @@
     max-width: 25rem;
 }
 
-span.rdh-help-item-dismiss {
+sup.rdh-help-item-dismiss {
     font-weight: bold;
     cursor: pointer;
+    transform: translateY(-3px); /* dang thang is hard to get in the right place! */
 }
 
-span.rdh-help-item-dismiss.rdh-dismiss-margin-left {
+sup.rdh-help-item-dismiss.rdh-dismiss-margin-left {
     margin: 0 0 0 0.5rem;
 }
 
-span.rdh-help-item-dismiss.rdh-dismiss-margin-right {
+sup.rdh-help-item-dismiss.rdh-dismiss-margin-right {
     margin: 0 0.5rem 0 0;
 }

@@ -166,6 +166,20 @@ export function HelpItem({
             };
         }
 
+        // make sure we have a bit of margin
+        let itemMargin = props.margin;
+
+        if (!itemMargin) {
+            if (position.includes("left")) {
+                itemMargin = "0 3px 0 0";
+            } else if (position.includes("right")) {
+                itemMargin = "0 0 0 3px";
+            } else if (position.includes("bottom")) {
+                itemMargin = "3px 0 0 0";
+            } else {
+                itemMargin = "0 0 3px 0";
+            }
+        }
         // Now we make sure that the dismiss button is in a sensible place, with a sensible margin,
         // unless they specified it...
 
@@ -182,6 +196,7 @@ export function HelpItem({
                 ? "rdh-dismiss-margin-left"
                 : "rdh-dismiss-margin-right";
 
+        // final niceties...
         if (highlightTarget) {
             target.style.boxShadow = "0px 0px 5px rgb(251 153 170)";
         }
@@ -190,31 +205,36 @@ export function HelpItem({
             console.log("rendering HelpItem", props.children);
         }
 
+        // Render...
+
         return ReactDOM.createPortal(
             <div
-                className="rdh-help-item rdh-help-item-custom"
+                className={
+                    /* the -custom element allows the app to be more specific and hence override our css */
+                    "rdh-help-item rdh-help-item-custom"
+                }
                 id={props.id}
                 style={{
                     position: "absolute",
-                    margin: props.margin,
+                    margin: itemMargin,
                     flexDirection: layout === "right" ? "row" : "row-reverse",
                     ...itemPosition,
                 }}
             >
                 <div className="rdh-help-item-content">{props.children}</div>
-                <span
+                <sup
                     className={`rdh-help-item-dismiss ${dismissStyle}`}
                     onClick={props.signalDismissed}
                 >
                     ☒
-                </span>
+                </sup>
             </div>,
             document.body,
         );
     } else {
         // we're not visible
         if (highlightTarget && target) {
-            target.style.boxShadow = ""; // note that this _does_ allow the css-set value to return
+            target.style.boxShadow = ""; // note that this _does_ allow the css-specified value to return (phew)
         }
         return <></>;
     }
