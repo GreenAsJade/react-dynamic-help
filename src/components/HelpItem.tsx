@@ -74,8 +74,52 @@ export function HelpItem({
     ...props
 }: HelpItemProperties): JSX.Element {
     const { appTargetsState } = React.useContext(SystemContext);
+    const initialWidth = React.useRef(0);
+
+    const thisItem = React.useRef<HTMLDivElement>(null);
 
     const target = appTargetsState.targetItems[props.target];
+
+    // we need to know the width prior to adding ourselves, so we can
+    // detect whether we fell off to the right.
+    initialWidth.current = window.innerWidth;
+
+    React.useEffect(() => {
+        if (thisItem.current) {
+            const disp = thisItem.current;
+            console.log(
+                "HELP ITEM post render",
+                disp.getBoundingClientRect(),
+                window.innerWidth,
+            );
+            // Here we try to make sure that we ended up on the screen, and if not then
+            // reposition to a sensible place
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+
+            const { top, bottom, left, right } = disp.getBoundingClientRect();
+            const width = right - left;
+            const height = bottom - top;
+
+            if (left < 0) {
+                disp.style.left = "0px";
+                const newRight = vw - width;
+                disp.style.right = `${newRight}px`;
+            } else if (right > initialWidth.current) {
+                disp.style.right = "0px";
+                const newLeft = initialWidth.current - width;
+                disp.style.left = `${newLeft}px`;
+            }
+
+            if (top < 0) {
+                disp.style.top = "0px";
+                const newBottom = vh - height;
+                disp.style.bottom = `${newBottom}px`;
+            }
+            // we don't try to move it up from below the bottom, because if it is down there,
+            // then so is the element it refers to.
+        }
+    });
 
     if (
         target &&
@@ -83,7 +127,9 @@ export function HelpItem({
         props.state?.visible &&
         props.systemEnabled
     ) {
-        // what follows is maths to attach the `anchor` corner of this element (itemPosition) to
+        // We need to render ourselves.
+
+        // What follows is maths to attach the `anchor` corner of this element (itemPosition) to
         // the `position` corner of the target, taking into accound that bottom and right are measured
         // from the bottom and right of the windown respectively for css absolute position, but they are measured
         // from the top and left respectively for getBoundingClientRect (FFS).
@@ -202,7 +248,11 @@ export function HelpItem({
         }
 
         if (debug) {
-            console.log("rendering HelpItem", props.children);
+            console.log(
+                "rendering HelpItem",
+                initialWidth.current,
+                props.children,
+            );
         }
 
         // Render...
@@ -210,9 +260,10 @@ export function HelpItem({
         return ReactDOM.createPortal(
             <div
                 className={
-                    /* the -custom element allows the app to be more specific and hence override our css */
+                    /* the -custom piece allows the app to be more specific and hence override our css */
                     "rdh-help-item rdh-help-item-custom"
                 }
+                ref={thisItem}
                 id={props.id}
                 style={{
                     position: "absolute",
