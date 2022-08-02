@@ -27,6 +27,7 @@ import { SystemContext } from "../DynamicHelp";
 
 type HelpFlowProps = {
     id: HelpTypes.FlowId;
+    description?: string; // passed to the app if it asks "what flows are there?"
     showInitially?: boolean;
     debug?: boolean; // if this is turned on it sets debug on the children as well, _overriding_ their debug prop.
     children: JSX.Element | JSX.Element[];
@@ -53,6 +54,7 @@ function defaultId(
 export const HelpFlow = ({
     showInitially = false,
     debug = false,
+    description = "",
     ...props
 }: HelpFlowProps): JSX.Element => {
     const helpContext = React.useContext(SystemContext);
@@ -64,7 +66,7 @@ export const HelpFlow = ({
         if (!systemState.flows[props.id]) {
             debug ? console.log("Help Flow registration:", props.id) : null;
 
-            api.addHelpFlow(flowId, showInitially);
+            api.addHelpFlow(flowId, showInitially, description);
 
             console.log("Help Flow - adding children...");
 

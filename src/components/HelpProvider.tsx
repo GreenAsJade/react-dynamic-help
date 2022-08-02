@@ -111,6 +111,12 @@ export const HelpProvider = ({
                     "Info: App signalled help-reset before controller initialized.",
                 );
             },
+            getFlowInfo: () => {
+                console.log(
+                    "Info: getFlowInfo called before controller initialized.",
+                );
+                return [];
+            },
         },
     );
 

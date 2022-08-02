@@ -42,7 +42,7 @@ export type Position =
     | "centre-right";
 
 /**
- * The API for the App on the Help Controller
+ * The API for the App, on the Help Controller
  */
 export type AppApi = {
     registerTargetItem: TargetItemRegisterer;
@@ -50,6 +50,7 @@ export type AppApi = {
     signalUsed: (target: TargetId) => void;
     enableHelp: (enable: boolean) => void;
     resetHelp: () => void;
+    getFlowInfo: () => Readonly<FlowState[]>; // the app is not invited to mess with these
 };
 
 export type TargetItemHelpers = {
@@ -58,7 +59,7 @@ export type TargetItemHelpers = {
 };
 export type TargetItemRegisterer = (id: TargetId) => TargetItemHelpers;
 
-export type FlowSwitch = (flow: FlowId, enabled: boolean) => void;
+export type FlowSwitch = (flow: FlowId, enabled?: boolean) => void;
 
 export type DynamicHelpStorageAPI = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -87,7 +88,11 @@ export type HelpSystemContext = {
     api: ControllerApi;
 };
 
-export type RegisterFlow = (id: FlowId, showInitially: boolean) => void;
+export type RegisterFlow = (
+    id: FlowId,
+    showInitially: boolean,
+    description: string,
+) => void;
 export type RegisterItem = (
     flowId: FlowId,
     itemId: ItemId,
@@ -121,10 +126,12 @@ export type ItemState = {
 };
 
 export type FlowState = {
+    id: FlowId;
     visible: boolean;
     showInitially: boolean;
     items: ItemId[];
     activeItem: number; // index into items
+    description: string;
 };
 
 type FlowStates = {

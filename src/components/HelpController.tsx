@@ -32,6 +32,7 @@ import {
     FlowId,
     TargetItemHelpers,
     DynamicHelpStorageAPI,
+    FlowState,
 } from "../DynamicHelpTypes";
 
 import { SystemContextProvider, SystemContext } from "../DynamicHelp";
@@ -133,6 +134,7 @@ export class HelpController extends React.Component<
             signalUsed: this.signalTargetIsUsed,
             enableHelp: this.enableHelp,
             resetHelp: this.resetHelp,
+            getFlowInfo: this.getFlowInfo,
         });
 
         this.systemState = this.props.storage.get(
@@ -208,7 +210,7 @@ export class HelpController extends React.Component<
     };
 
     enableFlow = (flow: FlowId, enabled = true): void => {
-        console.log("Turning on flow", flow);
+        console.log("Ebable flow:", flow, enabled);
         const initialItem = this.systemState.flows[flow].items[0];
         this.systemState.flows[flow].visible = enabled;
         this.systemState.items[initialItem].visible = enabled;
@@ -227,23 +229,33 @@ export class HelpController extends React.Component<
         this.propagateSystemState();
     };
 
+    getFlowInfo = (): FlowState[] => Object.values(this.systemState.flows);
+
     //
     // API for Help Flows and Help Items to interact with systemState.
     //
 
-    // Registration.  These should check local storage for state: TBD
-
-    addHelpFlow = (id: FlowId, showInitially: boolean): void => {
+    // Registration.
+    addHelpFlow = (
+        id: FlowId,
+        showInitially: boolean,
+        description: string,
+    ): void => {
         console.log("Flow registration:", id, showInitially);
+        const desc = description || id;
         if (!(id in this.systemState.flows)) {
             this.systemState.flows[id] = {
+                id: id,
                 visible: showInitially,
                 showInitially,
                 items: [],
                 activeItem: 0,
+                description: desc,
             };
-            this.propagateSystemState();
+        } else {
+            this.systemState.flows[id].description = desc;
         }
+        this.propagateSystemState();
     };
 
     addHelpItem = (flowId: FlowId, itemId: ItemId, target: TargetId): void => {

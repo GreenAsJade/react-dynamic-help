@@ -244,6 +244,7 @@ export function HelpItem({
 
         // final niceties...
         if (highlightTarget) {
+            console.log("BOX", target);
             target.style.boxShadow = "0px 0px 5px rgb(251 153 170)";
         }
 
@@ -285,6 +286,7 @@ export function HelpItem({
     } else {
         // we're not visible
         if (highlightTarget && target) {
+            console.log("DEBOX", target);
             target.style.boxShadow = ""; // note that this _does_ allow the css-specified value to return (phew)
         }
         return <></>;
