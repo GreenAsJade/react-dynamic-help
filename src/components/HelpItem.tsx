@@ -54,6 +54,7 @@ type HelpItemProperties = {
     debug?: boolean; // note - this will be overriden by Flow debug, if that is set.
 
     // provided by the containing HelpFlow:
+    myId?: HelpTypes.ItemId;
     state?: HelpTypes.ItemState;
     flowState?: HelpTypes.FlowState;
     systemEnabled?: boolean;
@@ -91,6 +92,7 @@ export function HelpItem({
                 "HELP ITEM post render",
                 disp.getBoundingClientRect(),
                 window.innerWidth,
+                props.myId,
             );
             // Here we try to make sure that we ended up on the screen, and if not then
             // reposition to a sensible place
@@ -122,7 +124,8 @@ export function HelpItem({
     });
 
     if (
-        target &&
+        props.myId &&
+        target?.ref &&
         props.flowState?.visible &&
         props.state?.visible &&
         props.systemEnabled
@@ -139,7 +142,7 @@ export function HelpItem({
             bottom: targetBottom,
             left: targetLeft,
             right: targetRight,
-        } = target.getBoundingClientRect();
+        } = target.ref.getBoundingClientRect();
 
         const vw = window.innerWidth;
         const vh = window.innerHeight;
@@ -244,16 +247,13 @@ export function HelpItem({
 
         // final niceties...
         if (highlightTarget) {
-            console.log("BOX", target);
-            target.style.boxShadow = "0px 0px 5px rgb(251 153 170)";
+            console.log("BOX", target, props.myId);
+            target.ref.style.boxShadow = "0px 0px 5px rgb(251 153 170)";
+            target.highlighters.add(props.myId);
         }
 
         if (debug) {
-            console.log(
-                "rendering HelpItem",
-                initialWidth.current,
-                props.children,
-            );
+            console.log("rendering HelpItem", props.myId);
         }
 
         // Render...
@@ -285,9 +285,15 @@ export function HelpItem({
         );
     } else {
         // we're not visible
-        if (highlightTarget && target) {
-            console.log("DEBOX", target);
-            target.style.boxShadow = ""; // note that this _does_ allow the css-specified value to return (phew)
+        if (highlightTarget && target?.ref && props.myId) {
+            // if we were the one highlighting the target, we need to undo that
+            if (target.highlighters.has(props.myId)) {
+                target.highlighters.delete(props.myId);
+                if (target.highlighters.size === 0) {
+                    console.log("UNBOX", props.myId);
+                    target.ref.style.boxShadow = ""; // note that this _does_ allow the css-specified value to return (phew)
+                }
+            }
         }
         return <></>;
     }

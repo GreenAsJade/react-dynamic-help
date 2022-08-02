@@ -85,14 +85,10 @@ export const HelpFlow = ({
         }
     });
 
-    // The primary reason for this chicanery is to allow the user to not have to provide an id for the HelpItems.
+    // The primary reason for this chicanery is to allow the user to not have to provide a unique id for the HelpItems.
 
-    // A side effect is that we have to provide the Item's state to it via its props, because it doesn't necessarily
-    // know it's own id, and hence it can't look up its own state in the context via that id.
-
-    // It doesn't work to try naievly to provide the id to the child by inserting it on props, because we are using the
-    // absence of it on props to recognise we need to default it!  (I guess we could add a separate prop 'actualId',
-    // if that sort of refactor becomes necessary)
+    // It also provides a means to supply the necessary state via props intead of having the HelpItem look it up
+    // from context.  Not sure if this is good or bad - could be done either way.
 
     const children = React.useMemo(
         () => React.Children.toArray(props.children) as JSX.Element[],
@@ -104,6 +100,7 @@ export const HelpFlow = ({
             child.props.id || defaultId(flowId, child.props.target, index);
         return React.cloneElement(child, {
             ...child.props,
+            myId: id,
             state: systemState?.items[id],
             flowState: systemState?.flows[flowId],
             systemEnabled: systemState?.systemEnabled,

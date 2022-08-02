@@ -151,8 +151,15 @@ type ItemMap = {
 };
 
 /**
- * Used by Help Items to find their target based on its id.
+ * Used by Help Items to find their target based on its id, and track who's highlighting it
+ *
  */
 export type TargetTable = {
-    [target: TargetId]: HTMLElement; // ref to target
+    [target: TargetId]: TargetInfo;
+};
+
+// *** Note: not JSON persistable due to Set.
+export type TargetInfo = {
+    ref: HTMLElement; // the ref to the target, supplied to us on a ref callback
+    highlighters: Set<ItemId>; // The HelpItems that think that this target should be highlighted
 };
