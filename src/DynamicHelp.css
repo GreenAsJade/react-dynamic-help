@@ -17,9 +17,9 @@ sup.rdh-help-item-dismiss {
 }
 
 sup.rdh-help-item-dismiss.rdh-dismiss-margin-left {
-    margin: 0 0 0 0.5rem;
+    padding: 0 0 0 0.5rem;
 }
 
 sup.rdh-help-item-dismiss.rdh-dismiss-margin-right {
-    margin: 0 0.5rem 0 0;
+    padding: 0 0.5rem 0 0;
 }

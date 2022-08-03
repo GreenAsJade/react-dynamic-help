@@ -85,6 +85,8 @@ export function HelpItem({
     // detect whether we fell off to the right.
     initialWidth.current = window.innerWidth;
 
+    // Here we try to make sure that we ended up on the screen, and if not then
+    // reposition to a sensible place
     React.useEffect(() => {
         if (thisItem.current) {
             const disp = thisItem.current;
@@ -94,8 +96,7 @@ export function HelpItem({
                 window.innerWidth,
                 props.myId,
             );
-            // Here we try to make sure that we ended up on the screen, and if not then
-            // reposition to a sensible place
+
             const vw = window.innerWidth;
             const vh = window.innerHeight;
 
@@ -123,9 +124,24 @@ export function HelpItem({
         }
     });
 
+    let [targetTop, targetBottom, targetLeft, targetRight] = [0, 0, 0, 0];
+
+    if (target && target.ref) {
+        ({
+            top: targetTop,
+            bottom: targetBottom,
+            left: targetLeft,
+            right: targetRight,
+        } = target.ref.getBoundingClientRect());
+    }
+
+    // here we are defending aginst the target being inside a display:none element.
+    const targetDisplayNone = targetTop === targetBottom;
+
     if (
         props.myId &&
         target?.ref &&
+        !targetDisplayNone &&
         props.flowState?.visible &&
         props.state?.visible &&
         props.systemEnabled
@@ -136,13 +152,6 @@ export function HelpItem({
         // the `position` corner of the target, taking into accound that bottom and right are measured
         // from the bottom and right of the windown respectively for css absolute position, but they are measured
         // from the top and left respectively for getBoundingClientRect (FFS).
-
-        const {
-            top: targetTop,
-            bottom: targetBottom,
-            left: targetLeft,
-            right: targetRight,
-        } = target.ref.getBoundingClientRect();
 
         const vw = window.innerWidth;
         const vh = window.innerHeight;
@@ -217,16 +226,21 @@ export function HelpItem({
 
         // make sure we have a bit of margin
         let itemMargin = props.margin;
+        let itemPadding = "";
 
         if (!itemMargin) {
             if (position.includes("left")) {
-                itemMargin = "0 3px 0 0";
+                itemMargin = "0 4px 0 0";
+                itemPadding = "0 0.3rem 0 0";
             } else if (position.includes("right")) {
-                itemMargin = "0 0 0 3px";
+                itemMargin = "0 0 0 4px";
+                itemPadding = "0 0 0 0.3rem";
             } else if (position.includes("bottom")) {
-                itemMargin = "3px 0 0 0";
+                itemMargin = "4px 0 0 0";
+                itemPadding = "0 0 0 0.3rem";
             } else {
-                itemMargin = "0 0 3px 0";
+                itemMargin = "0 0 4px 0";
+                itemPadding = "0 0 0 0.3rem";
             }
         }
         // Now we make sure that the dismiss button is in a sensible place, with a sensible margin,
@@ -247,7 +261,6 @@ export function HelpItem({
 
         // final niceties...
         if (highlightTarget) {
-            console.log("BOX", target, props.myId);
             target.ref.style.boxShadow = "0px 0px 5px rgb(251 153 170)";
             target.highlighters.add(props.myId);
         }
@@ -269,6 +282,7 @@ export function HelpItem({
                 style={{
                     position: "absolute",
                     margin: itemMargin,
+                    padding: itemPadding,
                     flexDirection: layout === "right" ? "row" : "row-reverse",
                     ...itemPosition,
                 }}
@@ -290,7 +304,6 @@ export function HelpItem({
             if (target.highlighters.has(props.myId)) {
                 target.highlighters.delete(props.myId);
                 if (target.highlighters.size === 0) {
-                    console.log("UNBOX", props.myId);
                     target.ref.style.boxShadow = ""; // note that this _does_ allow the css-specified value to return (phew)
                 }
             }
