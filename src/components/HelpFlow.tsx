@@ -64,7 +64,7 @@ export const HelpFlow = ({
 
     React.useEffect(() => {
         if (!systemState.flows[props.id]) {
-            debug ? console.log("Help Flow registration:", props.id) : null;
+            debug ? console.log("Help Flow registration:", flowId) : null;
 
             api.addHelpFlow(flowId, showInitially, description);
 
@@ -85,29 +85,23 @@ export const HelpFlow = ({
         }
     });
 
-    // The primary reason for this chicanery is to allow the user to not have to provide a unique id for the HelpItems.
-
-    // It also provides a means to supply the necessary state via props intead of having the HelpItem look it up
-    // from context.  Not sure if this is good or bad - could be done either way.
+    // The reason for this chicanery is to allow the user to not have to provide a unique id for the HelpItems.
+    // It's also the place that "if the flow has debug then the Items do too" is implemented
 
     const children = React.useMemo(
         () => React.Children.toArray(props.children) as JSX.Element[],
         [props.children],
     );
 
-    const childrenWithState = children.map((child, index) => {
+    const childrenWithIds = children.map((child, index) => {
         const id =
             child.props.id || defaultId(flowId, child.props.target, index);
         return React.cloneElement(child, {
             ...child.props,
             myId: id,
-            state: systemState?.items[id],
-            flowState: systemState?.flows[flowId],
-            systemEnabled: systemState?.systemEnabled,
-            signalDismissed: () => api.signalItemDismissed(id),
             ...(debug ? { debug } : {}),
         });
     });
 
-    return <>{childrenWithState}</>;
+    return <>{childrenWithIds}</>;
 };

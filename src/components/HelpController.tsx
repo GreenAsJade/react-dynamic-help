@@ -33,6 +33,8 @@ import {
     TargetItemHelpers,
     DynamicHelpStorageAPI,
     FlowState,
+    HelpPopupDictionary,
+    HelpPopupPhrase,
 } from "../DynamicHelpTypes";
 
 import { SystemContextProvider, SystemContext } from "../DynamicHelp";
@@ -71,6 +73,7 @@ function FloatingStateReset(): JSX.Element {
 
 type HelpControllerProps = {
     provideControllerApi: AppApiSetter;
+    dictionary: HelpPopupDictionary;
     storage: DynamicHelpStorageAPI;
     debug: boolean;
     children: JSX.Element | JSX.Element[];
@@ -104,7 +107,7 @@ export class HelpController extends React.Component<
     HelpControllerProps,
     HelpControllerState
 > {
-    // we accumulate multiple updates per render cycle (due to refs changing on render) here .
+    // we accumulate multiple updates to state per render cycle (due to refs changing on render) here.
     // .. the ultimate value of these ends up in this.state (and storage) when react finally updates the state,
     // to be passed out on the Context.
     appTargets: AppTargetsState = { targetItems: {} };
@@ -135,6 +138,9 @@ export class HelpController extends React.Component<
             enableHelp: this.enableHelp,
             resetHelp: this.resetHelp,
             getFlowInfo: this.getFlowInfo,
+            getSystemStatus: () => ({
+                enabled: this.systemState.systemEnabled,
+            }),
         });
 
         this.systemState = this.props.storage.get(
@@ -166,7 +172,7 @@ export class HelpController extends React.Component<
         };
     };
 
-    mapTarget = (target: TargetId, targetRef: HTMLElement): void => {
+    private mapTarget = (target: TargetId, targetRef: HTMLElement): void => {
         // Note that this callback can be called multiple times per render of the App,
         // one for each help item target that the app rendering.
         console.log("target registration", target, targetRef, this.appTargets);
@@ -213,7 +219,7 @@ export class HelpController extends React.Component<
     };
 
     enableFlow = (flow: FlowId, enabled = true): void => {
-        console.log("Ebable flow:", flow, enabled);
+        console.log("Enable flow:", flow, enabled);
         const initialItem = this.systemState.flows[flow].items[0];
         this.systemState.flows[flow].visible = enabled;
         this.systemState.items[initialItem].visible = enabled;
@@ -238,13 +244,16 @@ export class HelpController extends React.Component<
     // API for Help Flows and Help Items to interact with systemState.
     //
 
-    // Registration.
+    // Registration....
     addHelpFlow = (
         id: FlowId,
         showInitially: boolean,
         description: string,
     ): void => {
-        console.log("Flow registration:", id, showInitially);
+        if (this.props.debug) {
+            console.log("Flow registration:", id, showInitially);
+        }
+
         const desc = description || id;
         if (!(id in this.systemState.flows)) {
             this.systemState.flows[id] = {
@@ -262,7 +271,9 @@ export class HelpController extends React.Component<
     };
 
     addHelpItem = (flowId: FlowId, itemId: ItemId, target: TargetId): void => {
-        console.log("Item registration:", flowId, itemId, target);
+        if (this.props.debug) {
+            console.log("Item registration:", flowId, itemId, target);
+        }
         if (!(itemId in this.systemState.items)) {
             this.systemState.items[itemId] = {
                 visible: this.systemState.flows[flowId].items.length === 0,
@@ -284,8 +295,12 @@ export class HelpController extends React.Component<
         }
     };
 
+    // ... operation
+
     signalItemDismissed = (itemId: ItemId): void => {
-        console.log("signal dismissed called for", itemId);
+        if (this.props.debug) {
+            console.log("signal dismissed called for", itemId);
+        }
         const state = this.systemState; // just alias for ease of reading
 
         const flowId = state.flowMap[itemId];
@@ -303,6 +318,10 @@ export class HelpController extends React.Component<
         this.propagateSystemState();
     };
 
+    translate = (phrase: HelpPopupPhrase): string => {
+        return this.props.dictionary[phrase];
+    };
+
     render(): JSX.Element {
         //console.log("Help Controller has state", this.state.systemState);
         return (
@@ -315,6 +334,9 @@ export class HelpController extends React.Component<
                             addHelpFlow: this.addHelpFlow,
                             addHelpItem: this.addHelpItem,
                             signalItemDismissed: this.signalItemDismissed,
+                            translate: this.translate,
+                            enableFlow: this.enableFlow,
+                            enableHelp: this.enableHelp,
                             resetHelp: this.resetHelp,
                         },
                     }}

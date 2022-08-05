@@ -27,6 +27,7 @@ import {
     TargetId,
     AppApiSetter,
     DynamicHelpStorageAPI,
+    HelpPopupDictionary,
 } from "../DynamicHelpTypes";
 
 import { StorageApi } from "../storage";
@@ -35,9 +36,15 @@ import { ApiProvider } from "../DynamicHelp";
 import { HelpController } from "../components/HelpController";
 
 type HelpProviderProps = {
+    dictionary?: HelpPopupDictionary;
     storageApi?: DynamicHelpStorageAPI;
     debug?: boolean;
     children: JSX.Element | JSX.Element[];
+};
+
+const DEFAULT_DICTIONARY: HelpPopupDictionary = {
+    "Don't show me these": "Don't show me these",
+    Skip: "Skip",
 };
 
 /**
@@ -64,6 +71,7 @@ export const HelpProvider = ({
 
     // Here we store the Contoller API functions on our state, when they provided to us by the HelpController...
     // ... for passing on to the Application via context.
+
     // In this way, the App is decoupled from the Help System renders, which is important to avoid App ref regeneration loops.
 
     const [controllerApi, setControllerAPI] = React.useState<AppApi>(
@@ -100,22 +108,25 @@ export const HelpProvider = ({
                     target,
                 );
             },
+            getFlowInfo: () => {
+                console.log(
+                    "Info: getFlowInfo called before controller initialized.",
+                );
+                return [];
+            },
             enableHelp: (enabled) => {
                 console.log(
                     "Info: enableHelp called before controller initialised",
                     enabled,
                 );
             },
+            getSystemStatus: () => ({
+                enabled: false,
+            }),
             resetHelp: () => {
                 console.log(
                     "Info: App signalled help-reset before controller initialized.",
                 );
-            },
-            getFlowInfo: () => {
-                console.log(
-                    "Info: getFlowInfo called before controller initialized.",
-                );
-                return [];
             },
         },
     );
@@ -133,6 +144,7 @@ export const HelpProvider = ({
             <ApiProvider value={controllerApi}>{app}</ApiProvider>
             <HelpController
                 provideControllerApi={provideControllerApi}
+                dictionary={props.dictionary || DEFAULT_DICTIONARY}
                 storage={storageApi}
                 debug={debug}
             >

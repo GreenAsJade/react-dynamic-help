@@ -48,17 +48,12 @@ type HelpItemProperties = {
     position?: HelpTypes.Position; // where the HelpItem is placed on the target
     anchor?: HelpTypes.Position; // which part of the HelpItem is placed at `position`
     margin?: string; // can be used to offset the HelpItem from the default position
-    layout?: "left" | "right"; // which side is the dismiss button
     id?: HelpTypes.ItemId; // user can provide this for css targetting
     highlightTarget?: boolean;
     debug?: boolean; // note - this will be overriden by Flow debug, if that is set.
 
     // provided by the containing HelpFlow:
     myId?: HelpTypes.ItemId;
-    state?: HelpTypes.ItemState;
-    flowState?: HelpTypes.FlowState;
-    systemEnabled?: boolean;
-    signalDismissed?: () => void;
 
     children: React.ReactNode; // The help popup elements.
 };
@@ -74,12 +69,33 @@ export function HelpItem({
     highlightTarget = true,
     ...props
 }: HelpItemProperties): JSX.Element {
-    const { appTargetsState } = React.useContext(SystemContext);
+    const {
+        appTargetsState,
+        systemState,
+        api: controller,
+    } = React.useContext(SystemContext);
+
     const initialWidth = React.useRef(0);
 
     const thisItem = React.useRef<HTMLDivElement>(null);
 
     const target = appTargetsState.targetItems[props.target];
+
+    const [flowState, myState] = getItemState(props.myId, systemState);
+
+    const turnOffHelpSystem = () => {
+        controller.enableHelp(false);
+    };
+
+    const dismissFlow = () => {
+        if (flowState) {
+            controller.enableFlow(flowState.id, false);
+        } else {
+            console.warn(
+                "Warning: HelpItem 'dismissFlow' called with undefined flow state.  That's unexpected!",
+            );
+        }
+    };
 
     // we need to know the width prior to adding ourselves, so we can
     // detect whether we fell off to the right.
@@ -90,12 +106,14 @@ export function HelpItem({
     React.useEffect(() => {
         if (thisItem.current) {
             const disp = thisItem.current;
-            console.log(
-                "HELP ITEM post render",
-                disp.getBoundingClientRect(),
-                window.innerWidth,
-                props.myId,
-            );
+            if (debug) {
+                console.log(
+                    "HelpItem post render",
+                    disp.getBoundingClientRect(),
+                    window.innerWidth,
+                    props.myId,
+                );
+            }
 
             const vw = window.innerWidth;
             const vh = window.innerHeight;
@@ -142,9 +160,9 @@ export function HelpItem({
         props.myId &&
         target?.ref &&
         !targetDisplayNone &&
-        props.flowState?.visible &&
-        props.state?.visible &&
-        props.systemEnabled
+        flowState?.visible &&
+        myState?.visible &&
+        systemState.systemEnabled
     ) {
         // We need to render ourselves.
 
@@ -243,21 +261,6 @@ export function HelpItem({
                 itemPadding = "0 0 0 0.3rem";
             }
         }
-        // Now we make sure that the dismiss button is in a sensible place, with a sensible margin,
-        // unless they specified it...
-
-        let layout = "right";
-
-        if (props.layout) {
-            layout = props.layout;
-        } else if (position.includes("left")) {
-            layout = "left";
-        }
-
-        const dismissStyle =
-            layout === "right"
-                ? "rdh-dismiss-margin-left"
-                : "rdh-dismiss-margin-right";
 
         // final niceties...
         if (highlightTarget) {
@@ -283,22 +286,26 @@ export function HelpItem({
                     position: "absolute",
                     margin: itemMargin,
                     padding: itemPadding,
-                    flexDirection: layout === "right" ? "row" : "row-reverse",
                     ...itemPosition,
                 }}
             >
                 <div className="rdh-help-item-content">{props.children}</div>
-                <sup
-                    className={`rdh-help-item-dismiss ${dismissStyle}`}
-                    onClick={props.signalDismissed}
-                >
-                    ☒
-                </sup>
+                <div className="rdh-popup-dismissers">
+                    <span className="rdh-dont-show" onClick={turnOffHelpSystem}>
+                        {controller.translate("Don't show me these")}
+                    </span>
+                    <span className="rdh-popup-skip" onClick={dismissFlow}>
+                        {controller.translate("Skip")}
+                    </span>
+                </div>
             </div>,
             document.body,
         );
     } else {
-        // we're not visible
+        if (debug) {
+            console.log("render: not showing inactive HelpItem", props.myId);
+        }
+
         if (highlightTarget && target?.ref && props.myId) {
             // if we were the one highlighting the target, we need to undo that
             if (target.highlighters.has(props.myId)) {
@@ -313,16 +320,17 @@ export function HelpItem({
 }
 
 type ItemStateInfo = [
-    flow: HelpTypes.FlowState,
-    itemState: HelpTypes.ItemState,
+    flow: HelpTypes.FlowState | null,
+    itemState: HelpTypes.ItemState | null,
 ];
 
-// Currently not used because we receive this info on props.
-
 export const getItemState = (
-    item: HelpTypes.ItemId,
+    item: HelpTypes.ItemId | undefined,
     helpState: HelpTypes.SystemState,
 ): ItemStateInfo => {
+    if (!item) {
+        return [null, null];
+    }
     const flowId = helpState.flowMap[item];
     const flow = helpState.flows[flowId];
     return [flow, helpState.items[item]];

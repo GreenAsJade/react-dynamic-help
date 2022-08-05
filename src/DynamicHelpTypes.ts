@@ -49,15 +49,29 @@ export type AppApi = {
     enableFlow: FlowSwitch;
     signalUsed: (target: TargetId) => void;
     enableHelp: (enable: boolean) => void;
-    resetHelp: () => void;
     getFlowInfo: () => Readonly<FlowState[]>; // the app is not invited to mess with these
+    getSystemStatus: () => HelpSystemStatus;
+    resetHelp: () => void; // intended for use in development, not as app functionality
+};
+
+export type HelpSystemStatus = {
+    enabled: boolean;
 };
 
 export type TargetItemHelpers = {
     ref: (targetRef: HTMLElement) => void;
     used: () => void;
 };
+
 export type TargetItemRegisterer = (id: TargetId) => TargetItemHelpers;
+
+export type DictionaryProvider = (dict: HelpPopupDictionary) => void;
+
+export type HelpPopupPhrase = "Don't show me these" | "Skip";
+
+export type HelpPopupDictionary = {
+    [phrase in HelpPopupPhrase]: string;
+};
 
 export type FlowSwitch = (flow: FlowId, enabled?: boolean) => void;
 
@@ -104,6 +118,9 @@ export type ControllerApi = {
     addHelpFlow: RegisterFlow;
     addHelpItem: RegisterItem;
     signalItemDismissed: (item: ItemId) => void;
+    translate: (text: HelpPopupPhrase) => string;
+    enableFlow: FlowSwitch;
+    enableHelp: (enable: boolean) => void;
     resetHelp: () => void;
 };
 

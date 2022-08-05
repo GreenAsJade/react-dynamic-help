@@ -6,20 +6,23 @@
     border-radius: 0.3rem;
 
     display: flex;
+    flex-direction: column;
 
     max-width: 25rem;
 }
 
-sup.rdh-help-item-dismiss {
-    font-weight: bold;
-    cursor: pointer;
-    transform: translateY(-3px); /* dang thang is hard to get in the right place! */
+.rdh-popup-dismissers {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    color: lightgrey;
+    font-size: smaller;
 }
 
-sup.rdh-help-item-dismiss.rdh-dismiss-margin-left {
-    padding: 0 0 0 0.5rem;
+.rdh-dont-show {
+    text-decoration: underline;
 }
 
-sup.rdh-help-item-dismiss.rdh-dismiss-margin-right {
-    padding: 0 0.5rem 0 0;
+.rdh-popup-skip {
+    text-decoration: underline;
 }
