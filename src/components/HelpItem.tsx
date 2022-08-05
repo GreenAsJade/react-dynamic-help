@@ -24,7 +24,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 
 import * as HelpTypes from "../DynamicHelpTypes";
-import { SystemContext } from "../DynamicHelp";
+import { SystemContext, log } from "../DynamicHelp";
 
 const defaultAnchors: {
     [position in HelpTypes.Position as string]: HelpTypes.Position;
@@ -106,14 +106,13 @@ export function HelpItem({
     React.useEffect(() => {
         if (thisItem.current) {
             const disp = thisItem.current;
-            if (debug) {
-                console.log(
-                    "HelpItem post render",
-                    disp.getBoundingClientRect(),
-                    window.innerWidth,
-                    props.myId,
-                );
-            }
+            log(
+                debug,
+                "HelpItem post render",
+                disp.getBoundingClientRect(),
+                window.innerWidth,
+                props.myId,
+            );
 
             const vw = window.innerWidth;
             const vh = window.innerHeight;
@@ -268,9 +267,7 @@ export function HelpItem({
             target.highlighters.add(props.myId);
         }
 
-        if (debug) {
-            console.log("rendering HelpItem", props.myId);
-        }
+        log(debug, "rendering HelpItem", props.myId);
 
         // Render...
 
@@ -302,9 +299,7 @@ export function HelpItem({
             document.body,
         );
     } else {
-        if (debug) {
-            console.log("render: not showing inactive HelpItem", props.myId);
-        }
+        log(debug, "HelpItem render not showing", props.myId);
 
         if (highlightTarget && target?.ref && props.myId) {
             // if we were the one highlighting the target, we need to undo that

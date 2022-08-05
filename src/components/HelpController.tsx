@@ -37,7 +37,7 @@ import {
     HelpPopupPhrase,
 } from "../DynamicHelpTypes";
 
-import { SystemContextProvider, SystemContext } from "../DynamicHelp";
+import { SystemContextProvider, SystemContext, log } from "../DynamicHelp";
 
 /** A handy component when debugging
  * ... because the state gets saved, making it hard to repeat tests!
@@ -47,7 +47,7 @@ function FloatingStateReset(): JSX.Element {
     const api = React.useContext(SystemContext).api;
 
     const resetHelp = () => {
-        console.log("Clicked debug reset");
+        console.log("Clicked debug reset"); // note: this is a debug component, so it is expected to log!
         api.resetHelp();
     };
 
@@ -114,7 +114,7 @@ export class HelpController extends React.Component<
     systemState: SystemState = _resetState;
 
     propagateSystemState = (): void => {
-        console.log("HelpController state update:", this.systemState);
+        log(this.props.debug, "HelpController state update:", this.systemState);
         this.props.storage.set("system-state", this.systemState);
         this.setState({ systemState: this.systemState });
     };
@@ -128,7 +128,8 @@ export class HelpController extends React.Component<
     }
 
     componentDidMount = (): void => {
-        console.log(
+        log(
+            this.props.debug,
             "**** Mounting HelpController: Help System initialization underway...",
         );
         this.props.provideControllerApi({
@@ -148,7 +149,7 @@ export class HelpController extends React.Component<
             _resetState,
         ) as SystemState;
 
-        console.log("Initial state loaded:", this.systemState);
+        log(this.props.debug, "Initial state loaded:", this.systemState);
         this.setState({ systemState: this.systemState });
     };
 
@@ -175,7 +176,13 @@ export class HelpController extends React.Component<
     private mapTarget = (target: TargetId, targetRef: HTMLElement): void => {
         // Note that this callback can be called multiple times per render of the App,
         // one for each help item target that the app rendering.
-        console.log("target registration", target, targetRef, this.appTargets);
+        log(
+            this.props.debug,
+            "target registration",
+            target,
+            targetRef,
+            this.appTargets,
+        );
 
         this.appTargets = {
             targetItems: {
@@ -190,7 +197,7 @@ export class HelpController extends React.Component<
     };
 
     signalTargetIsUsed = (target: TargetId): void => {
-        console.log("seeing target used:", target);
+        log(this.props.debug, "seeing target used:", target);
 
         const state = this.systemState; // just alias for ease of reading
 
@@ -206,11 +213,11 @@ export class HelpController extends React.Component<
                     flow.visible = false;
                     const initialItemId = flow.items[0];
                     state.items[initialItemId].visible = true;
-                    console.log("Finished flow", flowId);
+                    log(this.props.debug, "Finished flow", flowId);
                 } else {
                     const nextItem = flow.items[flow.activeItem];
                     state.items[nextItem].visible = true;
-                    console.log("stepped flow", flowId, nextItem);
+                    log(this.props.debug, "stepped flow", flowId, nextItem);
                 }
                 state.flows[flowId] = flow;
                 this.propagateSystemState();
@@ -219,7 +226,7 @@ export class HelpController extends React.Component<
     };
 
     enableFlow = (flow: FlowId, enabled = true): void => {
-        console.log("Enable flow:", flow, enabled);
+        log(this.props.debug, "Enable flow:", flow, enabled);
         const initialItem = this.systemState.flows[flow].items[0];
         this.systemState.flows[flow].visible = enabled;
         this.systemState.items[initialItem].visible = enabled;
@@ -233,7 +240,7 @@ export class HelpController extends React.Component<
     };
 
     resetHelp = (): void => {
-        console.log("Info: resetting help system state");
+        log(this.props.debug, "Info: resetting help system state");
         this.systemState = _resetState;
         this.propagateSystemState();
     };
@@ -250,9 +257,7 @@ export class HelpController extends React.Component<
         showInitially: boolean,
         description: string,
     ): void => {
-        if (this.props.debug) {
-            console.log("Flow registration:", id, showInitially);
-        }
+        log(this.props.debug, "Flow registration:", id, showInitially);
 
         const desc = description || id;
         if (!(id in this.systemState.flows)) {
@@ -271,9 +276,8 @@ export class HelpController extends React.Component<
     };
 
     addHelpItem = (flowId: FlowId, itemId: ItemId, target: TargetId): void => {
-        if (this.props.debug) {
-            console.log("Item registration:", flowId, itemId, target);
-        }
+        log(this.props.debug, "Item registration:", flowId, itemId, target);
+
         if (!(itemId in this.systemState.items)) {
             this.systemState.items[itemId] = {
                 visible: this.systemState.flows[flowId].items.length === 0,
@@ -298,9 +302,8 @@ export class HelpController extends React.Component<
     // ... operation
 
     signalItemDismissed = (itemId: ItemId): void => {
-        if (this.props.debug) {
-            console.log("signal dismissed called for", itemId);
-        }
+        log(this.props.debug, "signal dismissed called for", itemId);
+
         const state = this.systemState; // just alias for ease of reading
 
         const flowId = state.flowMap[itemId];
@@ -312,7 +315,8 @@ export class HelpController extends React.Component<
         flow.visible = false;
         const initialItemId = flow.items[0];
         state.items[initialItemId].visible = true;
-        console.log("Reset flow", flowId);
+
+        log(this.props.debug, "Flow reset to inactive", flowId);
 
         state.flows[flowId] = flow;
         this.propagateSystemState();

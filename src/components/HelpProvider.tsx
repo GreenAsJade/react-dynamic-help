@@ -32,7 +32,7 @@ import {
 
 import { StorageApi } from "../storage";
 
-import { ApiProvider } from "../DynamicHelp";
+import { ApiProvider, log } from "../DynamicHelp";
 import { HelpController } from "../components/HelpController";
 
 type HelpProviderProps = {
@@ -82,7 +82,8 @@ export const HelpProvider = ({
         {
             registerTargetItem: (id: TargetId) => ({
                 ref: (target: HTMLElement) => {
-                    console.log(
+                    log(
+                        debug,
                         "Info: registration of target before controller initialised:",
                         id,
                         target,
@@ -96,7 +97,8 @@ export const HelpProvider = ({
                 },
             }),
             enableFlow: (flow, enabled) => {
-                console.log(
+                log(
+                    debug,
                     "Info: enableFlow called before controller initialized",
                     flow,
                     enabled,
@@ -109,13 +111,15 @@ export const HelpProvider = ({
                 );
             },
             getFlowInfo: () => {
-                console.log(
+                log(
+                    debug,
                     "Info: getFlowInfo called before controller initialized.",
                 );
                 return [];
             },
             enableHelp: (enabled) => {
-                console.log(
+                log(
+                    debug,
                     "Info: enableHelp called before controller initialised",
                     enabled,
                 );
@@ -124,7 +128,8 @@ export const HelpProvider = ({
                 enabled: false,
             }),
             resetHelp: () => {
-                console.log(
+                log(
+                    debug,
                     "Info: App signalled help-reset before controller initialized.",
                 );
             },
@@ -135,7 +140,8 @@ export const HelpProvider = ({
      * The callback prop passed to the HelpController, which it uses to give us the API object.
      */
     const provideControllerApi: AppApiSetter = (apiObject) => {
-        console.log("HelpProvider provideController API called:", apiObject);
+        log(debug, "HelpProvider provideController API called:", apiObject);
+
         setControllerAPI(apiObject);
     };
 

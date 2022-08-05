@@ -23,7 +23,7 @@ SOFTWARE.
 import * as React from "react";
 
 import * as HelpTypes from "../DynamicHelpTypes";
-import { SystemContext } from "../DynamicHelp";
+import { SystemContext, log } from "../DynamicHelp";
 
 type HelpFlowProps = {
     id: HelpTypes.FlowId;
@@ -64,11 +64,11 @@ export const HelpFlow = ({
 
     React.useEffect(() => {
         if (!systemState.flows[props.id]) {
-            debug ? console.log("Help Flow registration:", flowId) : null;
+            log(debug, "Help Flow registration:", flowId);
 
             api.addHelpFlow(flowId, showInitially, description);
 
-            console.log("Help Flow - adding children...");
+            log(debug, "Help Flow - adding children...");
 
             React.Children.toArray(props.children).forEach(
                 // item is a HelpItem, with known props, but it's hard to tell Typescript this!

@@ -21,7 +21,6 @@ SOFTWARE.
 */
 
 import * as React from "react";
-//import * as data from "data";
 
 import * as HelpTypes from "DynamicHelpTypes";
 
@@ -36,3 +35,10 @@ export const SystemContext = React.createContext({
 } as HelpTypes.HelpSystemContext);
 
 export const SystemContextProvider = SystemContext.Provider;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const log = (debug: boolean, ...stuff: any[]): void => {
+    if (debug) {
+        console.log(...stuff);
+    }
+};
