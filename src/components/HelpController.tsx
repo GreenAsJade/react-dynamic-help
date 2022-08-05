@@ -84,7 +84,7 @@ type HelpControllerState = {
     systemState: SystemState;
 };
 
-const _resetState: SystemState = {
+const __resetState: SystemState = {
     systemEnabled: true,
     flows: {},
     flowMap: {},
@@ -107,11 +107,15 @@ export class HelpController extends React.Component<
     HelpControllerProps,
     HelpControllerState
 > {
+    // Here we track which flows have definitely registered, and therefore are present in the current
+    // JSX of the application (as opposed to flows that were once present, saved in storage, but removed from the application)
+    registeredFlows = new Set<FlowId>();
+
     // we accumulate multiple updates to state per render cycle (due to refs changing on render) here.
     // .. the ultimate value of these ends up in this.state (and storage) when react finally updates the state,
     // to be passed out on the Context.
     appTargets: AppTargetsState = { targetItems: {} };
-    systemState: SystemState = _resetState;
+    systemState: SystemState = __resetState;
 
     propagateSystemState = (): void => {
         log(this.props.debug, "HelpController state update:", this.systemState);
@@ -146,7 +150,7 @@ export class HelpController extends React.Component<
 
         this.systemState = this.props.storage.get(
             "system-state",
-            _resetState,
+            __resetState,
         ) as SystemState;
 
         log(this.props.debug, "Initial state loaded:", this.systemState);
@@ -241,11 +245,16 @@ export class HelpController extends React.Component<
 
     resetHelp = (): void => {
         log(this.props.debug, "Info: resetting help system state");
-        this.systemState = _resetState;
+        this.systemState = __resetState;
         this.propagateSystemState();
     };
 
-    getFlowInfo = (): FlowState[] => Object.values(this.systemState.flows);
+    // Only share registered flows with the app.
+    // The other flow info that we have from stored state is presumably out of date and therefore irrelevant
+    getFlowInfo = (): FlowState[] =>
+        Array.from(this.registeredFlows).map(
+            (flowId) => this.systemState.flows[flowId],
+        );
 
     //
     // API for Help Flows and Help Items to interact with systemState.
@@ -258,6 +267,8 @@ export class HelpController extends React.Component<
         description: string,
     ): void => {
         log(this.props.debug, "Flow registration:", id, showInitially);
+
+        this.registeredFlows.add(id);
 
         const desc = description || id;
         if (!(id in this.systemState.flows)) {
