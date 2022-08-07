@@ -7,7 +7,7 @@
 
     display: flex;
     flex-direction: column;
-
+    padding: 0 0.3rem 0 0.3rem;
     max-width: 25rem;
 }
 
@@ -17,10 +17,12 @@
     justify-content: space-between;
     color: lightgrey;
     font-size: smaller;
+    cursor: pointer;
 }
 
 .rdh-dont-show {
     text-decoration: underline;
+    margin-right: 0.4rem;
 }
 
 .rdh-popup-skip {

@@ -7,7 +7,7 @@ This library is intended to pop up help for the user _while they use the app_.
 
 ---
 
-V 1.1.1 - Basic implementation of the concept, enough features to actually use.
+V 1.1.3 - Basic implementation of the concept, enough features to actually use.
 
 Demo at https://github.com/GreenAsJade/react-dynamic-help-demo
 

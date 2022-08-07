@@ -1,7 +1,7 @@
 {
   "name": "react-dynamic-help",
   "description": "React Dynamic Help - Create flows of helpful popups in your React App",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/greenasjade/react-dynamic-help.git"
@@ -14,9 +14,20 @@
   "module": "lib/es6/index.js",
   "author": "GreenAsJade",
   "license": "MIT",
-  "keywords": ["help", "tour", "guide", "popup", "onboarding", "on-boarding", "walkthrough", "walk-through", "instructions", "react", "reactjs"],
+  "keywords": [
+    "help",
+    "tour",
+    "guide",
+    "popup",
+    "onboarding",
+    "on-boarding",
+    "walkthrough",
+    "walk-through",
+    "instructions",
+    "react",
+    "reactjs"
+  ],
   "dependencies": {
-    "@types/react": "^18.0.15",
-    "react": "^18.2.0"
+    "@types/react": "^18.0.15"
   }
 }

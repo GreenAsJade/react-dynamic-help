@@ -67,7 +67,7 @@ export type TargetItemRegisterer = (id: TargetId) => TargetItemHelpers;
 
 export type DictionaryProvider = (dict: HelpPopupDictionary) => void;
 
-export type HelpPopupPhrase = "Don't show me these" | "Skip";
+export type HelpPopupPhrase = "Don't show me these" | "Skip" | "OK";
 
 export type HelpPopupDictionary = {
     [phrase in HelpPopupPhrase]: string;

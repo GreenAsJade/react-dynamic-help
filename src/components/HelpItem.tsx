@@ -243,21 +243,16 @@ export function HelpItem({
 
         // make sure we have a bit of margin
         let itemMargin = props.margin;
-        let itemPadding = "";
 
         if (!itemMargin) {
             if (position.includes("left")) {
                 itemMargin = "0 4px 0 0";
-                itemPadding = "0 0.3rem 0 0";
             } else if (position.includes("right")) {
                 itemMargin = "0 0 0 4px";
-                itemPadding = "0 0 0 0.3rem";
             } else if (position.includes("bottom")) {
                 itemMargin = "4px 0 0 0";
-                itemPadding = "0 0 0 0.3rem";
             } else {
                 itemMargin = "0 0 4px 0";
-                itemPadding = "0 0 0 0.3rem";
             }
         }
 
@@ -265,6 +260,12 @@ export function HelpItem({
         if (highlightTarget) {
             target.ref.style.boxShadow = "0px 0px 5px rgb(251 153 170)";
             target.highlighters.add(props.myId);
+        }
+
+        let dismissFlowLabel = controller.translate("Skip");
+
+        if (flowState.activeItem === flowState.items.length - 1) {
+            dismissFlowLabel = controller.translate("OK");
         }
 
         log(debug, "rendering HelpItem", props.myId);
@@ -282,7 +283,6 @@ export function HelpItem({
                 style={{
                     position: "absolute",
                     margin: itemMargin,
-                    padding: itemPadding,
                     ...itemPosition,
                 }}
             >
@@ -292,7 +292,7 @@ export function HelpItem({
                         {controller.translate("Don't show me these")}
                     </span>
                     <span className="rdh-popup-skip" onClick={dismissFlow}>
-                        {controller.translate("Skip")}
+                        {dismissFlowLabel}
                     </span>
                 </div>
             </div>,
