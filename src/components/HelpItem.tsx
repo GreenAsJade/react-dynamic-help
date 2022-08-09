@@ -258,7 +258,8 @@ export function HelpItem({
 
         // final niceties...
         if (highlightTarget) {
-            target.ref.style.boxShadow = "0px 0px 5px rgb(251 153 170)";
+            // two classes added here to allow specific css highlighting by app
+            target.ref.classList.add("rdh-target", "rdh-target-highlight");
             target.highlighters.add(props.myId);
         }
 
@@ -306,7 +307,10 @@ export function HelpItem({
             if (target.highlighters.has(props.myId)) {
                 target.highlighters.delete(props.myId);
                 if (target.highlighters.size === 0) {
-                    target.ref.style.boxShadow = ""; // note that this _does_ allow the css-specified value to return (phew)
+                    target.ref.classList.remove(
+                        "rdh-target",
+                        "rdh-target-highlight",
+                    );
                 }
             }
         }
