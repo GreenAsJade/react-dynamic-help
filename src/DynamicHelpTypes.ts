@@ -48,9 +48,10 @@ export type AppApi = {
     registerTargetItem: TargetItemRegisterer;
     enableFlow: FlowSwitch;
     signalUsed: (target: TargetId) => void;
-    enableHelp: (enable: boolean) => void;
+    enableHelp: (enable: boolean) => void; // Turn on the help system master switch
     getFlowInfo: () => Readonly<FlowState[]>; // the app is not invited to mess with these
     getSystemStatus: () => HelpSystemStatus;
+    resetFlows: () => void; // intended for when a user logs in: sets all flows to "not enabled"
     resetHelp: () => void; // intended for use in development, not as app functionality
 };
 

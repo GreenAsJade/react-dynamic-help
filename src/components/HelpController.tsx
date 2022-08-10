@@ -141,11 +141,12 @@ export class HelpController extends React.Component<
             enableFlow: this.enableFlow,
             signalUsed: this.signalTargetIsUsed,
             enableHelp: this.enableHelp,
-            resetHelp: this.resetHelp,
             getFlowInfo: this.getFlowInfo,
             getSystemStatus: () => ({
                 enabled: this.systemState.systemEnabled,
             }),
+            resetFlows: this.resetFlows,
+            resetHelp: this.resetHelp,
         });
 
         this.systemState = this.props.storage.get(
@@ -240,6 +241,14 @@ export class HelpController extends React.Component<
 
     enableHelp = (enabled: boolean = true): void => {
         this.systemState.systemEnabled = enabled;
+        this.propagateSystemState();
+    };
+
+    resetFlows = (): void => {
+        log(this.props.debug, "Info: resetting flows...");
+        Object.keys(this.systemState.flows).forEach((flowId) => {
+            this.systemState.flows[flowId].visible = false;
+        });
         this.propagateSystemState();
     };
 

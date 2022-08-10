@@ -128,6 +128,12 @@ export const HelpProvider = ({
             getSystemStatus: () => ({
                 enabled: false,
             }),
+            resetFlows: () => {
+                log(
+                    debug,
+                    "Info: App called for resetFlows before controller initialized",
+                );
+            },
             resetHelp: () => {
                 log(
                     debug,
@@ -148,15 +154,17 @@ export const HelpProvider = ({
 
     return (
         <>
-            <ApiProvider value={controllerApi}>{app}</ApiProvider>
-            <HelpController
-                provideControllerApi={provideControllerApi}
-                dictionary={props.dictionary || DEFAULT_DICTIONARY}
-                storage={storageApi}
-                debug={debug}
-            >
-                {helpFlows}
-            </HelpController>
+            <ApiProvider value={controllerApi}>
+                {app}
+                <HelpController
+                    provideControllerApi={provideControllerApi}
+                    dictionary={props.dictionary || DEFAULT_DICTIONARY}
+                    storage={storageApi}
+                    debug={debug}
+                >
+                    {helpFlows}
+                </HelpController>
+            </ApiProvider>
         </>
     );
 };
