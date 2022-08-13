@@ -32,9 +32,10 @@ import {
     FlowId,
     TargetItemHelpers,
     DynamicHelpStorageAPI,
-    FlowState,
     HelpPopupDictionary,
     HelpPopupPhrase,
+    HelpUserState,
+    FlowInfo,
 } from "../DynamicHelpTypes";
 
 import { SystemContextProvider, SystemContext, log } from "../DynamicHelp";
@@ -84,8 +85,11 @@ type HelpControllerState = {
     systemState: SystemState;
 };
 
+const __resetUserState: HelpUserState = {};
+
 const __resetState: SystemState = {
     systemEnabled: true,
+    userState: {},
     flows: {},
     flowMap: {},
     items: {},
@@ -115,11 +119,12 @@ export class HelpController extends React.Component<
     // .. the ultimate value of these ends up in this.state (and storage) when react finally updates the state,
     // to be passed out on the Context.
     appTargets: AppTargetsState = { targetItems: {} };
-    systemState: SystemState = __resetState;
+    systemState: SystemState = { ...__resetState };
 
     propagateSystemState = (): void => {
         log(this.props.debug, "HelpController state update:", this.systemState);
-        this.props.storage.set("system-state", this.systemState);
+        const stringified = JSON.stringify(this.systemState.userState);
+        this.props.storage.saveState(stringified);
         this.setState({ systemState: this.systemState });
     };
 
@@ -138,24 +143,19 @@ export class HelpController extends React.Component<
         );
         this.props.provideControllerApi({
             registerTargetItem: this.registerTargetCallback,
-            enableFlow: this.enableFlow,
+            triggerFlow: this.triggerFlow,
             signalUsed: this.signalTargetIsUsed,
             enableHelp: this.enableHelp,
             getFlowInfo: this.getFlowInfo,
+            enableFlow: this.enableFlow,
             getSystemStatus: () => ({
                 enabled: this.systemState.systemEnabled,
             }),
-            resetFlows: this.resetFlows,
+
             resetHelp: this.resetHelp,
         });
 
-        this.systemState = this.props.storage.get(
-            "system-state",
-            __resetState,
-        ) as SystemState;
-
-        log(this.props.debug, "Initial state loaded:", this.systemState);
-        this.setState({ systemState: this.systemState });
+        this.reloadUserState();
     };
 
     //
@@ -230,40 +230,64 @@ export class HelpController extends React.Component<
         });
     };
 
-    enableFlow = (flow: FlowId, enabled = true): void => {
-        log(this.props.debug, "Enable flow:", flow, enabled);
-        const initialItem = this.systemState.flows[flow].items[0];
-        this.systemState.flows[flow].visible = enabled;
-        this.systemState.items[initialItem].visible = enabled;
-        this.systemState.flows[flow].activeItem = 0;
+    enableFlow = (flowId: FlowId, enable = true): void => {
+        log(this.props.debug, "Enabling flow:", flowId, enable);
+
+        const flow = this.systemState.flows[flowId];
+        const initialItem = flow.items[0];
+
+        flow.visible = enable;
+        this.systemState.items[initialItem].visible = enable;
+        flow.activeItem = 0;
+        if (enable) {
+            this.systemState.userState[flowId].seen = true;
+        }
+
         this.propagateSystemState();
+    };
+
+    triggerFlow = (flowId: FlowId): void => {
+        log(this.props.debug, "Trigger flow:", flowId);
+        if (!this.systemState.userState[flowId].seen) {
+            this.enableFlow(flowId, true);
+        }
     };
 
     enableHelp = (enabled: boolean = true): void => {
         this.systemState.systemEnabled = enabled;
+        if (enabled) {
+            this.reloadUserState();
+        }
         this.propagateSystemState();
     };
 
-    resetFlows = (): void => {
-        log(this.props.debug, "Info: resetting flows...");
-        Object.keys(this.systemState.flows).forEach((flowId) => {
-            this.systemState.flows[flowId].visible = false;
-        });
-        this.propagateSystemState();
+    reloadUserState = (): void => {
+        log(this.props.debug, "Info: reloading user help state");
+        const stored = this.props.storage.getState();
+        const newUserState = JSON.parse(stored);
+        this.systemState.userState = newUserState;
+
+        log(this.props.debug, "Initial user state loaded:", this.systemState);
+        this.setState({ systemState: this.systemState });
     };
 
     resetHelp = (): void => {
         log(this.props.debug, "Info: resetting help system state");
-        this.systemState = __resetState;
+        this.systemState = { ...__resetState };
         this.propagateSystemState();
     };
 
     // Only share registered flows with the app.
-    // The other flow info that we have from stored state is presumably out of date and therefore irrelevant
-    getFlowInfo = (): FlowState[] =>
-        Array.from(this.registeredFlows).map(
-            (flowId) => this.systemState.flows[flowId],
-        );
+    // The other flows we might have from stored state is presumably out of date and therefore irrelevant
+    getFlowInfo = (): FlowInfo[] => {
+        const info = Array.from(this.registeredFlows).map((flowId) => ({
+            id: flowId,
+            description: this.systemState.flows[flowId].description,
+            visible: this.systemState.flows[flowId].visible,
+            seen: this.systemState.userState[flowId].seen,
+        }));
+        return info;
+    };
 
     //
     // API for Help Flows and Help Items to interact with systemState.
@@ -271,26 +295,30 @@ export class HelpController extends React.Component<
 
     // Registration....
     addHelpFlow = (
-        id: FlowId,
+        flowId: FlowId,
         showInitially: boolean,
         description: string,
     ): void => {
-        log(this.props.debug, "Flow registration:", id, showInitially);
+        log(this.props.debug, "Flow registration:", flowId, showInitially);
 
-        this.registeredFlows.add(id);
+        this.registeredFlows.add(flowId);
 
-        const desc = description || id;
-        if (!(id in this.systemState.flows)) {
-            this.systemState.flows[id] = {
-                id: id,
+        const desc = description || flowId;
+        if (!(flowId in this.systemState.flows)) {
+            this.systemState.flows[flowId] = {
+                id: flowId,
                 visible: showInitially,
                 showInitially,
                 items: [],
                 activeItem: 0,
                 description: desc,
             };
+            if (!(flowId in this.systemState.userState)) {
+                log(this.props.debug, "First ever registration for", flowId);
+                this.systemState.userState[flowId] = { seen: false };
+            }
         } else {
-            this.systemState.flows[id].description = desc;
+            this.systemState.flows[flowId].description = desc;
         }
         this.propagateSystemState();
     };

@@ -29,10 +29,22 @@ A basic interface to local storage to hold HelpController state.
 import * as HelpTypes from "./DynamicHelpTypes";
 
 export const StorageApi: HelpTypes.DynamicHelpStorageAPI = {
-    set: set,
-    remove: remove,
-    get: get,
+    saveState: saveState,
+    getState: getState,
 };
+
+export function saveState(userState: string): string {
+    return set("userState", userState);
+}
+
+export function getState(defaultValue?: string): string {
+    return get("userState", defaultValue);
+}
+
+/*** Here follows a simple general purpose local storage key-value store.
+ *
+ *   Don't try and store Sets, or anything JSON.stringify doesn't naturally handle.
+ */
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type HelpDataStore = { [key: HelpTypes.StorageKey]: any }; // we really do offer to store `any`
@@ -45,12 +57,7 @@ export function set(key: HelpTypes.StorageKey, value: any): any {
     store[key] = value;
     //const savedValue = JSON.stringify(value);
     //console.log("JSON:", savedValue);
-    safeLocalStorageSet(
-        `dynamic-help.${key}`,
-        JSON.stringify(value, (_key, value) =>
-            value instanceof Set ? [...value] : value,
-        ),
-    );
+    safeLocalStorageSet(`dynamic-help.${key}`, JSON.stringify(value));
     return value;
 }
 

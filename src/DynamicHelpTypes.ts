@@ -46,13 +46,20 @@ export type Position =
  */
 export type AppApi = {
     registerTargetItem: TargetItemRegisterer;
-    enableFlow: FlowSwitch;
+    triggerFlow: (flowId: FlowId) => void;
     signalUsed: (target: TargetId) => void;
     enableHelp: (enable: boolean) => void; // Turn on the help system master switch
-    getFlowInfo: () => Readonly<FlowState[]>; // the app is not invited to mess with these
+    getFlowInfo: () => FlowInfo[];
+    enableFlow: FlowSwitch;
     getSystemStatus: () => HelpSystemStatus;
-    resetFlows: () => void; // intended for when a user logs in: sets all flows to "not enabled"
     resetHelp: () => void; // intended for use in development, not as app functionality
+};
+
+export type FlowInfo = {
+    id: FlowId;
+    description: string;
+    visible: boolean;
+    seen: boolean;
 };
 
 export type HelpSystemStatus = {
@@ -76,12 +83,13 @@ export type HelpPopupDictionary = {
 
 export type FlowSwitch = (flow: FlowId, enabled?: boolean) => void;
 
+export type HelpUserState = {
+    [id: FlowId]: { seen: boolean };
+};
+
 export type DynamicHelpStorageAPI = {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    set: (key: StorageKey, value: any) => any;
-    remove: (key: StorageKey) => void;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    get: (key: StorageKey, default_value?: any) => any;
+    saveState: (userState: string) => string;
+    getState: (defaultValue?: string) => string;
 };
 
 /**
@@ -130,7 +138,8 @@ export type AppTargetsState = {
 };
 
 export type SystemState = {
-    systemEnabled: boolean;
+    systemEnabled: boolean; // ** TBD: should this be in userState?
+    userState: HelpUserState; // this is the state that is persisted in storage
     flows: FlowStates;
     flowMap: FlowMap;
     items: ItemStates;
@@ -176,7 +185,7 @@ export type TargetTable = {
     [target: TargetId]: TargetInfo;
 };
 
-// *** Note: not JSON persistable due to Set.
+// *** Note: transitent working store. Not JSON persistable due to Set.
 export type TargetInfo = {
     ref: HTMLElement; // the ref to the target, supplied to us on a ref callback
     highlighters: Set<ItemId>; // The HelpItems that think that this target should be highlighted

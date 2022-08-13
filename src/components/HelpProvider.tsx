@@ -97,6 +97,13 @@ export const HelpProvider = ({
                     );
                 },
             }),
+            triggerFlow: (flowId) => {
+                log(
+                    debug,
+                    "Info: triggerFlow called before controller initialized",
+                    flowId,
+                );
+            },
             enableFlow: (flow, enabled) => {
                 log(
                     debug,
@@ -128,12 +135,6 @@ export const HelpProvider = ({
             getSystemStatus: () => ({
                 enabled: false,
             }),
-            resetFlows: () => {
-                log(
-                    debug,
-                    "Info: App called for resetFlows before controller initialized",
-                );
-            },
             resetHelp: () => {
                 log(
                     debug,
