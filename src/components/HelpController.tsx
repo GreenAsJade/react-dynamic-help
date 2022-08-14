@@ -34,7 +34,6 @@ import {
     DynamicHelpStorageAPI,
     HelpPopupDictionary,
     HelpPopupPhrase,
-    HelpUserState,
     FlowInfo,
 } from "../DynamicHelpTypes";
 
@@ -85,7 +84,7 @@ type HelpControllerState = {
     systemState: SystemState;
 };
 
-const __resetUserState: HelpUserState = {};
+const __resetUserState: string = JSON.stringify({});
 
 const __resetState: SystemState = {
     systemEnabled: true,
@@ -263,7 +262,7 @@ export class HelpController extends React.Component<
 
     reloadUserState = (): void => {
         log(this.props.debug, "Info: reloading user help state");
-        const stored = this.props.storage.getState();
+        const stored = this.props.storage.getState(__resetUserState);
         const newUserState = JSON.parse(stored);
         this.systemState.userState = newUserState;
 
