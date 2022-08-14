@@ -64,7 +64,7 @@ export const HelpFlow = ({
 
     React.useEffect(() => {
         if (!systemState.flows[props.id]) {
-            log(debug, "Help Flow registration:", flowId);
+            log(debug, "Help Flow registering:", flowId);
 
             api.addHelpFlow(flowId, showInitially, description);
 

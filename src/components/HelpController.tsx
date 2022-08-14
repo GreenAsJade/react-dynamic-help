@@ -303,18 +303,21 @@ export class HelpController extends React.Component<
         this.registeredFlows.add(flowId);
 
         const desc = description || flowId;
+
         if (!(flowId in this.systemState.flows)) {
             this.systemState.flows[flowId] = {
                 id: flowId,
-                visible: showInitially,
+                visible:
+                    showInitially && !this.systemState.userState[flowId].seen,
                 showInitially,
                 items: [],
                 activeItem: 0,
                 description: desc,
             };
+
             if (!(flowId in this.systemState.userState)) {
                 log(this.props.debug, "First ever registration for", flowId);
-                this.systemState.userState[flowId] = { seen: false };
+                this.systemState.userState[flowId] = { seen: showInitially };
             }
         } else {
             this.systemState.flows[flowId].description = desc;
