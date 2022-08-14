@@ -78,8 +78,7 @@ export const HelpProvider = ({
     const [controllerApi, setControllerAPI] = React.useState<AppApi>(
         // This is a non-null initialiser for the API so the client doesn't have to worry if the API is initialised yet.
         // It doesn't matter if these are called: all APIs will be re-called after the API initialised, due to the resulting App re-render.
-        // Some will certainly be called before intialisation, due to render sequence.
-        // Others... it would be suprising.  They are the "console.warn" ones.
+        // Some will certainly be called before intialisation, due to render sequence, and depending what is on the initial page
         {
             registerTargetItem: (id: TargetId) => ({
                 ref: (target: HTMLElement) => {
@@ -91,7 +90,8 @@ export const HelpProvider = ({
                     );
                 },
                 used: () => {
-                    console.warn(
+                    log(
+                        debug,
                         "Warning: a target signalled used before controller initialized",
                         id,
                     );
@@ -113,7 +113,8 @@ export const HelpProvider = ({
                 );
             },
             signalUsed: (target) => {
-                console.warn(
+                log(
+                    debug,
                     "Warning: signalUsed called before controller initialized",
                     target,
                 );
