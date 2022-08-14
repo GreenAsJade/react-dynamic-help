@@ -308,7 +308,7 @@ export class HelpController extends React.Component<
             this.systemState.flows[flowId] = {
                 id: flowId,
                 visible:
-                    showInitially && !this.systemState.userState[flowId].seen,
+                    showInitially && !this.systemState.userState[flowId]?.seen,
                 showInitially,
                 items: [],
                 activeItem: 0,
