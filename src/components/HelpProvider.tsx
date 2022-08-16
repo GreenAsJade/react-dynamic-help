@@ -92,7 +92,7 @@ export const HelpProvider = ({
                 used: () => {
                     log(
                         debug,
-                        "Warning: a target signalled used before controller initialized",
+                        "Info: a target signalled used before controller initialized",
                         id,
                     );
                 },
@@ -115,7 +115,7 @@ export const HelpProvider = ({
             signalUsed: (target) => {
                 log(
                     debug,
-                    "Warning: signalUsed called before controller initialized",
+                    "Info: signalUsed called before controller initialized",
                     target,
                 );
             },

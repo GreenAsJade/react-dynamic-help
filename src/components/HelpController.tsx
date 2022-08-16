@@ -35,6 +35,7 @@ import {
     HelpPopupDictionary,
     HelpPopupPhrase,
     FlowInfo,
+    HelpUserState,
 } from "../DynamicHelpTypes";
 
 import { SystemContextProvider, SystemContext, log } from "../DynamicHelp";
@@ -84,11 +85,13 @@ type HelpControllerState = {
     systemState: SystemState;
 };
 
-const __resetUserState: string = JSON.stringify({});
+const __resetUserState = {
+    systemEnabled: true,
+    flows: {},
+};
 
 const __resetState: SystemState = {
-    systemEnabled: true,
-    userState: {},
+    userState: __resetUserState,
     flows: {},
     flowMap: {},
     items: {},
@@ -148,7 +151,7 @@ export class HelpController extends React.Component<
             getFlowInfo: this.getFlowInfo,
             enableFlow: this.enableFlow,
             getSystemStatus: () => ({
-                enabled: this.systemState.systemEnabled,
+                enabled: this.systemState.userState.systemEnabled,
             }),
 
             resetHelp: this.resetHelp,
@@ -239,7 +242,7 @@ export class HelpController extends React.Component<
         this.systemState.items[initialItem].visible = enable;
         flow.activeItem = 0;
         if (enable) {
-            this.systemState.userState[flowId].seen = true;
+            this.systemState.userState.flows[flowId].seen = true;
         }
 
         this.propagateSystemState();
@@ -247,23 +250,32 @@ export class HelpController extends React.Component<
 
     triggerFlow = (flowId: FlowId): void => {
         log(this.props.debug, "Trigger flow:", flowId);
-        if (!this.systemState.userState[flowId].seen) {
+        if (!this.systemState.userState.flows[flowId].seen) {
             this.enableFlow(flowId, true);
         }
     };
 
     enableHelp = (enabled: boolean = true): void => {
-        this.systemState.systemEnabled = enabled;
+        console.log("Enable help", enabled);
         if (enabled) {
             this.reloadUserState();
         }
+        this.systemState.userState.systemEnabled = enabled;
         this.propagateSystemState();
     };
 
     reloadUserState = (): void => {
         log(this.props.debug, "Info: reloading user help state");
-        const stored = this.props.storage.getState(__resetUserState);
-        const newUserState = JSON.parse(stored);
+        const stored = JSON.parse(this.props.storage.getState("{}"));
+        // Allow for new insertions from __resetUserState into older stored state,
+        // and remove cruft from older stored state
+        const newUserState: HelpUserState = { ...__resetUserState };
+        Object.keys(__resetUserState).forEach((field) => {
+            if (typeof stored[field] !== undefined) {
+                newUserState[field as keyof HelpUserState] = stored[field];
+            }
+        });
+
         this.systemState.userState = newUserState;
 
         log(this.props.debug, "Initial user state loaded:", this.systemState);
@@ -283,7 +295,7 @@ export class HelpController extends React.Component<
             id: flowId,
             description: this.systemState.flows[flowId].description,
             visible: this.systemState.flows[flowId].visible,
-            seen: this.systemState.userState[flowId].seen,
+            seen: this.systemState.userState.flows?.[flowId].seen,
         }));
         return info;
     };
@@ -308,16 +320,19 @@ export class HelpController extends React.Component<
             this.systemState.flows[flowId] = {
                 id: flowId,
                 visible:
-                    showInitially && !this.systemState.userState[flowId]?.seen,
+                    showInitially &&
+                    !this.systemState.userState.flows?.[flowId]?.seen,
                 showInitially,
                 items: [],
                 activeItem: 0,
                 description: desc,
             };
 
-            if (!(flowId in this.systemState.userState)) {
+            if (!(flowId in this.systemState.userState.flows)) {
                 log(this.props.debug, "First ever registration for", flowId);
-                this.systemState.userState[flowId] = { seen: showInitially };
+                this.systemState.userState.flows[flowId] = {
+                    seen: showInitially,
+                };
             }
         } else {
             this.systemState.flows[flowId].description = desc;

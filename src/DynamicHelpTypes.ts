@@ -84,7 +84,8 @@ export type HelpPopupDictionary = {
 export type FlowSwitch = (flow: FlowId, enabled?: boolean) => void;
 
 export type HelpUserState = {
-    [id: FlowId]: { seen: boolean };
+    systemEnabled: boolean;
+    flows: { [id: FlowId]: { seen: boolean } };
 };
 
 export type DynamicHelpStorageAPI = {
@@ -137,8 +138,8 @@ export type AppTargetsState = {
     targetItems: TargetTable;
 };
 
+// The state that is passed to help components in context
 export type SystemState = {
-    systemEnabled: boolean; // ** TBD: should this be in userState?
     userState: HelpUserState; // this is the state that is persisted in storage
     flows: FlowStates;
     flowMap: FlowMap;

@@ -161,7 +161,7 @@ export function HelpItem({
         !targetDisplayNone &&
         flowState?.visible &&
         myState?.visible &&
-        systemState.systemEnabled
+        systemState.userState.systemEnabled
     ) {
         // We need to render ourselves.
 
