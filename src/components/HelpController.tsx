@@ -122,11 +122,16 @@ export class HelpController extends React.Component<
     // to be passed out on the Context.
     appTargets: AppTargetsState = { targetItems: {} };
     systemState: SystemState = { ...__resetState };
+    prevUserState: string = "";
 
     propagateSystemState = (): void => {
         log(this.props.debug, "HelpController state update:", this.systemState);
         const stringified = JSON.stringify(this.systemState.userState);
-        this.props.storage.saveState(stringified);
+        // a simplistic check to reduce writes to system storage
+        if (stringified !== this.prevUserState) {
+            this.props.storage.saveState(stringified);
+            this.prevUserState = stringified;
+        }
         this.setState({ systemState: this.systemState });
     };
 
@@ -256,7 +261,6 @@ export class HelpController extends React.Component<
     };
 
     enableHelp = (enabled: boolean = true): void => {
-        console.log("Enable help", enabled);
         if (enabled) {
             this.reloadUserState();
         }
