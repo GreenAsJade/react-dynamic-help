@@ -275,7 +275,7 @@ export class HelpController extends React.Component<
         // and remove cruft from older stored state
         const newUserState: HelpUserState = { ...__resetUserState };
         Object.keys(__resetUserState).forEach((field) => {
-            if (typeof stored[field] !== undefined) {
+            if (typeof stored[field] !== "undefined") {
                 newUserState[field as keyof HelpUserState] = stored[field];
             }
         });
