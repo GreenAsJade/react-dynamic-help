@@ -51,6 +51,7 @@ export type AppApi = {
     enableHelp: (enable: boolean) => void; // Turn on the help system master switch
     getFlowInfo: () => FlowInfo[];
     enableFlow: FlowSwitch;
+    reloadUserState: () => void; // Needed if the user changes
     getSystemStatus: () => HelpSystemStatus;
     resetHelp: () => void; // intended for use in development, not as app functionality
 };

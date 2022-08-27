@@ -88,8 +88,8 @@ export function HelpItem({
     };
 
     const dismissFlow = () => {
-        if (flowState) {
-            controller.enableFlow(flowState.id, false);
+        if (flowState && props.myId) {
+            controller.signalItemDismissed(props.myId);
         } else {
             console.warn(
                 "Warning: HelpItem 'dismissFlow' called with undefined flow state.  That's unexpected!",

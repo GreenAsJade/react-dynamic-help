@@ -48,6 +48,8 @@ const DEFAULT_DICTIONARY: HelpPopupDictionary = {
     OK: "OK",
 };
 
+const uninitMsg = (functionName: string) =>
+    `Info: ${functionName} called before controller initialized`;
 /**
  * The component that connects the help flows to the app.
  *
@@ -82,65 +84,36 @@ export const HelpProvider = ({
         {
             registerTargetItem: (id: TargetId) => ({
                 ref: (target: HTMLElement) => {
-                    log(
-                        debug,
-                        "Info: registration of target before controller initialised:",
-                        id,
-                        target,
-                    );
+                    log(debug, uninitMsg("registration of target"), id, target);
                 },
                 used: () => {
-                    log(
-                        debug,
-                        "Info: a target signalled used before controller initialized",
-                        id,
-                    );
+                    log(debug, uninitMsg("target used"), id);
                 },
             }),
             triggerFlow: (flowId) => {
-                log(
-                    debug,
-                    "Info: triggerFlow called before controller initialized",
-                    flowId,
-                );
+                log(debug, uninitMsg("triggerFlow"), flowId);
             },
             enableFlow: (flow, enabled) => {
-                log(
-                    debug,
-                    "Info: enableFlow called before controller initialized",
-                    flow,
-                    enabled,
-                );
+                log(debug, uninitMsg("enableFlow"), flow, enabled);
+            },
+            reloadUserState: () => {
+                log(debug, uninitMsg("reloadUserState"));
             },
             signalUsed: (target) => {
-                log(
-                    debug,
-                    "Info: signalUsed called before controller initialized",
-                    target,
-                );
+                log(debug, uninitMsg("signalUsed"), target);
             },
             getFlowInfo: () => {
-                log(
-                    debug,
-                    "Info: getFlowInfo called before controller initialized.",
-                );
+                log(debug, uninitMsg("getFlowInfo"));
                 return [];
             },
             enableHelp: (enabled) => {
-                log(
-                    debug,
-                    "Info: enableHelp called before controller initialised",
-                    enabled,
-                );
+                log(debug, uninitMsg("enableHelp"), enabled);
             },
             getSystemStatus: () => ({
                 enabled: false,
             }),
             resetHelp: () => {
-                log(
-                    debug,
-                    "Info: App signalled help-reset before controller initialized.",
-                );
+                log(debug, uninitMsg("helpReset"));
             },
         },
     );

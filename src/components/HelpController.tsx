@@ -127,7 +127,8 @@ export class HelpController extends React.Component<
     propagateSystemState = (): void => {
         log(this.props.debug, "HelpController state update:", this.systemState);
         const stringified = JSON.stringify(this.systemState.userState);
-        // a simplistic check to reduce writes to system storage
+        // a simplistic check to reduce redundant writes to storage
+        // (in theory, we can write the same change as often as we like, but that's messy)
         if (stringified !== this.prevUserState) {
             this.props.storage.saveState(stringified);
             this.prevUserState = stringified;
@@ -155,6 +156,7 @@ export class HelpController extends React.Component<
             enableHelp: this.enableHelp,
             getFlowInfo: this.getFlowInfo,
             enableFlow: this.enableFlow,
+            reloadUserState: this.reloadUserState,
             getSystemStatus: () => ({
                 enabled: this.systemState.userState.systemEnabled,
             }),
@@ -177,8 +179,6 @@ export class HelpController extends React.Component<
      */
 
     registerTargetCallback = (target: TargetId): TargetItemHelpers => {
-        //console.log("Request to register", target);
-
         return {
             ref: (targetRef: HTMLElement) => this.mapTarget(target, targetRef),
             used: () => this.signalTargetIsUsed(target),
@@ -216,15 +216,18 @@ export class HelpController extends React.Component<
         state.itemMap[target].forEach((itemId) => {
             const flowId = state.flowMap[itemId];
             const flow = state.flows[flowId];
-            //console.log("checking", itemId, flow);
+
             if (flow.items[flow.activeItem] === itemId) {
                 state.items[itemId].visible = false;
                 if (++flow.activeItem === flow.items.length) {
+                    state.userState.flows[flowId].seen = true;
+
                     // turn off the flow and reset it
                     flow.activeItem = 0;
                     flow.visible = false;
                     const initialItemId = flow.items[0];
                     state.items[initialItemId].visible = true;
+
                     log(this.props.debug, "Finished flow", flowId);
                 } else {
                     const nextItem = flow.items[flow.activeItem];
@@ -246,9 +249,6 @@ export class HelpController extends React.Component<
         flow.visible = enable;
         this.systemState.items[initialItem].visible = enable;
         flow.activeItem = 0;
-        if (enable) {
-            this.systemState.userState.flows[flowId].seen = true;
-        }
 
         this.propagateSystemState();
     };
@@ -261,16 +261,15 @@ export class HelpController extends React.Component<
     };
 
     enableHelp = (enabled: boolean = true): void => {
-        if (enabled) {
-            this.reloadUserState();
-        }
+        log(this.props.debug, "enableHelp:", enabled);
         this.systemState.userState.systemEnabled = enabled;
         this.propagateSystemState();
     };
 
     reloadUserState = (): void => {
         log(this.props.debug, "Info: reloading user help state");
-        const stored = JSON.parse(this.props.storage.getState("{}"));
+        this.prevUserState = this.props.storage.getState("{}");
+        const stored = JSON.parse(this.prevUserState);
         // Allow for new insertions from __resetUserState into older stored state,
         // and remove cruft from older stored state
         const newUserState: HelpUserState = { ...__resetUserState };
@@ -385,6 +384,8 @@ export class HelpController extends React.Component<
         const initialItemId = flow.items[0];
         state.items[initialItemId].visible = true;
 
+        state.userState.flows[flowId].seen = true;
+
         log(this.props.debug, "Flow reset to inactive", flowId);
 
         state.flows[flowId] = flow;
@@ -396,7 +397,6 @@ export class HelpController extends React.Component<
     };
 
     render(): JSX.Element {
-        //console.log("Help Controller has state", this.state.systemState);
         return (
             <>
                 <SystemContextProvider
