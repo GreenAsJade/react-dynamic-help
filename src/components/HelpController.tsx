@@ -243,6 +243,11 @@ export class HelpController extends React.Component<
     enableFlow = (flowId: FlowId, enable = true): void => {
         log(this.props.debug, "Enabling flow:", flowId, enable);
 
+        if (!this.systemState.flows[flowId]) {
+            console.error("Unrecogised help flow:", flowId);
+            return;
+        }
+
         const flow = this.systemState.flows[flowId];
         const initialItem = flow.items[0];
 
@@ -255,6 +260,10 @@ export class HelpController extends React.Component<
 
     triggerFlow = (flowId: FlowId): void => {
         log(this.props.debug, "Trigger flow:", flowId);
+        if (!this.systemState.userState.flows[flowId]) {
+            console.error("Unrecogised help flow:", flowId);
+            return;
+        }
         if (!this.systemState.userState.flows[flowId].seen) {
             this.enableFlow(flowId, true);
         }
