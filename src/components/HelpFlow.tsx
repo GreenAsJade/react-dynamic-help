@@ -58,12 +58,14 @@ export const HelpFlow = ({
     ...props
 }: HelpFlowProps): JSX.Element => {
     const helpContext = React.useContext(SystemContext);
-    const { api, systemState } = helpContext;
+    const { api, systemState, storageReady } = helpContext;
 
     const flowId = props.id; // alias for clearer code
 
     React.useEffect(() => {
-        if (!systemState.flows[props.id]) {
+        log(debug, "HelpFlow UE", flowId, storageReady);
+
+        if (!systemState.flows[props.id] && storageReady) {
             log(debug, "Help Flow registering:", flowId);
 
             api.addHelpFlow(flowId, showInitially, description);
@@ -103,5 +105,6 @@ export const HelpFlow = ({
         });
     });
 
+    log(debug, "HelpFlow render", flowId, storageReady);
     return <>{childrenWithIds}</>;
 };

@@ -76,6 +76,7 @@ type HelpControllerProps = {
     provideControllerApi: AppApiSetter;
     dictionary: HelpPopupDictionary;
     storage: DynamicHelpStorageAPI;
+    storageReady: boolean;
     debug: boolean;
     children: JSX.Element | JSX.Element[];
 };
@@ -83,6 +84,7 @@ type HelpControllerProps = {
 type HelpControllerState = {
     appTargetsState: AppTargetsState;
     systemState: SystemState;
+    initialized: boolean;
 };
 
 const __resetUserState = {
@@ -141,13 +143,29 @@ export class HelpController extends React.Component<
         this.state = {
             appTargetsState: this.appTargets,
             systemState: this.systemState,
+            initialized: false,
         };
     }
 
-    componentDidMount = (): void => {
+    componentDidMount(): void {
+        if (this.props.storageReady) {
+            this.initialize();
+        }
+    }
+
+    componentDidUpdate(): void {
+        if (!this.state.initialized && this.props.storageReady) {
+            this.initialize();
+        }
+    }
+
+    // Note: providing the controller API causes the client app to re-render, because its state gets updated
+    // This is handy because if it calls getFlowInfo, it will get the correct userState answer during that re-render.
+
+    initialize = (): void => {
         log(
             this.props.debug,
-            "**** Mounting HelpController: Help System initialization underway...",
+            "**** HelpController: Help System initialization underway...",
         );
         this.props.provideControllerApi({
             registerTargetItem: this.registerTargetCallback,
@@ -165,6 +183,7 @@ export class HelpController extends React.Component<
         });
 
         this.reloadUserState();
+        this.setState({ initialized: true });
     };
 
     //
@@ -211,6 +230,11 @@ export class HelpController extends React.Component<
     signalTargetIsUsed = (target: TargetId): void => {
         log(this.props.debug, "seeing target used:", target);
 
+        if (!this.props.storageReady) {
+            log(this.props.debug, "... but storage not ready");
+            return;
+        }
+
         const state = this.systemState; // just alias for ease of reading
 
         state.itemMap[target].forEach((itemId) => {
@@ -243,6 +267,11 @@ export class HelpController extends React.Component<
     enableFlow = (flowId: FlowId, enable = true): void => {
         log(this.props.debug, "Enabling flow:", flowId, enable);
 
+        if (!this.props.storageReady) {
+            log(this.props.debug, "... but storage not ready");
+            return;
+        }
+
         if (!this.systemState.flows[flowId]) {
             console.error("Unrecogised help flow:", flowId);
             return;
@@ -260,6 +289,12 @@ export class HelpController extends React.Component<
 
     triggerFlow = (flowId: FlowId): void => {
         log(this.props.debug, "Trigger flow:", flowId);
+
+        if (!this.props.storageReady) {
+            log(this.props.debug, "... but storage not ready");
+            return;
+        }
+
         if (!this.systemState.userState.flows[flowId]) {
             console.error("Unrecogised help flow:", flowId);
             return;
@@ -271,6 +306,12 @@ export class HelpController extends React.Component<
 
     enableHelp = (enabled: boolean = true): void => {
         log(this.props.debug, "enableHelp:", enabled);
+
+        if (!this.props.storageReady) {
+            log(this.props.debug, "... but storage not ready");
+            return;
+        }
+
         this.systemState.userState.systemEnabled = enabled;
         this.propagateSystemState();
     };
@@ -301,8 +342,10 @@ export class HelpController extends React.Component<
     };
 
     // Only share registered flows with the app.
-    // The other flows we might have from stored state is presumably out of date and therefore irrelevant
+    // Any other flow we might have from stored state is presumably out of date and therefore irrelevant
     getFlowInfo = (): FlowInfo[] => {
+        log(this.props.debug, "Get flow info has:", this.registeredFlows);
+
         const info = Array.from(this.registeredFlows).map((flowId) => ({
             id: flowId,
             description: this.systemState.flows[flowId].description,
@@ -412,6 +455,7 @@ export class HelpController extends React.Component<
                     value={{
                         systemState: this.state.systemState,
                         appTargetsState: this.state.appTargetsState,
+                        storageReady: this.props.storageReady,
                         api: {
                             addHelpFlow: this.addHelpFlow,
                             addHelpItem: this.addHelpItem,

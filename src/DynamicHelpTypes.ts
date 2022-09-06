@@ -110,6 +110,7 @@ export type AppApiSetter = (apiObject: AppApi) => void;
 export type HelpSystemContext = {
     systemState: SystemState;
     appTargetsState: AppTargetsState;
+    storageReady: boolean;
     api: ControllerApi;
 };
 

@@ -38,6 +38,7 @@ import { HelpController } from "../components/HelpController";
 type HelpProviderProps = {
     dictionary?: HelpPopupDictionary;
     storageApi?: DynamicHelpStorageAPI;
+    storageReady?: boolean;
     debug?: boolean;
     children: JSX.Element | JSX.Element[];
 };
@@ -65,6 +66,7 @@ const uninitMsg = (functionName: string) =>
 
 export const HelpProvider = ({
     storageApi = StorageApi,
+    storageReady = true,
     debug = false,
     ...props
 }: HelpProviderProps): JSX.Element => {
@@ -135,6 +137,7 @@ export const HelpProvider = ({
                     provideControllerApi={provideControllerApi}
                     dictionary={props.dictionary || DEFAULT_DICTIONARY}
                     storage={storageApi}
+                    storageReady={storageReady}
                     debug={debug}
                 >
                     {helpFlows}
