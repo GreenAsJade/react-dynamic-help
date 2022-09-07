@@ -101,6 +101,12 @@ export function HelpItem({
     // detect whether we fell off to the right.
     initialWidth.current = window.innerWidth;
 
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+
+    const win_top = window.pageYOffset || document.documentElement.scrollTop;
+    const win_left = window.pageXOffset || document.documentElement.scrollLeft;
+
     // Here we try to make sure that we ended up on the screen, and if not then
     // reposition to a sensible place
     React.useEffect(() => {
@@ -114,9 +120,6 @@ export function HelpItem({
                 props.myId,
             );
 
-            const vw = window.innerWidth;
-            const vh = window.innerHeight;
-
             const { top, bottom, left, right } = disp.getBoundingClientRect();
             const width = right - left;
             const height = bottom - top;
@@ -125,16 +128,19 @@ export function HelpItem({
                 disp.style.left = "0px";
                 const newRight = vw - width;
                 disp.style.right = `${newRight}px`;
+                log(debug, "Fell off left", newRight);
             } else if (right > initialWidth.current) {
                 disp.style.right = "0px";
                 const newLeft = initialWidth.current - width;
                 disp.style.left = `${newLeft}px`;
+                log(debug, "Fell off right", newLeft);
             }
 
             if (top < 0) {
-                disp.style.top = "0px";
+                //disp.style.top = `${win_top}px`;
                 const newBottom = vh - height;
-                disp.style.bottom = `${newBottom}px`;
+                //disp.style.bottom = `${newBottom}px`;
+                log(debug, "Fell off top", newBottom);
             }
             // we don't try to move it up from below the bottom, because if it is down there,
             // then so is the element it refers to.
@@ -170,9 +176,6 @@ export function HelpItem({
         // from the bottom and right of the windown respectively for css absolute position, but they are measured
         // from the top and left respectively for getBoundingClientRect (FFS).
 
-        const vw = window.innerWidth;
-        const vh = window.innerHeight;
-
         let itemPosition = {};
 
         const anchor = props.anchor || defaultAnchors[position];
@@ -180,24 +183,33 @@ export function HelpItem({
         const yAnchor = anchor.includes("top") ? "top" : "bottom";
         const xAnchor = anchor.includes("left") ? "left" : "right";
 
+        const margin_y = 5; //px
+
         const yAnchorTargetBottom =
-            yAnchor === "top" ? targetBottom : vh - targetBottom;
+            yAnchor === "top"
+                ? targetBottom + win_top + margin_y
+                : vh - targetBottom - win_top + margin_y;
+
         const yAnchorTargetTop =
-            yAnchor === "bottom" ? vh - targetTop : targetTop;
+            yAnchor === "bottom"
+                ? vh - targetTop - win_top + margin_y
+                : targetTop + win_top + margin_y;
+
         const xAnchorTargetLeft =
-            xAnchor === "right" ? vw - targetLeft : targetLeft;
+            xAnchor === "right" ? vw - targetLeft : targetLeft + win_left;
+
         const xAnchorTargetRight =
-            xAnchor === "left" ? targetRight : vw - targetRight;
+            xAnchor === "left" ? targetRight + win_left : vw - targetRight;
 
         const yAnchorTargetCentre =
             yAnchor === "top"
-                ? (targetTop + targetBottom) / 2
-                : vh - (targetTop + targetBottom) / 2;
+                ? (targetTop + targetBottom) / 2 + win_top + margin_y
+                : vh - (targetTop + targetBottom) / 2 - win_top + margin_y;
 
         const xAnchorTargetCentre =
             xAnchor === "left"
-                ? (targetRight + targetLeft) / 2
-                : vw - (targetRight + targetLeft) / 2;
+                ? (targetRight + targetLeft) / 2 + win_left
+                : vw - (targetRight + targetLeft) / 2 - win_left;
 
         if (position === "bottom-right") {
             itemPosition = {
@@ -269,8 +281,17 @@ export function HelpItem({
             dismissFlowLabel = controller.translate("OK");
         }
 
-        log(debug, "rendering HelpItem", props.myId);
+        log(
+            debug,
+            "rendering HelpItem onto target:",
+            props.myId,
+            vh,
+            vw,
+            itemPosition,
+            target.ref.getBoundingClientRect(),
+        );
 
+        console.log("win_top:", win_top);
         // Render...
 
         return ReactDOM.createPortal(
