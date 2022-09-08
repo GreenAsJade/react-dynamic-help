@@ -291,7 +291,6 @@ export function HelpItem({
             target.ref.getBoundingClientRect(),
         );
 
-        console.log("win_top:", win_top);
         // Render...
 
         return ReactDOM.createPortal(
