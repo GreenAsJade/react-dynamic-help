@@ -7,7 +7,7 @@ This library is intended to pop up help for the user _while they use the app_.
 
 ---
 
-V 2.4.2 - As integrated with [online-go.com](https://online-go.com).
+V 2.4.3 - As integrated with [online-go.com](https://online-go.com).
 
 Demo at https://github.com/GreenAsJade/react-dynamic-help-demo
 
@@ -93,8 +93,5 @@ Things to do:
     - Don't know if it is even possible.
     - Note that this would not support registration based features, but would be even less imact on the app.
 
- - Fix up the packaging
-
 This library was packaged following https://www.youtube.com/watch?v=vRmLTZyq57U
 
-It turns out this might not have been the best choice of packaging guide.   The current packaging seems to work, but is non-standard (does not include the source) and cumbersome (manually copying CSS for example).
