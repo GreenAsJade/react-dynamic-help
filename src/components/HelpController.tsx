@@ -177,6 +177,7 @@ export class HelpController extends React.Component<
             reloadUserState: this.reloadUserState,
             getSystemStatus: () => ({
                 enabled: this.systemState.userState.systemEnabled,
+                initialized: this.state.initialized,
             }),
 
             resetHelp: this.resetHelp,
@@ -237,6 +238,11 @@ export class HelpController extends React.Component<
 
         const state = this.systemState; // just alias for ease of reading
 
+        if (!state.itemMap[target]) {
+            throw new Error(
+                `Apparently undefined target '${target}' passed to signalUsed`,
+            );
+        }
         state.itemMap[target].forEach((itemId) => {
             const flowId = state.flowMap[itemId];
             const flow = state.flows[flowId];

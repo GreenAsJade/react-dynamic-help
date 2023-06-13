@@ -320,7 +320,17 @@ export function HelpItem({
             document.body,
         );
     } else {
-        log(debug, "HelpItem render not showing", props.myId);
+        log(
+            debug,
+            "HelpItem render not showing self: ",
+            props.myId,
+            ", target: ",
+            target?.ref,
+            ", target-display is none:",
+            targetDisplayNone,
+            ", item state:",
+            myState,
+        );
 
         if (highlightTarget && target?.ref && props.myId) {
             // if we were the one highlighting the target, we need to undo that

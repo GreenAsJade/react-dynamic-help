@@ -113,6 +113,7 @@ export const HelpProvider = ({
             },
             getSystemStatus: () => ({
                 enabled: false,
+                initialized: false,
             }),
             resetHelp: () => {
                 log(debug, uninitMsg("helpReset"));

@@ -63,7 +63,13 @@ export const HelpFlow = ({
     const flowId = props.id; // alias for clearer code
 
     React.useEffect(() => {
-        log(debug, "HelpFlow UE", flowId, storageReady);
+        log(
+            debug,
+            "HelpFlow UseEffect",
+            flowId,
+            "with storage ready:",
+            storageReady,
+        );
 
         if (!systemState.flows[props.id] && storageReady) {
             log(debug, "Help Flow registering:", flowId);
@@ -105,6 +111,6 @@ export const HelpFlow = ({
         });
     });
 
-    log(debug, "HelpFlow render", flowId, storageReady);
+    log(debug, "HelpFlow render", flowId, "with storage ready:", storageReady);
     return <>{childrenWithIds}</>;
 };

@@ -1,7 +1,7 @@
 {
   "name": "react-dynamic-help",
   "description": "React Dynamic Help - Create flows of helpful popups in your React App",
-  "version": "2.5.0",
+  "version": "2.6.2",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/greenasjade/react-dynamic-help.git"
@@ -10,7 +10,20 @@
     "url": "https://github.com/greenasjade/react-dynamic-help/issues"
   },
   "homepage": "https://github.com/greenasjade/react-dynamic-help#readme",
-  "main": "dist/lib/es5/index.js",  "keywords": ["help", "tour", "guide", "popup", "onboarding", "on-boarding", "walkthrough", "walk-through", "instructions", "react", "reactjs"],
+  "main": "dist/lib/es5/index.js",
+  "keywords": [
+    "help",
+    "tour",
+    "guide",
+    "popup",
+    "onboarding",
+    "on-boarding",
+    "walkthrough",
+    "walk-through",
+    "instructions",
+    "react",
+    "reactjs"
+  ],
   "scripts": {
     "copy-files": "cp README.md dist/ && cp src/DynamicHelp.css dist/lib/es5/",
     "compile": "rm -rf dist/lib; tsc && npm run copy-files",
@@ -41,7 +54,6 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
-    "@types/react": "^18.0.15",
-    "react": "^18.2.0"
+    "@types/react": "^18.0.15"
   }
 }
