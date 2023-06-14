@@ -49,6 +49,7 @@ type HelpItemProperties = {
     anchor?: HelpTypes.Position; // which part of the HelpItem is placed at `position`
     margin?: string; // can be used to offset the HelpItem from the default position
     id?: HelpTypes.ItemId; // user can provide this for css targetting
+    hideOptOut?: boolean; // don't show "dont show me these" button
     highlightTarget?: boolean;
     debug?: boolean; // note - this will be overriden by Flow debug, if that is set.
 
@@ -310,8 +311,10 @@ export function HelpItem({
                 <div className="rdh-help-item-content">{props.children}</div>
                 <div className="rdh-popup-dismissers">
                     <span className="rdh-dont-show" onClick={turnOffHelpSystem}>
-                        {controller.translate("Don't show me these")}
+                        {(!props.hideOptOut || null) &&
+                            controller.translate("Don't show me these")}
                     </span>
+
                     <span className="rdh-popup-skip" onClick={dismissFlow}>
                         {dismissFlowLabel}
                     </span>
