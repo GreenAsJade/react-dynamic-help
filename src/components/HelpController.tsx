@@ -127,7 +127,11 @@ export class HelpController extends React.Component<
     prevUserState: string = "";
 
     propagateSystemState = (): void => {
-        log(this.props.debug, "HelpController state update:", this.systemState);
+        log(
+            this.props.debug,
+            "HelpController state update:",
+            JSON.stringify(this.systemState), // make sure we see the actual value right now in browser console
+        );
         const stringified = JSON.stringify(this.systemState.userState);
         // a simplistic check to reduce redundant writes to storage
         // (in theory, we can write the same change as often as we like, but that's messy)
@@ -228,11 +232,37 @@ export class HelpController extends React.Component<
         this.setState({ appTargetsState: this.appTargets });
     };
 
+    dissmissItem = (itemId: ItemId): void => {
+        const state = this.systemState; // just alias for ease of reading
+        const flowId = state.flowMap[itemId];
+        const flow = state.flows[flowId];
+
+        state.items[itemId].visible = false;
+        if (++flow.activeItem === flow.items.length) {
+            state.userState.flows[flowId].seen = true;
+
+            // turn off the flow and reset it
+            flow.activeItem = 0;
+            flow.visible = false;
+            const initialItemId = flow.items[0];
+            state.items[initialItemId].visible = true;
+
+            log(this.props.debug, "Finished flow", flowId);
+        } else {
+            const nextItem = flow.items[flow.activeItem];
+            state.items[nextItem].visible = true;
+            log(this.props.debug, "stepped flow", flowId, nextItem);
+        }
+        state.flows[flowId] = flow;
+        this.propagateSystemState();
+    };
+
     signalTargetIsUsed = (target: TargetId): void => {
-        log(this.props.debug, "seeing target used:", target);
+        const debug = this.props.debug;
+        log(debug, "seeing target used:", target);
 
         if (!this.props.storageReady) {
-            log(this.props.debug, "... but storage not ready");
+            log(debug, "... but storage not ready");
             return;
         }
 
@@ -248,24 +278,8 @@ export class HelpController extends React.Component<
             const flow = state.flows[flowId];
 
             if (flow.items[flow.activeItem] === itemId) {
-                state.items[itemId].visible = false;
-                if (++flow.activeItem === flow.items.length) {
-                    state.userState.flows[flowId].seen = true;
-
-                    // turn off the flow and reset it
-                    flow.activeItem = 0;
-                    flow.visible = false;
-                    const initialItemId = flow.items[0];
-                    state.items[initialItemId].visible = true;
-
-                    log(this.props.debug, "Finished flow", flowId);
-                } else {
-                    const nextItem = flow.items[flow.activeItem];
-                    state.items[nextItem].visible = true;
-                    log(this.props.debug, "stepped flow", flowId, nextItem);
-                }
-                state.flows[flowId] = flow;
-                this.propagateSystemState();
+                log(debug, "processing active item", state.items[itemId]);
+                this.dissmissItem(itemId);
             }
         });
     };
@@ -303,6 +317,11 @@ export class HelpController extends React.Component<
 
         if (!this.systemState.userState.flows[flowId]) {
             console.error("Unrecogised help flow:", flowId);
+            return;
+        }
+
+        if (this.systemState.flows[flowId].visible) {
+            log(this.props.debug, "... already visible, nothing to do");
             return;
         }
         if (!this.systemState.userState.flows[flowId].seen) {
@@ -427,8 +446,8 @@ export class HelpController extends React.Component<
 
     // ... operation
 
-    signalItemDismissed = (itemId: ItemId): void => {
-        log(this.props.debug, "signal dismissed called for", itemId);
+    signalFlowDismissed = (itemId: ItemId): void => {
+        log(this.props.debug, "signal Flow-dismissed called for", itemId);
 
         const state = this.systemState; // just alias for ease of reading
 
@@ -465,7 +484,8 @@ export class HelpController extends React.Component<
                         api: {
                             addHelpFlow: this.addHelpFlow,
                             addHelpItem: this.addHelpItem,
-                            signalItemDismissed: this.signalItemDismissed,
+                            signalItemDismissed: this.dissmissItem,
+                            signalFlowDismissed: this.signalFlowDismissed,
                             translate: this.translate,
                             enableFlow: this.enableFlow,
                             enableHelp: this.enableHelp,

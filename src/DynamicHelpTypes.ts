@@ -76,7 +76,7 @@ export type TargetItemRegisterer = (id: TargetId) => TargetItemHelpers;
 
 export type DictionaryProvider = (dict: HelpPopupDictionary) => void;
 
-export type HelpPopupPhrase = "Don't show me these" | "Skip" | "OK";
+export type HelpPopupPhrase = "Skip this topic" | "OK";
 
 export type HelpPopupDictionary = {
     [phrase in HelpPopupPhrase]: string;
@@ -130,6 +130,7 @@ export type ControllerApi = {
     addHelpFlow: RegisterFlow;
     addHelpItem: RegisterItem;
     signalItemDismissed: (item: ItemId) => void;
+    signalFlowDismissed: (item: ItemId) => void;
     translate: (text: HelpPopupPhrase) => string;
     enableFlow: FlowSwitch;
     enableHelp: (enable: boolean) => void;

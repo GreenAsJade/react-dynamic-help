@@ -49,12 +49,11 @@ type HelpItemProperties = {
     anchor?: HelpTypes.Position; // which part of the HelpItem is placed at `position`
     margin?: string; // can be used to offset the HelpItem from the default position
     id?: HelpTypes.ItemId; // user can provide this for css targetting
-    hideOptOut?: boolean; // don't show "dont show me these" button
     highlightTarget?: boolean;
     debug?: boolean; // note - this will be overriden by Flow debug, if that is set.
 
     // provided by the containing HelpFlow:
-    myId?: HelpTypes.ItemId;
+    myId: HelpTypes.ItemId;
 
     children: React.ReactNode; // The help popup elements.
 };
@@ -84,13 +83,19 @@ export function HelpItem({
 
     const [flowState, myState] = getItemState(props.myId, systemState);
 
-    const turnOffHelpSystem = () => {
-        controller.enableHelp(false);
+    const dismissItem = () => {
+        if (flowState && props.myId) {
+            controller.signalItemDismissed(props.myId);
+        } else {
+            console.warn(
+                "Warning: HelpItem 'dismissItem' called with undefined flow state.  That's unexpected!",
+            );
+        }
     };
 
     const dismissFlow = () => {
         if (flowState && props.myId) {
-            controller.signalItemDismissed(props.myId);
+            controller.signalFlowDismissed(props.myId);
         } else {
             console.warn(
                 "Warning: HelpItem 'dismissFlow' called with undefined flow state.  That's unexpected!",
@@ -276,20 +281,16 @@ export function HelpItem({
             target.highlighters.add(props.myId);
         }
 
-        let dismissFlowLabel = controller.translate("Skip");
-
-        if (flowState.activeItem === flowState.items.length - 1) {
-            dismissFlowLabel = controller.translate("OK");
-        }
-
         log(
             debug,
             "rendering HelpItem onto target:",
             props.myId,
+            /* the following can be useful in case of layout strife,
+            but are noisey otherwise...
             vh,
             vw,
             itemPosition,
-            target.ref.getBoundingClientRect(),
+            target.ref.getBoundingClientRect(),*/
         );
 
         // Render...
@@ -310,13 +311,12 @@ export function HelpItem({
             >
                 <div className="rdh-help-item-content">{props.children}</div>
                 <div className="rdh-popup-dismissers">
-                    <span className="rdh-dont-show" onClick={turnOffHelpSystem}>
-                        {(!props.hideOptOut || null) &&
-                            controller.translate("Don't show me these")}
+                    <span className="rdh-quit-flow" onClick={dismissFlow}>
+                        {controller.translate("Skip this topic")}
                     </span>
 
-                    <span className="rdh-popup-skip" onClick={dismissFlow}>
-                        {dismissFlowLabel}
+                    <span className="rdh-popup-skip" onClick={dismissItem}>
+                        {controller.translate("OK")}
                     </span>
                 </div>
             </div>,
@@ -327,12 +327,14 @@ export function HelpItem({
             debug,
             "HelpItem render not showing self: ",
             props.myId,
+            ", item visible:",
+            myState?.visible,
             ", target: ",
             target?.ref,
             ", target-display is none:",
             targetDisplayNone,
-            ", item state:",
-            myState,
+            "flow enabled:",
+            flowState?.visible,
         );
 
         if (highlightTarget && target?.ref && props.myId) {

@@ -44,8 +44,7 @@ type HelpProviderProps = {
 };
 
 const DEFAULT_DICTIONARY: HelpPopupDictionary = {
-    "Don't show me these": "Don't show me these",
-    Skip: "Skip",
+    "Skip this topic": "Skip this topic",
     OK: "OK",
 };
 
