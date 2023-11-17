@@ -53,7 +53,7 @@ type HelpItemProperties = {
     debug?: boolean; // note - this will be overriden by Flow debug, if that is set.
 
     // provided by the containing HelpFlow:
-    myId: HelpTypes.ItemId;
+    myId?: HelpTypes.ItemId;
 
     children: React.ReactNode; // The help popup elements.
 };
