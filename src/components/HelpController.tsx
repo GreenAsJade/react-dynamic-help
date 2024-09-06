@@ -205,7 +205,7 @@ export class HelpController extends React.Component<
   registerTargetCallback = (target: TargetId): TargetItemHelpers => {
     return {
       ref: (targetRef: HTMLElement | null) => this.mapTarget(target, targetRef),
-      active: () => Boolean(this.appTargets.targetItems[target].ref),
+      active: () => Boolean(this.appTargets.targetItems[target]?.ref),
       used: () => this.signalTargetIsUsed(target),
     };
   };
