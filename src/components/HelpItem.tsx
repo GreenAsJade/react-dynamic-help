@@ -164,7 +164,15 @@ export function HelpItem({
         } = target.ref.getBoundingClientRect());
     }
 
-    // here we are defending aginst the target being inside a display:none element.
+    log(
+        debug,
+        "HelpItem render Target:",
+        targetTop,
+        targetBottom,
+        targetLeft,
+        targetRight,
+    );
+    // here we are defending against the target being inside a display:none element.
     const targetDisplayNone = targetTop === targetBottom;
 
     if (
@@ -178,8 +186,8 @@ export function HelpItem({
         // We need to render ourselves.
 
         // What follows is maths to attach the `anchor` corner of this element (itemPosition) to
-        // the `position` corner of the target, taking into accound that bottom and right are measured
-        // from the bottom and right of the windown respectively for css absolute position, but they are measured
+        // the `position` corner of the target, taking into account that bottom and right are measured
+        // from the bottom and right of the window respectively for css absolute position, but they are measured
         // from the top and left respectively for getBoundingClientRect (FFS).
 
         let itemPosition = {};
@@ -286,7 +294,7 @@ export function HelpItem({
             "rendering HelpItem onto target:",
             props.myId,
             /* the following can be useful in case of layout strife,
-            but are noisey otherwise...
+            but are noisy otherwise...
             vh,
             vw,
             itemPosition,

@@ -1,7 +1,7 @@
 {
   "name": "react-dynamic-help",
   "description": "React Dynamic Help - Create flows of helpful popups in your React App",
-  "version": "2.8.4",
+  "version": "3.0.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/greenasjade/react-dynamic-help.git"
@@ -10,7 +10,9 @@
     "url": "https://github.com/greenasjade/react-dynamic-help/issues"
   },
   "homepage": "https://github.com/greenasjade/react-dynamic-help#readme",
-  "main": "dist/lib/es5/index.js",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
   "keywords": [
     "help",
     "tour",
@@ -25,38 +27,46 @@
     "reactjs"
   ],
   "scripts": {
-    "copy-files": "cp README.md dist/ && cp src/DynamicHelp.css dist/lib/es5/",
-    "compile": "rm -rf dist/lib; tsc && npm run copy-files",
-    "publish": "echo 'make sure you updated dist/package.json!' ; npm run compile ; cd dist ; npm publish",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "rollup": "rollup -c --bundleConfigAsCjs",
+    "build": "npm run rollup"
   },
   "author": "GreenAsJade",
   "license": "MIT",
   "devDependencies": {
-    "@testing-library/react": "^13.2.0",
-    "@types/jest": "^26.0.15",
-    "@typescript-eslint/eslint-plugin": "^5.26.0",
-    "@typescript-eslint/eslint-plugin-tslint": "^5.26.0",
-    "@typescript-eslint/parser": "^5.26.0",
-    "eslint": "^8.16.0",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-jsdoc": "^39.3.1",
-    "eslint-plugin-prefer-arrow": "^1.2.3",
-    "eslint-plugin-prettier": "^4.0.0",
-    "eslint-plugin-react": "^7.30.1",
-    "eslint-plugin-react-hooks": "^4.5.0",
-    "eslint-plugin-unicorn": "^42.0.0",
-    "prettier": "2.6.2",
-    "prettier-eslint": "^15.0.0",
-    "ts-jest": "^26.4.3",
-    "ts-loader": "^9.3.0",
-    "tslint": "^6.1.3",
-    "typescript": "^4.7.4"
+    "@rollup/plugin-commonjs": "^26.0.1",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "@testing-library/react": "*",
+    "@types/jest": "*",
+    "@types/react": "*",
+    "@types/react-dom": "*",
+    "@typescript-eslint/eslint-plugin": "*",
+    "@typescript-eslint/parser": "*",
+    "eslint": "*",
+    "eslint-config-prettier": "*",
+    "eslint-plugin-import": "*",
+    "eslint-plugin-jsdoc": "*",
+    "eslint-plugin-prefer-arrow": "*",
+    "eslint-plugin-prettier": "*",
+    "eslint-plugin-react": "*",
+    "eslint-plugin-react-hooks": "*",
+    "eslint-plugin-unicorn": "*",
+    "prettier": "*",
+    "prettier-eslint": "*",
+    "rollup": "^4.21.2",
+    "rollup-plugin-dts": "^6.1.1",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-postcss": "^4.0.2",
+    "ts-jest": "*",
+    "ts-loader": "*",
+    "tslib": "^2.7.0",
+    "typescript": "=5.5.2"
   },
   "peerDependencies": {
-    "react" : "*",
-    "@types/react" : "*",
-    "react-dom" : "*"
+    "@types/react": "*",
+    "react": "*",
+    "react-dom": "*"
   }
 }

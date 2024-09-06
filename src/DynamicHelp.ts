@@ -22,23 +22,23 @@ SOFTWARE.
 
 import * as React from "react";
 
-import * as HelpTypes from "DynamicHelpTypes";
+import * as HelpTypes from "./DynamicHelpTypes";
 
 export const Api: React.Context<HelpTypes.AppApi> = React.createContext({
-    // unused default
+  // unused default
 } as HelpTypes.AppApi);
 
 export const ApiProvider = Api.Provider;
 
 export const SystemContext = React.createContext({
-    // unused default
+  // unused default
 } as HelpTypes.HelpSystemContext);
 
 export const SystemContextProvider = SystemContext.Provider;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const log = (debug: boolean, ...stuff: any[]): void => {
-    if (debug) {
-        console.log(...stuff);
-    }
+  if (debug) {
+    console.log(...stuff);
+  }
 };

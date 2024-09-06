@@ -23,11 +23,11 @@ SOFTWARE.
 import * as React from "react";
 
 import {
-    AppApi,
-    TargetId,
-    AppApiSetter,
-    DynamicHelpStorageAPI,
-    HelpPopupDictionary,
+  AppApi,
+  TargetId,
+  AppApiSetter,
+  DynamicHelpStorageAPI,
+  HelpPopupDictionary,
 } from "../DynamicHelpTypes";
 
 import { StorageApi } from "../storage";
@@ -36,20 +36,20 @@ import { ApiProvider, log } from "../DynamicHelp";
 import { HelpController } from "../components/HelpController";
 
 type HelpProviderProps = {
-    dictionary?: HelpPopupDictionary;
-    storageApi?: DynamicHelpStorageAPI;
-    storageReady?: boolean;
-    debug?: boolean;
-    children: JSX.Element | JSX.Element[];
+  dictionary?: HelpPopupDictionary;
+  storageApi?: DynamicHelpStorageAPI;
+  storageReady?: boolean;
+  debug?: boolean;
+  children: JSX.Element | JSX.Element[];
 };
 
 const DEFAULT_DICTIONARY: HelpPopupDictionary = {
-    "Skip this topic": "Skip this topic",
-    OK: "OK",
+  "Skip this topic": "Skip this topic",
+  OK: "OK",
 };
 
 const uninitMsg = (functionName: string) =>
-    `Info: ${functionName} called before controller initialized`;
+  `Info: ${functionName} called before controller initialized`;
 /**
  * The component that connects the help flows to the app.
  *
@@ -64,85 +64,85 @@ const uninitMsg = (functionName: string) =>
  */
 
 export const HelpProvider = ({
-    storageApi = StorageApi,
-    storageReady = true,
-    debug = false,
-    ...props
+  storageApi = StorageApi,
+  storageReady = true,
+  debug = false,
+  ...props
 }: HelpProviderProps): JSX.Element => {
-    const [app, ...helpFlows] = React.Children.toArray(
-        props.children,
-    ) as React.ReactElement[];
+  const [app, ...helpFlows] = React.Children.toArray(
+    props.children,
+  ) as React.ReactElement[];
 
-    // Here we store the Contoller API functions on our state, when they provided to us by the HelpController...
-    // ... for passing on to the Application via context.
+  // Here we store the Controller API functions on our state, when they provided to us by the HelpController...
+  // ... for passing on to the Application via context.
 
-    // In this way, the App is decoupled from the Help System renders, which is important to avoid App ref regeneration loops.
+  // In this way, the App is decoupled from the Help System renders, which is important to avoid App ref regeneration loops.
 
-    const [controllerApi, setControllerAPI] = React.useState<AppApi>(
-        // This is a non-null initialiser for the API so the client doesn't have to worry if the API is initialised yet.
-        // It doesn't matter if these are called: all APIs will be re-called after the API initialised, due to the resulting App re-render.
-        // Some will certainly be called before intialisation, due to render sequence, and depending what is on the initial page
-        {
-            registerTargetItem: (id: TargetId) => ({
-                ref: (target: HTMLElement) => {
-                    log(debug, uninitMsg("registration of target"), id, target);
-                },
-                used: () => {
-                    log(debug, uninitMsg("target used"), id);
-                },
-            }),
-            triggerFlow: (flowId) => {
-                log(debug, uninitMsg("triggerFlow"), flowId);
-            },
-            enableFlow: (flow, enabled) => {
-                log(debug, uninitMsg("enableFlow"), flow, enabled);
-            },
-            reloadUserState: () => {
-                log(debug, uninitMsg("reloadUserState"));
-            },
-            signalUsed: (target) => {
-                log(debug, uninitMsg("signalUsed"), target);
-            },
-            getFlowInfo: () => {
-                log(debug, uninitMsg("getFlowInfo"));
-                return [];
-            },
-            enableHelp: (enabled) => {
-                log(debug, uninitMsg("enableHelp"), enabled);
-            },
-            getSystemStatus: () => ({
-                enabled: false,
-                initialized: false,
-            }),
-            resetHelp: () => {
-                log(debug, uninitMsg("helpReset"));
-            },
+  const [controllerApi, setControllerAPI] = React.useState<AppApi>(
+    // This is a non-null initialiser for the API so the client doesn't have to worry if the API is initialised yet.
+    // It doesn't matter if these are called: all APIs will be re-called after the API initialised, due to the resulting App re-render.
+    // Some will certainly be called before intialisation, due to render sequence, and depending what is on the initial page
+    {
+      registerTargetItem: (id: TargetId) => ({
+        ref: (target: HTMLElement) => {
+          log(debug, uninitMsg("registration of target"), id, target);
         },
-    );
+        used: () => {
+          log(debug, uninitMsg("target used"), id);
+        },
+      }),
+      triggerFlow: (flowId) => {
+        log(debug, uninitMsg("triggerFlow"), flowId);
+      },
+      enableFlow: (flow, enabled) => {
+        log(debug, uninitMsg("enableFlow"), flow, enabled);
+      },
+      reloadUserState: () => {
+        log(debug, uninitMsg("reloadUserState"));
+      },
+      signalUsed: (target) => {
+        log(debug, uninitMsg("signalUsed"), target);
+      },
+      getFlowInfo: () => {
+        log(debug, uninitMsg("getFlowInfo"));
+        return [];
+      },
+      enableHelp: (enabled) => {
+        log(debug, uninitMsg("enableHelp"), enabled);
+      },
+      getSystemStatus: () => ({
+        enabled: false,
+        initialized: false,
+      }),
+      resetHelp: () => {
+        log(debug, uninitMsg("helpReset"));
+      },
+    },
+  );
 
-    /**
-     * The callback prop passed to the HelpController, which it uses to give us the API object.
-     */
-    const provideControllerApi: AppApiSetter = (apiObject) => {
-        log(debug, "HelpProvider provideController API called:", apiObject);
+  /**
+   * The callback prop passed to the HelpController, which it uses to give us the API object.
+   */
+  const provideControllerApi: AppApiSetter = (apiObject) => {
+    log(debug, "HelpProvider provideController API called:", apiObject);
 
-        setControllerAPI(apiObject);
-    };
+    setControllerAPI(apiObject);
+  };
 
-    return (
-        <>
-            <ApiProvider value={controllerApi}>
-                {app}
-                <HelpController
-                    provideControllerApi={provideControllerApi}
-                    dictionary={props.dictionary || DEFAULT_DICTIONARY}
-                    storage={storageApi}
-                    storageReady={storageReady}
-                    debug={debug}
-                >
-                    {helpFlows}
-                </HelpController>
-            </ApiProvider>
-        </>
-    );
+  return (
+    <>
+      <ApiProvider value={controllerApi}>
+        {app}
+        <HelpController
+          provideControllerApi={provideControllerApi}
+          dictionary={props.dictionary || DEFAULT_DICTIONARY}
+          storage={storageApi}
+          storageReady={storageReady}
+          debug={debug}
+        >
+          {helpFlows}
+        </HelpController>
+      </ApiProvider>
+    </>
+  );
 };

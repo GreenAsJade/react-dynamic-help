@@ -189,7 +189,7 @@ export type TargetTable = {
     [target: TargetId]: TargetInfo;
 };
 
-// *** Note: transitent working store. Not JSON persistable due to Set.
+// *** Note: transient working store. Not JSON persistable due to Set.
 export type TargetInfo = {
     ref: HTMLElement; // the ref to the target, supplied to us on a ref callback
     highlighters: Set<ItemId>; // The HelpItems that think that this target should be highlighted
