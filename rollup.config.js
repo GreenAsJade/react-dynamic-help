@@ -26,12 +26,7 @@ export default [{
         commonjs(),
         typescript({ tsconfig: './tsconfig.json' }),
         terser(),
-        postcss({
-            extensions: ['.css'],
-            minimize: true,
-            extract: true,
-            modules: true,
-        }),
+        postcss({ extract: 'DynamicHelp.css' }),
     ],
     external: ['react', 'react-dom'],
 }, {

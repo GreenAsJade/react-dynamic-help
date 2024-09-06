@@ -20,6 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+import "./DynamicHelp.css";
 export * from "./DynamicHelpTypes";
 export * from "./DynamicHelp";
 export * from "./components";

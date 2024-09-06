@@ -29,7 +29,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "rollup": "rollup -c --bundleConfigAsCjs",
-    "build": "npm run rollup"
+    "build": "yarn run rollup"
   },
   "author": "GreenAsJade",
   "license": "MIT",
@@ -55,6 +55,7 @@
     "eslint-plugin-unicorn": "*",
     "prettier": "*",
     "prettier-eslint": "*",
+    "postcss": "^8.4.45",
     "rollup": "^4.21.2",
     "rollup-plugin-dts": "^6.1.1",
     "rollup-plugin-peer-deps-external": "^2.2.4",
@@ -68,5 +69,8 @@
     "@types/react": "*",
     "react": "*",
     "react-dom": "*"
+  },
+  "dependencies": {
+
   }
 }

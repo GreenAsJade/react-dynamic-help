@@ -84,8 +84,12 @@ export const HelpProvider = ({
     // Some will certainly be called before intialisation, due to render sequence, and depending what is on the initial page
     {
       registerTargetItem: (id: TargetId) => ({
-        ref: (target: HTMLElement) => {
+        ref: (target: HTMLElement | null) => {
           log(debug, uninitMsg("registration of target"), id, target);
+        },
+        active: () => {
+          log(debug, uninitMsg("returned that target is not active"), id);
+          return false;
         },
         used: () => {
           log(debug, uninitMsg("target used"), id);
