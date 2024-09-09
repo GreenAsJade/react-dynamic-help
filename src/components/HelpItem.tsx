@@ -166,7 +166,7 @@ export function HelpItem({
 
     log(
         debug,
-        "HelpItem render Target:",
+        `HelpItem ${props.myId} render Target:`,
         targetTop,
         targetBottom,
         targetLeft,
@@ -175,10 +175,19 @@ export function HelpItem({
     // here we are defending against the target being inside a display:none element.
     const targetDisplayNone = targetTop === targetBottom;
 
+    // and here we are defending against the target being off screen
+    const targetNotOnScreen = (
+        targetBottom <= 0 || // The element is above the viewport
+        targetRight <= 0 ||  // The element is to the left of the viewport
+        targetTop >= (window.innerHeight || document.documentElement.clientHeight) || // The element is below the viewport
+        targetLeft >= (window.innerWidth || document.documentElement.clientWidth)); // The element is to the right of the viewport
+
+    const targetNotVisible = targetDisplayNone || targetNotOnScreen;
+
     if (
         props.myId &&
         target?.ref &&
-        !targetDisplayNone &&
+        targetNotVisible &&
         flowState?.visible &&
         myState?.visible &&
         systemState.userState.systemEnabled

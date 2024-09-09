@@ -237,7 +237,7 @@ export class HelpController extends React.Component<
     this.setState({ appTargetsState: this.appTargets });
   };
 
-  dissmissItem = (itemId: ItemId): void => {
+  dismissItem = (itemId: ItemId): void => {
     const state = this.systemState; // just alias for ease of reading
     const flowId = state.flowMap[itemId];
     const flow = state.flows[flowId];
@@ -284,7 +284,7 @@ export class HelpController extends React.Component<
 
       if (flow.items[flow.activeItem] === itemId) {
         log(debug, "processing active item", state.items[itemId]);
-        this.dissmissItem(itemId);
+        this.dismissItem(itemId);
       }
     });
   };
@@ -298,7 +298,7 @@ export class HelpController extends React.Component<
     }
 
     if (!this.systemState.flows[flowId]) {
-      console.error("Unrecogised help flow:", flowId);
+      console.error("Unrecognised help flow:", flowId);
       return;
     }
 
@@ -321,7 +321,7 @@ export class HelpController extends React.Component<
     }
 
     if (!this.systemState.userState.flows[flowId]) {
-      console.error("Unrecogised help flow:", flowId);
+      console.error("Unrecognised help flow:", flowId);
       return;
     }
 
@@ -374,7 +374,7 @@ export class HelpController extends React.Component<
   // Only share registered flows with the app.
   // Any other flow we might have from stored state is presumably out of date and therefore irrelevant
   getFlowInfo = (): FlowInfo[] => {
-    log(this.props.debug, "Get flow info has:", this.registeredFlows);
+    log(this.props.debug, "getFlowInfo has:", this.registeredFlows);
 
     const info = Array.from(this.registeredFlows).map((flowId) => ({
       id: flowId,
@@ -415,7 +415,7 @@ export class HelpController extends React.Component<
       if (!(flowId in this.systemState.userState.flows)) {
         log(this.props.debug, "First ever registration for", flowId);
         this.systemState.userState.flows[flowId] = {
-          seen: showInitially,
+          seen: false,
         };
       }
     } else {
@@ -488,7 +488,7 @@ export class HelpController extends React.Component<
             api: {
               addHelpFlow: this.addHelpFlow,
               addHelpItem: this.addHelpItem,
-              signalItemDismissed: this.dissmissItem,
+              signalItemDismissed: this.dismissItem,
               signalFlowDismissed: this.signalFlowDismissed,
               translate: this.translate,
               enableFlow: this.enableFlow,
