@@ -110,35 +110,37 @@ export function HelpItem({
     const vw = window.innerWidth;
     const vh = window.innerHeight;
 
-    const win_top = window.pageYOffset || document.documentElement.scrollTop;
-    const win_left = window.pageXOffset || document.documentElement.scrollLeft;
+    const win_top = window.scrollY || document.documentElement.scrollTop;
+    const win_left = window.scrollX || document.documentElement.scrollLeft;
 
-    // Here we try to make sure that we ended up on the screen, and if not then
+    // Here we try to make sure that we ended up on the screen after render, and if not then
     // reposition to a sensible place
+
     React.useEffect(() => {
         if (thisItem.current) {
-            const disp = thisItem.current;
+            const popup = thisItem.current;
             log(
                 debug,
                 "HelpItem post render",
-                disp.getBoundingClientRect(),
-                window.innerWidth,
+                popup.getBoundingClientRect(),
+                targetTop,
+                targetBottom,
                 props.myId,
             );
 
-            const { top, bottom, left, right } = disp.getBoundingClientRect();
+            const { top, bottom, left, right } = popup.getBoundingClientRect();
             const width = right - left;
             const height = bottom - top;
 
             if (left < 0) {
-                disp.style.left = "0px";
+                popup.style.left = "0px";
                 const newRight = vw - width;
-                disp.style.right = `${newRight}px`;
+                popup.style.right = `${newRight}px`;
                 log(debug, "Fell off left", newRight);
             } else if (right > initialWidth.current) {
-                disp.style.right = "0px";
+                popup.style.right = "0px";
                 const newLeft = initialWidth.current - width;
-                disp.style.left = `${newLeft}px`;
+                popup.style.left = `${newLeft}px`;
                 log(debug, "Fell off right", newLeft);
             }
 
@@ -166,7 +168,7 @@ export function HelpItem({
 
     log(
         debug,
-        `HelpItem ${props.myId} render Target:`,
+        `HelpItem ${props.myId} render: Target at`,
         targetTop,
         targetBottom,
         targetLeft,
@@ -175,19 +177,10 @@ export function HelpItem({
     // here we are defending against the target being inside a display:none element.
     const targetDisplayNone = targetTop === targetBottom;
 
-    // and here we are defending against the target being off screen
-    const targetNotOnScreen = (
-        targetBottom <= 0 || // The element is above the viewport
-        targetRight <= 0 ||  // The element is to the left of the viewport
-        targetTop >= (window.innerHeight || document.documentElement.clientHeight) || // The element is below the viewport
-        targetLeft >= (window.innerWidth || document.documentElement.clientWidth)); // The element is to the right of the viewport
-
-    const targetNotVisible = targetDisplayNone || targetNotOnScreen;
-
     if (
         props.myId &&
         target?.ref &&
-        targetNotVisible &&
+        !targetDisplayNone &&
         flowState?.visible &&
         myState?.visible &&
         systemState.userState.systemEnabled
@@ -301,13 +294,7 @@ export function HelpItem({
         log(
             debug,
             "rendering HelpItem onto target:",
-            props.myId,
-            /* the following can be useful in case of layout strife,
-            but are noisy otherwise...
-            vh,
-            vw,
-            itemPosition,
-            target.ref.getBoundingClientRect(),*/
+            props.myId, itemPosition
         );
 
         // Render...
@@ -344,14 +331,16 @@ export function HelpItem({
             debug,
             "HelpItem render not showing self: ",
             props.myId,
-            ", item visible:",
-            myState?.visible,
             ", target: ",
             target?.ref,
             ", target-display is none:",
             targetDisplayNone,
             "flow enabled:",
             flowState?.visible,
+            ", item visible:",
+            myState?.visible,
+            ", system enabled:",
+            systemState.userState.systemEnabled,
         );
 
         if (highlightTarget && target?.ref && props.myId) {
