@@ -30,7 +30,7 @@ type HelpFlowProps = {
     description?: string; // passed to the app if it asks "what flows are there?"
     showInitially?: boolean;
     debug?: boolean; // if this is turned on it sets debug on the children as well, _overriding_ their debug prop.
-    children: JSX.Element | JSX.Element[];
+    children: React.ReactElement | React.ReactElement[];
 };
 
 function defaultId(
@@ -56,7 +56,7 @@ export const HelpFlow = ({
     debug = false,
     description = "",
     ...props
-}: HelpFlowProps): JSX.Element => {
+}: HelpFlowProps): React.ReactElement => {
     const helpContext = React.useContext(SystemContext);
     const { api, systemState, storageReady } = helpContext;
 
@@ -97,7 +97,7 @@ export const HelpFlow = ({
     // It's also the place that "if the flow has debug then the Items do too" is implemented
 
     const children = React.useMemo(
-        () => React.Children.toArray(props.children) as JSX.Element[],
+        () => React.Children.toArray(props.children) as React.ReactElement[],
         [props.children],
     );
 

@@ -44,7 +44,7 @@ import { SystemContextProvider, SystemContext, log } from "../DynamicHelp";
  * ... because the state gets saved, making it hard to repeat tests!
  */
 
-function FloatingStateReset(): JSX.Element {
+function FloatingStateReset(): React.ReactElement {
   const api = React.useContext(SystemContext).api;
 
   const resetHelp = () => {
@@ -78,7 +78,7 @@ type HelpControllerProps = {
   storage: DynamicHelpStorageAPI;
   storageReady: boolean;
   debug: boolean;
-  children: JSX.Element | JSX.Element[];
+  children: React.ReactElement | React.ReactElement[];
 };
 
 type HelpControllerState = {
@@ -477,7 +477,7 @@ export class HelpController extends React.Component<
     return this.props.dictionary[phrase];
   };
 
-  render(): JSX.Element {
+  render(): React.ReactElement {
     return (
       <>
         <SystemContextProvider

@@ -17,7 +17,7 @@ The app interaction is intended to be minimally intrusive in the app codebase.
 
 The app interacts primarily by registering elements as "help targets", and calling a callback to indicate that the target has been used.
 ```js
-function AppWithHelp(): JSX.Element {
+function AppWithHelp(): React.ReactElement {
    return (
        <DynamicHelp.HelpProvider>
            <App />
@@ -26,7 +26,7 @@ function AppWithHelp(): JSX.Element {
    );
 }
 
-export const AComponent = (props: ConfigProps): JSX.Element => {
+export const AComponent = (props: ConfigProps): React.ReactElement => {
 
    const { registerTargetItem } = React.useContext(DynamicHelp.Api);
 
@@ -50,7 +50,7 @@ export const AComponent = (props: ConfigProps): JSX.Element => {
 Help Items and their Flows are specified in a separate JSX tree.
 
 ```js
-export function HelpFlows(): JSX.Element {
+export function HelpFlows(): React.ReactElement {
    return (
        <div className="help-flow-container">
            <HelpFlow id="new-user" showInitially={true}>
