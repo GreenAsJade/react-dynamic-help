@@ -43,21 +43,6 @@ const defaultAnchors: {
     "centre-right": "bottom-left",
 };
 
-type HelpItemProperties = {
-    target: HelpTypes.TargetId; // App element the HelpItem relates to
-    position?: HelpTypes.Position; // where the HelpItem is placed on the target
-    anchor?: HelpTypes.Position; // which part of the HelpItem is placed at `position`
-    margin?: string; // can be used to offset the HelpItem from the default position
-    id?: HelpTypes.ItemId; // user can provide this for css targetting
-    highlightTarget?: boolean;
-    debug?: boolean; // note - this will be overriden by Flow debug, if that is set.
-
-    // provided by the containing HelpFlow:
-    myId?: HelpTypes.ItemId;
-
-    children: React.ReactNode; // The help popup elements.
-};
-
 /**
  * A display element in a Dynamic Help Flow - one "step" of the flow.
  *
@@ -68,7 +53,7 @@ export function HelpItem({
     debug = false,
     highlightTarget = true,
     ...props
-}: HelpItemProperties): React.ReactElement {
+}: HelpTypes.HelpItemProperties): JSX.Element {
     const {
         appTargetsState,
         systemState,
@@ -291,11 +276,7 @@ export function HelpItem({
             target.highlighters.add(props.myId);
         }
 
-        log(
-            debug,
-            "rendering HelpItem onto target:",
-            props.myId, itemPosition
-        );
+        log(debug, "rendering HelpItem onto target:", props.myId, itemPosition);
 
         // Render...
 

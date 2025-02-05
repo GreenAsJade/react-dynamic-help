@@ -102,10 +102,10 @@ export const HelpFlow = ({
     );
 
     const childrenWithIds = children.map((child, index) => {
-        const id =
-            child.props.id || defaultId(flowId, child.props.target, index);
+        const props = child.props as HelpTypes.HelpItemProperties;
+        const id = props.id || defaultId(flowId, props.target, index);
         return React.cloneElement(child, {
-            ...child.props,
+            ...props,
             myId: id,
             ...(debug ? { debug } : {}),
         });
