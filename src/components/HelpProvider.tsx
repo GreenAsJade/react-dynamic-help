@@ -40,7 +40,7 @@ type HelpProviderProps = {
   storageApi?: DynamicHelpStorageAPI;
   storageReady?: boolean;
   debug?: boolean;
-  children: JSX.Element | JSX.Element[];
+  children: React.ReactElement | React.ReactElement[];
 };
 
 const DEFAULT_DICTIONARY: HelpPopupDictionary = {
@@ -68,7 +68,7 @@ export const HelpProvider = ({
   storageReady = true,
   debug = false,
   ...props
-}: HelpProviderProps): JSX.Element => {
+}: HelpProviderProps): React.ReactElement => {
   const [app, ...helpFlows] = React.Children.toArray(
     props.children,
   ) as React.ReactElement[];
