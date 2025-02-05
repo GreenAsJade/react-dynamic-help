@@ -104,11 +104,14 @@ export const HelpFlow = ({
     const childrenWithIds = children.map((child, index) => {
         const props = child.props as HelpTypes.HelpItemProperties;
         const id = props.id || defaultId(flowId, props.target, index);
-        return React.cloneElement(child, {
-            ...props,
-            myId: id,
-            ...(debug ? { debug } : {}),
-        });
+        return React.cloneElement(
+            child as React.ReactElement<HelpTypes.HelpItemProperties>,
+            {
+                ...props,
+                myId: id,
+                ...(debug ? { debug } : {}),
+            },
+        );
     });
 
     log(debug, "HelpFlow render", flowId, "with storage ready:", storageReady);

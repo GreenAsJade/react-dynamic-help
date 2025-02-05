@@ -53,7 +53,7 @@ export function HelpItem({
     debug = false,
     highlightTarget = true,
     ...props
-}: HelpTypes.HelpItemProperties): JSX.Element {
+}: HelpTypes.HelpItemProperties): React.ReactElement {
     const {
         appTargetsState,
         systemState,
