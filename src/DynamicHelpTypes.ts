@@ -196,3 +196,15 @@ export type TargetInfo = {
   ref: HTMLElement; // the ref to the target, supplied to us on a ref callback
   highlighters: Set<ItemId>; // The HelpItems that think that this target should be highlighted
 };
+
+export type HelpItemProperties = {
+    target: TargetId;           // App element the HelpItem relates to
+    position?: Position;        // where the HelpItem is placed on the target
+    anchor?: Position;         // which part of the HelpItem is placed at `position`
+    margin?: string;          // can be used to offset the HelpItem from the default position
+    id?: ItemId;             // user can provide this for css targetting
+    highlightTarget?: boolean;
+    debug?: boolean;         // note - this will be overriden by Flow debug, if that is set
+    myId?: ItemId;          // provided by the containing HelpFlow
+    children: React.ReactNode; // The help popup elements
+};
