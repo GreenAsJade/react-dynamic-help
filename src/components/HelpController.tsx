@@ -118,6 +118,8 @@ export class HelpController extends React.Component<
   // Here we track which flows have definitely registered, and therefore are present in the current
   // JSX of the application (as opposed to flows that were once present, saved in storage, but removed from the application)
   registeredFlows = new Set<FlowId>();
+  registeredTargetHelpers = new Map<TargetId, TargetItemHelpers>();
+  pendingTargetUnregisters = new Map<TargetId, number>();
 
   // we accumulate multiple updates to state per render cycle (due to refs changing on render) here.
   // .. the ultimate value of these ends up in this.state (and storage) when react finally updates the state,
@@ -203,11 +205,19 @@ export class HelpController extends React.Component<
    */
 
   registerTargetCallback = (target: TargetId): TargetItemHelpers => {
-    return {
+    const existing = this.registeredTargetHelpers.get(target);
+    if (existing) {
+      return existing;
+    }
+
+    const helper = {
       ref: (targetRef: HTMLElement | null) => this.mapTarget(target, targetRef),
       active: () => Boolean(this.appTargets.targetItems[target]?.ref),
       used: () => this.signalTargetIsUsed(target),
     };
+
+    this.registeredTargetHelpers.set(target, helper);
+    return helper;
   };
 
   private mapTarget = (
@@ -224,6 +234,16 @@ export class HelpController extends React.Component<
       this.appTargets,
     );
     if (targetRef !== null) {
+      const pendingUnregister = this.pendingTargetUnregisters.get(target);
+      if (pendingUnregister !== undefined) {
+        window.clearTimeout(pendingUnregister);
+        this.pendingTargetUnregisters.delete(target);
+      }
+
+      if (this.appTargets.targetItems[target]?.ref === targetRef) {
+        return;
+      }
+
       this.appTargets = {
         targetItems: {
           ...this.appTargets.targetItems,
@@ -233,8 +253,35 @@ export class HelpController extends React.Component<
           },
         },
       };
+      this.setState({ appTargetsState: this.appTargets });
+      return;
     }
-    this.setState({ appTargetsState: this.appTargets });
+
+    if (!this.appTargets.targetItems[target]) {
+      return;
+    }
+
+    if (this.pendingTargetUnregisters.has(target)) {
+      return;
+    }
+
+    let unregisterTimer = 0;
+    unregisterTimer = window.setTimeout(() => {
+      if (this.pendingTargetUnregisters.get(target) !== unregisterTimer) {
+        return;
+      }
+
+      this.pendingTargetUnregisters.delete(target);
+
+      const nextTargetItems = { ...this.appTargets.targetItems };
+      delete nextTargetItems[target];
+      this.appTargets = {
+        targetItems: nextTargetItems,
+      };
+      this.setState({ appTargetsState: this.appTargets });
+    }, 0);
+
+    this.pendingTargetUnregisters.set(target, unregisterTimer);
   };
 
   dismissItem = (itemId: ItemId): void => {
